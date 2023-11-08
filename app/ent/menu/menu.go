@@ -3,6 +3,9 @@
 package menu
 
 import (
+	"fmt"
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -20,14 +23,20 @@ const (
 	FieldIsDeleted = "is_deleted"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldPreparationTime holds the string denoting the preparation_time field in the database.
-	FieldPreparationTime = "preparation_time"
 	// FieldOptions holds the string denoting the options field in the database.
 	FieldOptions = "options"
-	// FieldPrice holds the string denoting the price field in the database.
-	FieldPrice = "price"
+	// FieldFoodType holds the string denoting the foodtype field in the database.
+	FieldFoodType = "food_type"
+	// FieldMenuItemType holds the string denoting the menuitemtype field in the database.
+	FieldMenuItemType = "menu_item_type"
+	// FieldDrinkType holds the string denoting the drinktype field in the database.
+	FieldDrinkType = "drink_type"
+	// FieldDietaryType holds the string denoting the dietarytype field in the database.
+	FieldDietaryType = "dietary_type"
 	// FieldIsAvailable holds the string denoting the is_available field in the database.
 	FieldIsAvailable = "is_available"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
@@ -36,6 +45,10 @@ const (
 	EdgeMenuItems = "menu_items"
 	// EdgeMedia holds the string denoting the media edge name in mutations.
 	EdgeMedia = "media"
+	// EdgeCreatedBy holds the string denoting the created_by edge name in mutations.
+	EdgeCreatedBy = "created_by"
+	// EdgeUpdatedBy holds the string denoting the updated_by edge name in mutations.
+	EdgeUpdatedBy = "updated_by"
 	// Table holds the table name of the menu in the database.
 	Table = "menus"
 	// PlaceTable is the table that holds the place relation/edge. The primary key declared below.
@@ -58,6 +71,20 @@ const (
 	// MediaInverseTable is the table name for the Media entity.
 	// It exists in this package in order to avoid circular dependency with the "media" package.
 	MediaInverseTable = "media"
+	// CreatedByTable is the table that holds the created_by relation/edge.
+	CreatedByTable = "users"
+	// CreatedByInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	CreatedByInverseTable = "users"
+	// CreatedByColumn is the table column denoting the created_by relation/edge.
+	CreatedByColumn = "menu_created_by"
+	// UpdatedByTable is the table that holds the updated_by relation/edge.
+	UpdatedByTable = "users"
+	// UpdatedByInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UpdatedByInverseTable = "users"
+	// UpdatedByColumn is the table column denoting the updated_by relation/edge.
+	UpdatedByColumn = "menu_updated_by"
 )
 
 // Columns holds all SQL columns for menu fields.
@@ -67,10 +94,13 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldIsDeleted,
 	FieldDescription,
-	FieldPreparationTime,
 	FieldOptions,
-	FieldPrice,
+	FieldFoodType,
+	FieldMenuItemType,
+	FieldDrinkType,
+	FieldDietaryType,
 	FieldIsAvailable,
+	FieldUpdatedAt,
 }
 
 var (
@@ -103,9 +133,109 @@ var (
 	DefaultIsDeleted bool
 	// DefaultIsAvailable holds the default value on creation for the "is_available" field.
 	DefaultIsAvailable bool
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt time.Time
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
+
+// FoodType defines the type for the "foodType" enum field.
+type FoodType string
+
+// FoodType values.
+const (
+	FoodTypeLocal            FoodType = "local"
+	FoodTypeIntercontinental FoodType = "intercontinental"
+	FoodTypeNational         FoodType = "national"
+	FoodTypeRegional         FoodType = "regional"
+	FoodTypeContinental      FoodType = "continental"
+)
+
+func (ft FoodType) String() string {
+	return string(ft)
+}
+
+// FoodTypeValidator is a validator for the "foodType" field enum values. It is called by the builders before save.
+func FoodTypeValidator(ft FoodType) error {
+	switch ft {
+	case FoodTypeLocal, FoodTypeIntercontinental, FoodTypeNational, FoodTypeRegional, FoodTypeContinental:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for foodType field: %q", ft)
+	}
+}
+
+// MenuItemType defines the type for the "menuItemType" enum field.
+type MenuItemType string
+
+// MenuItemType values.
+const (
+	MenuItemTypeFood  MenuItemType = "food"
+	MenuItemTypeDrink MenuItemType = "drink"
+)
+
+func (mit MenuItemType) String() string {
+	return string(mit)
+}
+
+// MenuItemTypeValidator is a validator for the "menuItemType" field enum values. It is called by the builders before save.
+func MenuItemTypeValidator(mit MenuItemType) error {
+	switch mit {
+	case MenuItemTypeFood, MenuItemTypeDrink:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for menuItemType field: %q", mit)
+	}
+}
+
+// DrinkType defines the type for the "drinkType" enum field.
+type DrinkType string
+
+// DrinkType values.
+const (
+	DrinkTypeAlcoholic    DrinkType = "alcoholic"
+	DrinkTypeNonAlcoholic DrinkType = "non-alcoholic"
+	DrinkTypeBoth         DrinkType = "both"
+)
+
+func (dt DrinkType) String() string {
+	return string(dt)
+}
+
+// DrinkTypeValidator is a validator for the "drinkType" field enum values. It is called by the builders before save.
+func DrinkTypeValidator(dt DrinkType) error {
+	switch dt {
+	case DrinkTypeAlcoholic, DrinkTypeNonAlcoholic, DrinkTypeBoth:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for drinkType field: %q", dt)
+	}
+}
+
+// DietaryType defines the type for the "dietaryType" enum field.
+type DietaryType string
+
+// DietaryType values.
+const (
+	DietaryTypeVegan         DietaryType = "vegan"
+	DietaryTypeVegetarian    DietaryType = "vegetarian"
+	DietaryTypeNonVegetarian DietaryType = "non-vegetarian"
+	DietaryTypeBoth          DietaryType = "both"
+)
+
+func (dt DietaryType) String() string {
+	return string(dt)
+}
+
+// DietaryTypeValidator is a validator for the "dietaryType" field enum values. It is called by the builders before save.
+func DietaryTypeValidator(dt DietaryType) error {
+	switch dt {
+	case DietaryTypeVegan, DietaryTypeVegetarian, DietaryTypeNonVegetarian, DietaryTypeBoth:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for dietaryType field: %q", dt)
+	}
+}
 
 // OrderOption defines the ordering options for the Menu queries.
 type OrderOption func(*sql.Selector)
@@ -135,24 +265,39 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
-// ByPreparationTime orders the results by the preparation_time field.
-func ByPreparationTime(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPreparationTime, opts...).ToFunc()
-}
-
 // ByOptions orders the results by the options field.
 func ByOptions(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOptions, opts...).ToFunc()
 }
 
-// ByPrice orders the results by the price field.
-func ByPrice(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPrice, opts...).ToFunc()
+// ByFoodType orders the results by the foodType field.
+func ByFoodType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFoodType, opts...).ToFunc()
+}
+
+// ByMenuItemType orders the results by the menuItemType field.
+func ByMenuItemType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMenuItemType, opts...).ToFunc()
+}
+
+// ByDrinkType orders the results by the drinkType field.
+func ByDrinkType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDrinkType, opts...).ToFunc()
+}
+
+// ByDietaryType orders the results by the dietaryType field.
+func ByDietaryType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDietaryType, opts...).ToFunc()
 }
 
 // ByIsAvailable orders the results by the is_available field.
 func ByIsAvailable(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsAvailable, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByPlaceCount orders the results by place count.
@@ -210,6 +355,34 @@ func ByMedia(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newMediaStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCreatedByCount orders the results by created_by count.
+func ByCreatedByCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCreatedByStep(), opts...)
+	}
+}
+
+// ByCreatedBy orders the results by created_by terms.
+func ByCreatedBy(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatedByStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByUpdatedByCount orders the results by updated_by count.
+func ByUpdatedByCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUpdatedByStep(), opts...)
+	}
+}
+
+// ByUpdatedBy orders the results by updated_by terms.
+func ByUpdatedBy(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUpdatedByStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPlaceStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -236,5 +409,19 @@ func newMediaStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MediaInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, MediaTable, MediaPrimaryKey...),
+	)
+}
+func newCreatedByStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatedByInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CreatedByTable, CreatedByColumn),
+	)
+}
+func newUpdatedByStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UpdatedByInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, UpdatedByTable, UpdatedByColumn),
 	)
 }

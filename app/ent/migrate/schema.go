@@ -703,10 +703,13 @@ var (
 		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
 		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "preparation_time", Type: field.TypeString, Nullable: true},
 		{Name: "options", Type: field.TypeString, Nullable: true},
-		{Name: "price", Type: field.TypeString, Nullable: true},
+		{Name: "food_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"local", "intercontinental", "national", "regional", "continental"}},
+		{Name: "menu_item_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"food", "drink"}},
+		{Name: "drink_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"alcoholic", "non-alcoholic", "both"}},
+		{Name: "dietary_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"vegan", "vegetarian", "non-vegetarian", "both"}},
 		{Name: "is_available", Type: field.TypeBool, Default: true},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
 	}
 	// MenusTable holds the schema information for the "menus" table.
 	MenusTable = &schema.Table{
@@ -725,7 +728,34 @@ var (
 		{Name: "preparation_time", Type: field.TypeInt, Nullable: true},
 		{Name: "options", Type: field.TypeJSON, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "type", Type: field.TypeEnum, Nullable: true, Enums: []string{"local", "intercontinental", "national", "regional", "continental"}},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Enums: []string{"available", "unavailable"}},
+		{Name: "drink_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"alcoholic", "non-alcoholic", "both"}},
+		{Name: "dietary_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"vegan", "vegetarian", "non-vegetarian", "both"}},
 		{Name: "is_deleted", Type: field.TypeBool, Default: false},
+		{Name: "calories", Type: field.TypeInt, Nullable: true},
+		{Name: "serve_size", Type: field.TypeInt, Nullable: true},
+		{Name: "available_from", Type: field.TypeTime, Nullable: true},
+		{Name: "available_until", Type: field.TypeTime, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "spiciness_level", Type: field.TypeEnum, Nullable: true, Enums: []string{"mild", "medium", "hot"}},
+		{Name: "allergens", Type: field.TypeJSON, Nullable: true},
+		{Name: "chef_special_note", Type: field.TypeString, Nullable: true},
+		{Name: "rating", Type: field.TypeInt, Nullable: true},
+		{Name: "review_count", Type: field.TypeInt, Nullable: true},
+		{Name: "category", Type: field.TypeString, Nullable: true},
+		{Name: "order_count", Type: field.TypeInt, Nullable: true},
+		{Name: "sku", Type: field.TypeString, Nullable: true},
+		{Name: "is_featured", Type: field.TypeBool, Nullable: true, Default: false},
+		{Name: "is_new", Type: field.TypeBool, Nullable: true, Default: false},
+		{Name: "is_seasonal", Type: field.TypeBool, Nullable: true, Default: false},
+		{Name: "season", Type: field.TypeString, Nullable: true},
+		{Name: "discount_percentage", Type: field.TypeInt, Nullable: true},
+		{Name: "promotion_description", Type: field.TypeString, Nullable: true},
+		{Name: "promotion_start", Type: field.TypeTime, Nullable: true},
+		{Name: "promotion_end", Type: field.TypeTime, Nullable: true},
+		{Name: "tags", Type: field.TypeJSON, Nullable: true},
+		{Name: "related_items", Type: field.TypeJSON, Nullable: true},
 	}
 	// MenuItemsTable holds the schema information for the "menu_items" table.
 	MenuItemsTable = &schema.Table{
@@ -981,6 +1011,18 @@ var (
 		{Name: "is_reserved", Type: field.TypeBool, Default: false},
 		{Name: "is_vip", Type: field.TypeBool, Default: false},
 		{Name: "is_premium", Type: field.TypeBool, Default: false},
+		{Name: "location_description", Type: field.TypeString, Nullable: true},
+		{Name: "minimum_spend", Type: field.TypeFloat64, Nullable: true},
+		{Name: "reservation_time", Type: field.TypeTime, Nullable: true},
+		{Name: "next_available_time", Type: field.TypeTime, Nullable: true},
+		{Name: "special_requirements", Type: field.TypeJSON, Nullable: true},
+		{Name: "layout", Type: field.TypeString, Nullable: true},
+		{Name: "service_area", Type: field.TypeString, Nullable: true},
+		{Name: "ambient", Type: field.TypeString, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "rating", Type: field.TypeFloat64, Nullable: true},
+		{Name: "tags", Type: field.TypeJSON, Nullable: true},
+		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
 		{Name: "place_tables", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_tables_created", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_tables_updated", Type: field.TypeString, Nullable: true, Size: 36},
@@ -996,37 +1038,37 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "place_tables_places_tables",
-				Columns:    []*schema.Column{PlaceTablesColumns[14]},
+				Columns:    []*schema.Column{PlaceTablesColumns[26]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "place_tables_users_tables_created",
-				Columns:    []*schema.Column{PlaceTablesColumns[15]},
+				Columns:    []*schema.Column{PlaceTablesColumns[27]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "place_tables_users_tables_updated",
-				Columns:    []*schema.Column{PlaceTablesColumns[16]},
+				Columns:    []*schema.Column{PlaceTablesColumns[28]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "place_tables_users_tables_deleted",
-				Columns:    []*schema.Column{PlaceTablesColumns[17]},
+				Columns:    []*schema.Column{PlaceTablesColumns[29]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "place_tables_users_tables_reserved",
-				Columns:    []*schema.Column{PlaceTablesColumns[18]},
+				Columns:    []*schema.Column{PlaceTablesColumns[30]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "place_tables_users_tables_waited",
-				Columns:    []*schema.Column{PlaceTablesColumns[19]},
+				Columns:    []*schema.Column{PlaceTablesColumns[31]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1439,12 +1481,28 @@ var (
 		{Name: "role", Type: field.TypeEnum, Enums: []string{"user", "admin", "business_owner", "staff"}, Default: "user"},
 		{Name: "permissions", Type: field.TypeJSON, Nullable: true},
 		{Name: "is_premium", Type: field.TypeBool, Default: false},
+		{Name: "menu_created_by", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "menu_updated_by", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "users_menus_created_by",
+				Columns:    []*schema.Column{UsersColumns[22]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "users_menus_updated_by",
+				Columns:    []*schema.Column{UsersColumns[23]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// UserBusinessesColumns holds the columns for the "user_businesses" table.
 	UserBusinessesColumns = []*schema.Column{
@@ -2409,6 +2467,8 @@ func init() {
 	TicketOptionsTable.ForeignKeys[1].RefTable = TicketsTable
 	TransactionHistoriesTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	TransactionHistoriesTable.ForeignKeys[1].RefTable = UsersTable
+	UsersTable.ForeignKeys[0].RefTable = MenusTable
+	UsersTable.ForeignKeys[1].RefTable = MenusTable
 	UserBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	UserBusinessesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable

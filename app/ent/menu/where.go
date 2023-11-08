@@ -4,6 +4,7 @@ package menu
 
 import (
 	"placio-app/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -84,24 +85,19 @@ func Description(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldDescription, v))
 }
 
-// PreparationTime applies equality check predicate on the "preparation_time" field. It's identical to PreparationTimeEQ.
-func PreparationTime(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldEQ(FieldPreparationTime, v))
-}
-
 // Options applies equality check predicate on the "options" field. It's identical to OptionsEQ.
 func Options(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldOptions, v))
 }
 
-// Price applies equality check predicate on the "price" field. It's identical to PriceEQ.
-func Price(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldEQ(FieldPrice, v))
-}
-
 // IsAvailable applies equality check predicate on the "is_available" field. It's identical to IsAvailableEQ.
 func IsAvailable(v bool) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldIsAvailable, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -329,81 +325,6 @@ func DescriptionContainsFold(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldContainsFold(FieldDescription, v))
 }
 
-// PreparationTimeEQ applies the EQ predicate on the "preparation_time" field.
-func PreparationTimeEQ(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldEQ(FieldPreparationTime, v))
-}
-
-// PreparationTimeNEQ applies the NEQ predicate on the "preparation_time" field.
-func PreparationTimeNEQ(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldNEQ(FieldPreparationTime, v))
-}
-
-// PreparationTimeIn applies the In predicate on the "preparation_time" field.
-func PreparationTimeIn(vs ...string) predicate.Menu {
-	return predicate.Menu(sql.FieldIn(FieldPreparationTime, vs...))
-}
-
-// PreparationTimeNotIn applies the NotIn predicate on the "preparation_time" field.
-func PreparationTimeNotIn(vs ...string) predicate.Menu {
-	return predicate.Menu(sql.FieldNotIn(FieldPreparationTime, vs...))
-}
-
-// PreparationTimeGT applies the GT predicate on the "preparation_time" field.
-func PreparationTimeGT(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldGT(FieldPreparationTime, v))
-}
-
-// PreparationTimeGTE applies the GTE predicate on the "preparation_time" field.
-func PreparationTimeGTE(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldGTE(FieldPreparationTime, v))
-}
-
-// PreparationTimeLT applies the LT predicate on the "preparation_time" field.
-func PreparationTimeLT(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldLT(FieldPreparationTime, v))
-}
-
-// PreparationTimeLTE applies the LTE predicate on the "preparation_time" field.
-func PreparationTimeLTE(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldLTE(FieldPreparationTime, v))
-}
-
-// PreparationTimeContains applies the Contains predicate on the "preparation_time" field.
-func PreparationTimeContains(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldContains(FieldPreparationTime, v))
-}
-
-// PreparationTimeHasPrefix applies the HasPrefix predicate on the "preparation_time" field.
-func PreparationTimeHasPrefix(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldHasPrefix(FieldPreparationTime, v))
-}
-
-// PreparationTimeHasSuffix applies the HasSuffix predicate on the "preparation_time" field.
-func PreparationTimeHasSuffix(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldHasSuffix(FieldPreparationTime, v))
-}
-
-// PreparationTimeIsNil applies the IsNil predicate on the "preparation_time" field.
-func PreparationTimeIsNil() predicate.Menu {
-	return predicate.Menu(sql.FieldIsNull(FieldPreparationTime))
-}
-
-// PreparationTimeNotNil applies the NotNil predicate on the "preparation_time" field.
-func PreparationTimeNotNil() predicate.Menu {
-	return predicate.Menu(sql.FieldNotNull(FieldPreparationTime))
-}
-
-// PreparationTimeEqualFold applies the EqualFold predicate on the "preparation_time" field.
-func PreparationTimeEqualFold(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldEqualFold(FieldPreparationTime, v))
-}
-
-// PreparationTimeContainsFold applies the ContainsFold predicate on the "preparation_time" field.
-func PreparationTimeContainsFold(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldContainsFold(FieldPreparationTime, v))
-}
-
 // OptionsEQ applies the EQ predicate on the "options" field.
 func OptionsEQ(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldOptions, v))
@@ -479,79 +400,124 @@ func OptionsContainsFold(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldContainsFold(FieldOptions, v))
 }
 
-// PriceEQ applies the EQ predicate on the "price" field.
-func PriceEQ(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldEQ(FieldPrice, v))
+// FoodTypeEQ applies the EQ predicate on the "foodType" field.
+func FoodTypeEQ(v FoodType) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldFoodType, v))
 }
 
-// PriceNEQ applies the NEQ predicate on the "price" field.
-func PriceNEQ(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldNEQ(FieldPrice, v))
+// FoodTypeNEQ applies the NEQ predicate on the "foodType" field.
+func FoodTypeNEQ(v FoodType) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldFoodType, v))
 }
 
-// PriceIn applies the In predicate on the "price" field.
-func PriceIn(vs ...string) predicate.Menu {
-	return predicate.Menu(sql.FieldIn(FieldPrice, vs...))
+// FoodTypeIn applies the In predicate on the "foodType" field.
+func FoodTypeIn(vs ...FoodType) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldFoodType, vs...))
 }
 
-// PriceNotIn applies the NotIn predicate on the "price" field.
-func PriceNotIn(vs ...string) predicate.Menu {
-	return predicate.Menu(sql.FieldNotIn(FieldPrice, vs...))
+// FoodTypeNotIn applies the NotIn predicate on the "foodType" field.
+func FoodTypeNotIn(vs ...FoodType) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldFoodType, vs...))
 }
 
-// PriceGT applies the GT predicate on the "price" field.
-func PriceGT(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldGT(FieldPrice, v))
+// FoodTypeIsNil applies the IsNil predicate on the "foodType" field.
+func FoodTypeIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldFoodType))
 }
 
-// PriceGTE applies the GTE predicate on the "price" field.
-func PriceGTE(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldGTE(FieldPrice, v))
+// FoodTypeNotNil applies the NotNil predicate on the "foodType" field.
+func FoodTypeNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldFoodType))
 }
 
-// PriceLT applies the LT predicate on the "price" field.
-func PriceLT(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldLT(FieldPrice, v))
+// MenuItemTypeEQ applies the EQ predicate on the "menuItemType" field.
+func MenuItemTypeEQ(v MenuItemType) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldMenuItemType, v))
 }
 
-// PriceLTE applies the LTE predicate on the "price" field.
-func PriceLTE(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldLTE(FieldPrice, v))
+// MenuItemTypeNEQ applies the NEQ predicate on the "menuItemType" field.
+func MenuItemTypeNEQ(v MenuItemType) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldMenuItemType, v))
 }
 
-// PriceContains applies the Contains predicate on the "price" field.
-func PriceContains(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldContains(FieldPrice, v))
+// MenuItemTypeIn applies the In predicate on the "menuItemType" field.
+func MenuItemTypeIn(vs ...MenuItemType) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldMenuItemType, vs...))
 }
 
-// PriceHasPrefix applies the HasPrefix predicate on the "price" field.
-func PriceHasPrefix(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldHasPrefix(FieldPrice, v))
+// MenuItemTypeNotIn applies the NotIn predicate on the "menuItemType" field.
+func MenuItemTypeNotIn(vs ...MenuItemType) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldMenuItemType, vs...))
 }
 
-// PriceHasSuffix applies the HasSuffix predicate on the "price" field.
-func PriceHasSuffix(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldHasSuffix(FieldPrice, v))
+// MenuItemTypeIsNil applies the IsNil predicate on the "menuItemType" field.
+func MenuItemTypeIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldMenuItemType))
 }
 
-// PriceIsNil applies the IsNil predicate on the "price" field.
-func PriceIsNil() predicate.Menu {
-	return predicate.Menu(sql.FieldIsNull(FieldPrice))
+// MenuItemTypeNotNil applies the NotNil predicate on the "menuItemType" field.
+func MenuItemTypeNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldMenuItemType))
 }
 
-// PriceNotNil applies the NotNil predicate on the "price" field.
-func PriceNotNil() predicate.Menu {
-	return predicate.Menu(sql.FieldNotNull(FieldPrice))
+// DrinkTypeEQ applies the EQ predicate on the "drinkType" field.
+func DrinkTypeEQ(v DrinkType) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldDrinkType, v))
 }
 
-// PriceEqualFold applies the EqualFold predicate on the "price" field.
-func PriceEqualFold(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldEqualFold(FieldPrice, v))
+// DrinkTypeNEQ applies the NEQ predicate on the "drinkType" field.
+func DrinkTypeNEQ(v DrinkType) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldDrinkType, v))
 }
 
-// PriceContainsFold applies the ContainsFold predicate on the "price" field.
-func PriceContainsFold(v string) predicate.Menu {
-	return predicate.Menu(sql.FieldContainsFold(FieldPrice, v))
+// DrinkTypeIn applies the In predicate on the "drinkType" field.
+func DrinkTypeIn(vs ...DrinkType) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldDrinkType, vs...))
+}
+
+// DrinkTypeNotIn applies the NotIn predicate on the "drinkType" field.
+func DrinkTypeNotIn(vs ...DrinkType) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldDrinkType, vs...))
+}
+
+// DrinkTypeIsNil applies the IsNil predicate on the "drinkType" field.
+func DrinkTypeIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldDrinkType))
+}
+
+// DrinkTypeNotNil applies the NotNil predicate on the "drinkType" field.
+func DrinkTypeNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldDrinkType))
+}
+
+// DietaryTypeEQ applies the EQ predicate on the "dietaryType" field.
+func DietaryTypeEQ(v DietaryType) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldDietaryType, v))
+}
+
+// DietaryTypeNEQ applies the NEQ predicate on the "dietaryType" field.
+func DietaryTypeNEQ(v DietaryType) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldDietaryType, v))
+}
+
+// DietaryTypeIn applies the In predicate on the "dietaryType" field.
+func DietaryTypeIn(vs ...DietaryType) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldDietaryType, vs...))
+}
+
+// DietaryTypeNotIn applies the NotIn predicate on the "dietaryType" field.
+func DietaryTypeNotIn(vs ...DietaryType) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldDietaryType, vs...))
+}
+
+// DietaryTypeIsNil applies the IsNil predicate on the "dietaryType" field.
+func DietaryTypeIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldDietaryType))
+}
+
+// DietaryTypeNotNil applies the NotNil predicate on the "dietaryType" field.
+func DietaryTypeNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldDietaryType))
 }
 
 // IsAvailableEQ applies the EQ predicate on the "is_available" field.
@@ -562,6 +528,56 @@ func IsAvailableEQ(v bool) predicate.Menu {
 // IsAvailableNEQ applies the NEQ predicate on the "is_available" field.
 func IsAvailableNEQ(v bool) predicate.Menu {
 	return predicate.Menu(sql.FieldNEQ(FieldIsAvailable, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIsNil applies the IsNil predicate on the "updated_at" field.
+func UpdatedAtIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldUpdatedAt))
+}
+
+// UpdatedAtNotNil applies the NotNil predicate on the "updated_at" field.
+func UpdatedAtNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldUpdatedAt))
 }
 
 // HasPlace applies the HasEdge predicate on the "place" edge.
@@ -648,6 +664,52 @@ func HasMedia() predicate.Menu {
 func HasMediaWith(preds ...predicate.Media) predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
 		step := newMediaStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCreatedBy applies the HasEdge predicate on the "created_by" edge.
+func HasCreatedBy() predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CreatedByTable, CreatedByColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCreatedByWith applies the HasEdge predicate on the "created_by" edge with a given conditions (other predicates).
+func HasCreatedByWith(preds ...predicate.User) predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := newCreatedByStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUpdatedBy applies the HasEdge predicate on the "updated_by" edge.
+func HasUpdatedBy() predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, UpdatedByTable, UpdatedByColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUpdatedByWith applies the HasEdge predicate on the "updated_by" edge with a given conditions (other predicates).
+func HasUpdatedByWith(preds ...predicate.User) predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := newUpdatedByStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

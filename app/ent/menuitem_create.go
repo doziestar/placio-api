@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/menuitem"
 	"placio-app/ent/orderitem"
 	"placio-app/ent/placeinventory"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -111,6 +112,62 @@ func (mic *MenuItemCreate) SetNillableDeletedAt(s *string) *MenuItemCreate {
 	return mic
 }
 
+// SetType sets the "type" field.
+func (mic *MenuItemCreate) SetType(m menuitem.Type) *MenuItemCreate {
+	mic.mutation.SetType(m)
+	return mic
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableType(m *menuitem.Type) *MenuItemCreate {
+	if m != nil {
+		mic.SetType(*m)
+	}
+	return mic
+}
+
+// SetStatus sets the "status" field.
+func (mic *MenuItemCreate) SetStatus(m menuitem.Status) *MenuItemCreate {
+	mic.mutation.SetStatus(m)
+	return mic
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableStatus(m *menuitem.Status) *MenuItemCreate {
+	if m != nil {
+		mic.SetStatus(*m)
+	}
+	return mic
+}
+
+// SetDrinkType sets the "DrinkType" field.
+func (mic *MenuItemCreate) SetDrinkType(mt menuitem.DrinkType) *MenuItemCreate {
+	mic.mutation.SetDrinkType(mt)
+	return mic
+}
+
+// SetNillableDrinkType sets the "DrinkType" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableDrinkType(mt *menuitem.DrinkType) *MenuItemCreate {
+	if mt != nil {
+		mic.SetDrinkType(*mt)
+	}
+	return mic
+}
+
+// SetDietaryType sets the "DietaryType" field.
+func (mic *MenuItemCreate) SetDietaryType(mt menuitem.DietaryType) *MenuItemCreate {
+	mic.mutation.SetDietaryType(mt)
+	return mic
+}
+
+// SetNillableDietaryType sets the "DietaryType" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableDietaryType(mt *menuitem.DietaryType) *MenuItemCreate {
+	if mt != nil {
+		mic.SetDietaryType(*mt)
+	}
+	return mic
+}
+
 // SetIsDeleted sets the "is_deleted" field.
 func (mic *MenuItemCreate) SetIsDeleted(b bool) *MenuItemCreate {
 	mic.mutation.SetIsDeleted(b)
@@ -122,6 +179,304 @@ func (mic *MenuItemCreate) SetNillableIsDeleted(b *bool) *MenuItemCreate {
 	if b != nil {
 		mic.SetIsDeleted(*b)
 	}
+	return mic
+}
+
+// SetCalories sets the "calories" field.
+func (mic *MenuItemCreate) SetCalories(i int) *MenuItemCreate {
+	mic.mutation.SetCalories(i)
+	return mic
+}
+
+// SetNillableCalories sets the "calories" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableCalories(i *int) *MenuItemCreate {
+	if i != nil {
+		mic.SetCalories(*i)
+	}
+	return mic
+}
+
+// SetServeSize sets the "serve_size" field.
+func (mic *MenuItemCreate) SetServeSize(i int) *MenuItemCreate {
+	mic.mutation.SetServeSize(i)
+	return mic
+}
+
+// SetNillableServeSize sets the "serve_size" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableServeSize(i *int) *MenuItemCreate {
+	if i != nil {
+		mic.SetServeSize(*i)
+	}
+	return mic
+}
+
+// SetAvailableFrom sets the "available_from" field.
+func (mic *MenuItemCreate) SetAvailableFrom(t time.Time) *MenuItemCreate {
+	mic.mutation.SetAvailableFrom(t)
+	return mic
+}
+
+// SetNillableAvailableFrom sets the "available_from" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableAvailableFrom(t *time.Time) *MenuItemCreate {
+	if t != nil {
+		mic.SetAvailableFrom(*t)
+	}
+	return mic
+}
+
+// SetAvailableUntil sets the "available_until" field.
+func (mic *MenuItemCreate) SetAvailableUntil(t time.Time) *MenuItemCreate {
+	mic.mutation.SetAvailableUntil(t)
+	return mic
+}
+
+// SetNillableAvailableUntil sets the "available_until" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableAvailableUntil(t *time.Time) *MenuItemCreate {
+	if t != nil {
+		mic.SetAvailableUntil(*t)
+	}
+	return mic
+}
+
+// SetImageURL sets the "image_url" field.
+func (mic *MenuItemCreate) SetImageURL(s string) *MenuItemCreate {
+	mic.mutation.SetImageURL(s)
+	return mic
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableImageURL(s *string) *MenuItemCreate {
+	if s != nil {
+		mic.SetImageURL(*s)
+	}
+	return mic
+}
+
+// SetSpicinessLevel sets the "spiciness_level" field.
+func (mic *MenuItemCreate) SetSpicinessLevel(ml menuitem.SpicinessLevel) *MenuItemCreate {
+	mic.mutation.SetSpicinessLevel(ml)
+	return mic
+}
+
+// SetNillableSpicinessLevel sets the "spiciness_level" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableSpicinessLevel(ml *menuitem.SpicinessLevel) *MenuItemCreate {
+	if ml != nil {
+		mic.SetSpicinessLevel(*ml)
+	}
+	return mic
+}
+
+// SetAllergens sets the "allergens" field.
+func (mic *MenuItemCreate) SetAllergens(s []string) *MenuItemCreate {
+	mic.mutation.SetAllergens(s)
+	return mic
+}
+
+// SetChefSpecialNote sets the "chef_special_note" field.
+func (mic *MenuItemCreate) SetChefSpecialNote(s string) *MenuItemCreate {
+	mic.mutation.SetChefSpecialNote(s)
+	return mic
+}
+
+// SetNillableChefSpecialNote sets the "chef_special_note" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableChefSpecialNote(s *string) *MenuItemCreate {
+	if s != nil {
+		mic.SetChefSpecialNote(*s)
+	}
+	return mic
+}
+
+// SetRating sets the "rating" field.
+func (mic *MenuItemCreate) SetRating(i int) *MenuItemCreate {
+	mic.mutation.SetRating(i)
+	return mic
+}
+
+// SetNillableRating sets the "rating" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableRating(i *int) *MenuItemCreate {
+	if i != nil {
+		mic.SetRating(*i)
+	}
+	return mic
+}
+
+// SetReviewCount sets the "review_count" field.
+func (mic *MenuItemCreate) SetReviewCount(i int) *MenuItemCreate {
+	mic.mutation.SetReviewCount(i)
+	return mic
+}
+
+// SetNillableReviewCount sets the "review_count" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableReviewCount(i *int) *MenuItemCreate {
+	if i != nil {
+		mic.SetReviewCount(*i)
+	}
+	return mic
+}
+
+// SetCategory sets the "category" field.
+func (mic *MenuItemCreate) SetCategory(s string) *MenuItemCreate {
+	mic.mutation.SetCategory(s)
+	return mic
+}
+
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableCategory(s *string) *MenuItemCreate {
+	if s != nil {
+		mic.SetCategory(*s)
+	}
+	return mic
+}
+
+// SetOrderCount sets the "order_count" field.
+func (mic *MenuItemCreate) SetOrderCount(i int) *MenuItemCreate {
+	mic.mutation.SetOrderCount(i)
+	return mic
+}
+
+// SetNillableOrderCount sets the "order_count" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableOrderCount(i *int) *MenuItemCreate {
+	if i != nil {
+		mic.SetOrderCount(*i)
+	}
+	return mic
+}
+
+// SetSku sets the "sku" field.
+func (mic *MenuItemCreate) SetSku(s string) *MenuItemCreate {
+	mic.mutation.SetSku(s)
+	return mic
+}
+
+// SetNillableSku sets the "sku" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableSku(s *string) *MenuItemCreate {
+	if s != nil {
+		mic.SetSku(*s)
+	}
+	return mic
+}
+
+// SetIsFeatured sets the "is_featured" field.
+func (mic *MenuItemCreate) SetIsFeatured(b bool) *MenuItemCreate {
+	mic.mutation.SetIsFeatured(b)
+	return mic
+}
+
+// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableIsFeatured(b *bool) *MenuItemCreate {
+	if b != nil {
+		mic.SetIsFeatured(*b)
+	}
+	return mic
+}
+
+// SetIsNew sets the "is_new" field.
+func (mic *MenuItemCreate) SetIsNew(b bool) *MenuItemCreate {
+	mic.mutation.SetIsNew(b)
+	return mic
+}
+
+// SetNillableIsNew sets the "is_new" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableIsNew(b *bool) *MenuItemCreate {
+	if b != nil {
+		mic.SetIsNew(*b)
+	}
+	return mic
+}
+
+// SetIsSeasonal sets the "is_seasonal" field.
+func (mic *MenuItemCreate) SetIsSeasonal(b bool) *MenuItemCreate {
+	mic.mutation.SetIsSeasonal(b)
+	return mic
+}
+
+// SetNillableIsSeasonal sets the "is_seasonal" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableIsSeasonal(b *bool) *MenuItemCreate {
+	if b != nil {
+		mic.SetIsSeasonal(*b)
+	}
+	return mic
+}
+
+// SetSeason sets the "season" field.
+func (mic *MenuItemCreate) SetSeason(s string) *MenuItemCreate {
+	mic.mutation.SetSeason(s)
+	return mic
+}
+
+// SetNillableSeason sets the "season" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableSeason(s *string) *MenuItemCreate {
+	if s != nil {
+		mic.SetSeason(*s)
+	}
+	return mic
+}
+
+// SetDiscountPercentage sets the "discount_percentage" field.
+func (mic *MenuItemCreate) SetDiscountPercentage(i int) *MenuItemCreate {
+	mic.mutation.SetDiscountPercentage(i)
+	return mic
+}
+
+// SetNillableDiscountPercentage sets the "discount_percentage" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableDiscountPercentage(i *int) *MenuItemCreate {
+	if i != nil {
+		mic.SetDiscountPercentage(*i)
+	}
+	return mic
+}
+
+// SetPromotionDescription sets the "promotion_description" field.
+func (mic *MenuItemCreate) SetPromotionDescription(s string) *MenuItemCreate {
+	mic.mutation.SetPromotionDescription(s)
+	return mic
+}
+
+// SetNillablePromotionDescription sets the "promotion_description" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillablePromotionDescription(s *string) *MenuItemCreate {
+	if s != nil {
+		mic.SetPromotionDescription(*s)
+	}
+	return mic
+}
+
+// SetPromotionStart sets the "promotion_start" field.
+func (mic *MenuItemCreate) SetPromotionStart(t time.Time) *MenuItemCreate {
+	mic.mutation.SetPromotionStart(t)
+	return mic
+}
+
+// SetNillablePromotionStart sets the "promotion_start" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillablePromotionStart(t *time.Time) *MenuItemCreate {
+	if t != nil {
+		mic.SetPromotionStart(*t)
+	}
+	return mic
+}
+
+// SetPromotionEnd sets the "promotion_end" field.
+func (mic *MenuItemCreate) SetPromotionEnd(t time.Time) *MenuItemCreate {
+	mic.mutation.SetPromotionEnd(t)
+	return mic
+}
+
+// SetNillablePromotionEnd sets the "promotion_end" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillablePromotionEnd(t *time.Time) *MenuItemCreate {
+	if t != nil {
+		mic.SetPromotionEnd(*t)
+	}
+	return mic
+}
+
+// SetTags sets the "tags" field.
+func (mic *MenuItemCreate) SetTags(s []string) *MenuItemCreate {
+	mic.mutation.SetTags(s)
+	return mic
+}
+
+// SetRelatedItems sets the "related_items" field.
+func (mic *MenuItemCreate) SetRelatedItems(s []string) *MenuItemCreate {
+	mic.mutation.SetRelatedItems(s)
 	return mic
 }
 
@@ -238,6 +593,18 @@ func (mic *MenuItemCreate) defaults() {
 		v := menuitem.DefaultIsDeleted
 		mic.mutation.SetIsDeleted(v)
 	}
+	if _, ok := mic.mutation.IsFeatured(); !ok {
+		v := menuitem.DefaultIsFeatured
+		mic.mutation.SetIsFeatured(v)
+	}
+	if _, ok := mic.mutation.IsNew(); !ok {
+		v := menuitem.DefaultIsNew
+		mic.mutation.SetIsNew(v)
+	}
+	if _, ok := mic.mutation.IsSeasonal(); !ok {
+		v := menuitem.DefaultIsSeasonal
+		mic.mutation.SetIsSeasonal(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -251,8 +618,33 @@ func (mic *MenuItemCreate) check() error {
 	if _, ok := mic.mutation.IsAvailable(); !ok {
 		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "MenuItem.is_available"`)}
 	}
+	if v, ok := mic.mutation.GetType(); ok {
+		if err := menuitem.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "MenuItem.type": %w`, err)}
+		}
+	}
+	if v, ok := mic.mutation.Status(); ok {
+		if err := menuitem.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "MenuItem.status": %w`, err)}
+		}
+	}
+	if v, ok := mic.mutation.DrinkType(); ok {
+		if err := menuitem.DrinkTypeValidator(v); err != nil {
+			return &ValidationError{Name: "DrinkType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DrinkType": %w`, err)}
+		}
+	}
+	if v, ok := mic.mutation.DietaryType(); ok {
+		if err := menuitem.DietaryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DietaryType": %w`, err)}
+		}
+	}
 	if _, ok := mic.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "MenuItem.is_deleted"`)}
+	}
+	if v, ok := mic.mutation.SpicinessLevel(); ok {
+		if err := menuitem.SpicinessLevelValidator(v); err != nil {
+			return &ValidationError{Name: "spiciness_level", err: fmt.Errorf(`ent: validator failed for field "MenuItem.spiciness_level": %w`, err)}
+		}
 	}
 	if v, ok := mic.mutation.ID(); ok {
 		if err := menuitem.IDValidator(v); err != nil {
@@ -326,9 +718,117 @@ func (mic *MenuItemCreate) createSpec() (*MenuItem, *sqlgraph.CreateSpec) {
 		_spec.SetField(menuitem.FieldDeletedAt, field.TypeString, value)
 		_node.DeletedAt = value
 	}
+	if value, ok := mic.mutation.GetType(); ok {
+		_spec.SetField(menuitem.FieldType, field.TypeEnum, value)
+		_node.Type = value
+	}
+	if value, ok := mic.mutation.Status(); ok {
+		_spec.SetField(menuitem.FieldStatus, field.TypeEnum, value)
+		_node.Status = value
+	}
+	if value, ok := mic.mutation.DrinkType(); ok {
+		_spec.SetField(menuitem.FieldDrinkType, field.TypeEnum, value)
+		_node.DrinkType = value
+	}
+	if value, ok := mic.mutation.DietaryType(); ok {
+		_spec.SetField(menuitem.FieldDietaryType, field.TypeEnum, value)
+		_node.DietaryType = value
+	}
 	if value, ok := mic.mutation.IsDeleted(); ok {
 		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)
 		_node.IsDeleted = value
+	}
+	if value, ok := mic.mutation.Calories(); ok {
+		_spec.SetField(menuitem.FieldCalories, field.TypeInt, value)
+		_node.Calories = value
+	}
+	if value, ok := mic.mutation.ServeSize(); ok {
+		_spec.SetField(menuitem.FieldServeSize, field.TypeInt, value)
+		_node.ServeSize = value
+	}
+	if value, ok := mic.mutation.AvailableFrom(); ok {
+		_spec.SetField(menuitem.FieldAvailableFrom, field.TypeTime, value)
+		_node.AvailableFrom = value
+	}
+	if value, ok := mic.mutation.AvailableUntil(); ok {
+		_spec.SetField(menuitem.FieldAvailableUntil, field.TypeTime, value)
+		_node.AvailableUntil = value
+	}
+	if value, ok := mic.mutation.ImageURL(); ok {
+		_spec.SetField(menuitem.FieldImageURL, field.TypeString, value)
+		_node.ImageURL = value
+	}
+	if value, ok := mic.mutation.SpicinessLevel(); ok {
+		_spec.SetField(menuitem.FieldSpicinessLevel, field.TypeEnum, value)
+		_node.SpicinessLevel = value
+	}
+	if value, ok := mic.mutation.Allergens(); ok {
+		_spec.SetField(menuitem.FieldAllergens, field.TypeJSON, value)
+		_node.Allergens = value
+	}
+	if value, ok := mic.mutation.ChefSpecialNote(); ok {
+		_spec.SetField(menuitem.FieldChefSpecialNote, field.TypeString, value)
+		_node.ChefSpecialNote = value
+	}
+	if value, ok := mic.mutation.Rating(); ok {
+		_spec.SetField(menuitem.FieldRating, field.TypeInt, value)
+		_node.Rating = value
+	}
+	if value, ok := mic.mutation.ReviewCount(); ok {
+		_spec.SetField(menuitem.FieldReviewCount, field.TypeInt, value)
+		_node.ReviewCount = value
+	}
+	if value, ok := mic.mutation.Category(); ok {
+		_spec.SetField(menuitem.FieldCategory, field.TypeString, value)
+		_node.Category = value
+	}
+	if value, ok := mic.mutation.OrderCount(); ok {
+		_spec.SetField(menuitem.FieldOrderCount, field.TypeInt, value)
+		_node.OrderCount = value
+	}
+	if value, ok := mic.mutation.Sku(); ok {
+		_spec.SetField(menuitem.FieldSku, field.TypeString, value)
+		_node.Sku = value
+	}
+	if value, ok := mic.mutation.IsFeatured(); ok {
+		_spec.SetField(menuitem.FieldIsFeatured, field.TypeBool, value)
+		_node.IsFeatured = value
+	}
+	if value, ok := mic.mutation.IsNew(); ok {
+		_spec.SetField(menuitem.FieldIsNew, field.TypeBool, value)
+		_node.IsNew = value
+	}
+	if value, ok := mic.mutation.IsSeasonal(); ok {
+		_spec.SetField(menuitem.FieldIsSeasonal, field.TypeBool, value)
+		_node.IsSeasonal = value
+	}
+	if value, ok := mic.mutation.Season(); ok {
+		_spec.SetField(menuitem.FieldSeason, field.TypeString, value)
+		_node.Season = value
+	}
+	if value, ok := mic.mutation.DiscountPercentage(); ok {
+		_spec.SetField(menuitem.FieldDiscountPercentage, field.TypeInt, value)
+		_node.DiscountPercentage = value
+	}
+	if value, ok := mic.mutation.PromotionDescription(); ok {
+		_spec.SetField(menuitem.FieldPromotionDescription, field.TypeString, value)
+		_node.PromotionDescription = value
+	}
+	if value, ok := mic.mutation.PromotionStart(); ok {
+		_spec.SetField(menuitem.FieldPromotionStart, field.TypeTime, value)
+		_node.PromotionStart = value
+	}
+	if value, ok := mic.mutation.PromotionEnd(); ok {
+		_spec.SetField(menuitem.FieldPromotionEnd, field.TypeTime, value)
+		_node.PromotionEnd = value
+	}
+	if value, ok := mic.mutation.Tags(); ok {
+		_spec.SetField(menuitem.FieldTags, field.TypeJSON, value)
+		_node.Tags = value
+	}
+	if value, ok := mic.mutation.RelatedItems(); ok {
+		_spec.SetField(menuitem.FieldRelatedItems, field.TypeJSON, value)
+		_node.RelatedItems = value
 	}
 	if nodes := mic.mutation.MenuIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

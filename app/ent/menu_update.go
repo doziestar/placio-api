@@ -12,6 +12,8 @@ import (
 	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -91,26 +93,6 @@ func (mu *MenuUpdate) ClearDescription() *MenuUpdate {
 	return mu
 }
 
-// SetPreparationTime sets the "preparation_time" field.
-func (mu *MenuUpdate) SetPreparationTime(s string) *MenuUpdate {
-	mu.mutation.SetPreparationTime(s)
-	return mu
-}
-
-// SetNillablePreparationTime sets the "preparation_time" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillablePreparationTime(s *string) *MenuUpdate {
-	if s != nil {
-		mu.SetPreparationTime(*s)
-	}
-	return mu
-}
-
-// ClearPreparationTime clears the value of the "preparation_time" field.
-func (mu *MenuUpdate) ClearPreparationTime() *MenuUpdate {
-	mu.mutation.ClearPreparationTime()
-	return mu
-}
-
 // SetOptions sets the "options" field.
 func (mu *MenuUpdate) SetOptions(s string) *MenuUpdate {
 	mu.mutation.SetOptions(s)
@@ -131,23 +113,83 @@ func (mu *MenuUpdate) ClearOptions() *MenuUpdate {
 	return mu
 }
 
-// SetPrice sets the "price" field.
-func (mu *MenuUpdate) SetPrice(s string) *MenuUpdate {
-	mu.mutation.SetPrice(s)
+// SetFoodType sets the "foodType" field.
+func (mu *MenuUpdate) SetFoodType(mt menu.FoodType) *MenuUpdate {
+	mu.mutation.SetFoodType(mt)
 	return mu
 }
 
-// SetNillablePrice sets the "price" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillablePrice(s *string) *MenuUpdate {
-	if s != nil {
-		mu.SetPrice(*s)
+// SetNillableFoodType sets the "foodType" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableFoodType(mt *menu.FoodType) *MenuUpdate {
+	if mt != nil {
+		mu.SetFoodType(*mt)
 	}
 	return mu
 }
 
-// ClearPrice clears the value of the "price" field.
-func (mu *MenuUpdate) ClearPrice() *MenuUpdate {
-	mu.mutation.ClearPrice()
+// ClearFoodType clears the value of the "foodType" field.
+func (mu *MenuUpdate) ClearFoodType() *MenuUpdate {
+	mu.mutation.ClearFoodType()
+	return mu
+}
+
+// SetMenuItemType sets the "menuItemType" field.
+func (mu *MenuUpdate) SetMenuItemType(mit menu.MenuItemType) *MenuUpdate {
+	mu.mutation.SetMenuItemType(mit)
+	return mu
+}
+
+// SetNillableMenuItemType sets the "menuItemType" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableMenuItemType(mit *menu.MenuItemType) *MenuUpdate {
+	if mit != nil {
+		mu.SetMenuItemType(*mit)
+	}
+	return mu
+}
+
+// ClearMenuItemType clears the value of the "menuItemType" field.
+func (mu *MenuUpdate) ClearMenuItemType() *MenuUpdate {
+	mu.mutation.ClearMenuItemType()
+	return mu
+}
+
+// SetDrinkType sets the "drinkType" field.
+func (mu *MenuUpdate) SetDrinkType(mt menu.DrinkType) *MenuUpdate {
+	mu.mutation.SetDrinkType(mt)
+	return mu
+}
+
+// SetNillableDrinkType sets the "drinkType" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableDrinkType(mt *menu.DrinkType) *MenuUpdate {
+	if mt != nil {
+		mu.SetDrinkType(*mt)
+	}
+	return mu
+}
+
+// ClearDrinkType clears the value of the "drinkType" field.
+func (mu *MenuUpdate) ClearDrinkType() *MenuUpdate {
+	mu.mutation.ClearDrinkType()
+	return mu
+}
+
+// SetDietaryType sets the "dietaryType" field.
+func (mu *MenuUpdate) SetDietaryType(mt menu.DietaryType) *MenuUpdate {
+	mu.mutation.SetDietaryType(mt)
+	return mu
+}
+
+// SetNillableDietaryType sets the "dietaryType" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableDietaryType(mt *menu.DietaryType) *MenuUpdate {
+	if mt != nil {
+		mu.SetDietaryType(*mt)
+	}
+	return mu
+}
+
+// ClearDietaryType clears the value of the "dietaryType" field.
+func (mu *MenuUpdate) ClearDietaryType() *MenuUpdate {
+	mu.mutation.ClearDietaryType()
 	return mu
 }
 
@@ -162,6 +204,26 @@ func (mu *MenuUpdate) SetNillableIsAvailable(b *bool) *MenuUpdate {
 	if b != nil {
 		mu.SetIsAvailable(*b)
 	}
+	return mu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (mu *MenuUpdate) SetUpdatedAt(t time.Time) *MenuUpdate {
+	mu.mutation.SetUpdatedAt(t)
+	return mu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableUpdatedAt(t *time.Time) *MenuUpdate {
+	if t != nil {
+		mu.SetUpdatedAt(*t)
+	}
+	return mu
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (mu *MenuUpdate) ClearUpdatedAt() *MenuUpdate {
+	mu.mutation.ClearUpdatedAt()
 	return mu
 }
 
@@ -223,6 +285,36 @@ func (mu *MenuUpdate) AddMedia(m ...*Media) *MenuUpdate {
 		ids[i] = m[i].ID
 	}
 	return mu.AddMediumIDs(ids...)
+}
+
+// AddCreatedByIDs adds the "created_by" edge to the User entity by IDs.
+func (mu *MenuUpdate) AddCreatedByIDs(ids ...string) *MenuUpdate {
+	mu.mutation.AddCreatedByIDs(ids...)
+	return mu
+}
+
+// AddCreatedBy adds the "created_by" edges to the User entity.
+func (mu *MenuUpdate) AddCreatedBy(u ...*User) *MenuUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mu.AddCreatedByIDs(ids...)
+}
+
+// AddUpdatedByIDs adds the "updated_by" edge to the User entity by IDs.
+func (mu *MenuUpdate) AddUpdatedByIDs(ids ...string) *MenuUpdate {
+	mu.mutation.AddUpdatedByIDs(ids...)
+	return mu
+}
+
+// AddUpdatedBy adds the "updated_by" edges to the User entity.
+func (mu *MenuUpdate) AddUpdatedBy(u ...*User) *MenuUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mu.AddUpdatedByIDs(ids...)
 }
 
 // Mutation returns the MenuMutation object of the builder.
@@ -314,6 +406,48 @@ func (mu *MenuUpdate) RemoveMedia(m ...*Media) *MenuUpdate {
 	return mu.RemoveMediumIDs(ids...)
 }
 
+// ClearCreatedBy clears all "created_by" edges to the User entity.
+func (mu *MenuUpdate) ClearCreatedBy() *MenuUpdate {
+	mu.mutation.ClearCreatedBy()
+	return mu
+}
+
+// RemoveCreatedByIDs removes the "created_by" edge to User entities by IDs.
+func (mu *MenuUpdate) RemoveCreatedByIDs(ids ...string) *MenuUpdate {
+	mu.mutation.RemoveCreatedByIDs(ids...)
+	return mu
+}
+
+// RemoveCreatedBy removes "created_by" edges to User entities.
+func (mu *MenuUpdate) RemoveCreatedBy(u ...*User) *MenuUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mu.RemoveCreatedByIDs(ids...)
+}
+
+// ClearUpdatedBy clears all "updated_by" edges to the User entity.
+func (mu *MenuUpdate) ClearUpdatedBy() *MenuUpdate {
+	mu.mutation.ClearUpdatedBy()
+	return mu
+}
+
+// RemoveUpdatedByIDs removes the "updated_by" edge to User entities by IDs.
+func (mu *MenuUpdate) RemoveUpdatedByIDs(ids ...string) *MenuUpdate {
+	mu.mutation.RemoveUpdatedByIDs(ids...)
+	return mu
+}
+
+// RemoveUpdatedBy removes "updated_by" edges to User entities.
+func (mu *MenuUpdate) RemoveUpdatedBy(u ...*User) *MenuUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mu.RemoveUpdatedByIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (mu *MenuUpdate) Save(ctx context.Context) (int, error) {
 	return withHooks(ctx, mu.sqlSave, mu.mutation, mu.hooks)
@@ -341,7 +475,35 @@ func (mu *MenuUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (mu *MenuUpdate) check() error {
+	if v, ok := mu.mutation.FoodType(); ok {
+		if err := menu.FoodTypeValidator(v); err != nil {
+			return &ValidationError{Name: "foodType", err: fmt.Errorf(`ent: validator failed for field "Menu.foodType": %w`, err)}
+		}
+	}
+	if v, ok := mu.mutation.MenuItemType(); ok {
+		if err := menu.MenuItemTypeValidator(v); err != nil {
+			return &ValidationError{Name: "menuItemType", err: fmt.Errorf(`ent: validator failed for field "Menu.menuItemType": %w`, err)}
+		}
+	}
+	if v, ok := mu.mutation.DrinkType(); ok {
+		if err := menu.DrinkTypeValidator(v); err != nil {
+			return &ValidationError{Name: "drinkType", err: fmt.Errorf(`ent: validator failed for field "Menu.drinkType": %w`, err)}
+		}
+	}
+	if v, ok := mu.mutation.DietaryType(); ok {
+		if err := menu.DietaryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "dietaryType", err: fmt.Errorf(`ent: validator failed for field "Menu.dietaryType": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := mu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(menu.Table, menu.Columns, sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString))
 	if ps := mu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -368,26 +530,44 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if mu.mutation.DescriptionCleared() {
 		_spec.ClearField(menu.FieldDescription, field.TypeString)
 	}
-	if value, ok := mu.mutation.PreparationTime(); ok {
-		_spec.SetField(menu.FieldPreparationTime, field.TypeString, value)
-	}
-	if mu.mutation.PreparationTimeCleared() {
-		_spec.ClearField(menu.FieldPreparationTime, field.TypeString)
-	}
 	if value, ok := mu.mutation.Options(); ok {
 		_spec.SetField(menu.FieldOptions, field.TypeString, value)
 	}
 	if mu.mutation.OptionsCleared() {
 		_spec.ClearField(menu.FieldOptions, field.TypeString)
 	}
-	if value, ok := mu.mutation.Price(); ok {
-		_spec.SetField(menu.FieldPrice, field.TypeString, value)
+	if value, ok := mu.mutation.FoodType(); ok {
+		_spec.SetField(menu.FieldFoodType, field.TypeEnum, value)
 	}
-	if mu.mutation.PriceCleared() {
-		_spec.ClearField(menu.FieldPrice, field.TypeString)
+	if mu.mutation.FoodTypeCleared() {
+		_spec.ClearField(menu.FieldFoodType, field.TypeEnum)
+	}
+	if value, ok := mu.mutation.MenuItemType(); ok {
+		_spec.SetField(menu.FieldMenuItemType, field.TypeEnum, value)
+	}
+	if mu.mutation.MenuItemTypeCleared() {
+		_spec.ClearField(menu.FieldMenuItemType, field.TypeEnum)
+	}
+	if value, ok := mu.mutation.DrinkType(); ok {
+		_spec.SetField(menu.FieldDrinkType, field.TypeEnum, value)
+	}
+	if mu.mutation.DrinkTypeCleared() {
+		_spec.ClearField(menu.FieldDrinkType, field.TypeEnum)
+	}
+	if value, ok := mu.mutation.DietaryType(); ok {
+		_spec.SetField(menu.FieldDietaryType, field.TypeEnum, value)
+	}
+	if mu.mutation.DietaryTypeCleared() {
+		_spec.ClearField(menu.FieldDietaryType, field.TypeEnum)
 	}
 	if value, ok := mu.mutation.IsAvailable(); ok {
 		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
+	}
+	if value, ok := mu.mutation.UpdatedAt(); ok {
+		_spec.SetField(menu.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if mu.mutation.UpdatedAtCleared() {
+		_spec.ClearField(menu.FieldUpdatedAt, field.TypeTime)
 	}
 	if mu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -569,6 +749,96 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedCreatedByIDs(); len(nodes) > 0 && !mu.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedUpdatedByIDs(); len(nodes) > 0 && !mu.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{menu.Label}
@@ -649,26 +919,6 @@ func (muo *MenuUpdateOne) ClearDescription() *MenuUpdateOne {
 	return muo
 }
 
-// SetPreparationTime sets the "preparation_time" field.
-func (muo *MenuUpdateOne) SetPreparationTime(s string) *MenuUpdateOne {
-	muo.mutation.SetPreparationTime(s)
-	return muo
-}
-
-// SetNillablePreparationTime sets the "preparation_time" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillablePreparationTime(s *string) *MenuUpdateOne {
-	if s != nil {
-		muo.SetPreparationTime(*s)
-	}
-	return muo
-}
-
-// ClearPreparationTime clears the value of the "preparation_time" field.
-func (muo *MenuUpdateOne) ClearPreparationTime() *MenuUpdateOne {
-	muo.mutation.ClearPreparationTime()
-	return muo
-}
-
 // SetOptions sets the "options" field.
 func (muo *MenuUpdateOne) SetOptions(s string) *MenuUpdateOne {
 	muo.mutation.SetOptions(s)
@@ -689,23 +939,83 @@ func (muo *MenuUpdateOne) ClearOptions() *MenuUpdateOne {
 	return muo
 }
 
-// SetPrice sets the "price" field.
-func (muo *MenuUpdateOne) SetPrice(s string) *MenuUpdateOne {
-	muo.mutation.SetPrice(s)
+// SetFoodType sets the "foodType" field.
+func (muo *MenuUpdateOne) SetFoodType(mt menu.FoodType) *MenuUpdateOne {
+	muo.mutation.SetFoodType(mt)
 	return muo
 }
 
-// SetNillablePrice sets the "price" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillablePrice(s *string) *MenuUpdateOne {
-	if s != nil {
-		muo.SetPrice(*s)
+// SetNillableFoodType sets the "foodType" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableFoodType(mt *menu.FoodType) *MenuUpdateOne {
+	if mt != nil {
+		muo.SetFoodType(*mt)
 	}
 	return muo
 }
 
-// ClearPrice clears the value of the "price" field.
-func (muo *MenuUpdateOne) ClearPrice() *MenuUpdateOne {
-	muo.mutation.ClearPrice()
+// ClearFoodType clears the value of the "foodType" field.
+func (muo *MenuUpdateOne) ClearFoodType() *MenuUpdateOne {
+	muo.mutation.ClearFoodType()
+	return muo
+}
+
+// SetMenuItemType sets the "menuItemType" field.
+func (muo *MenuUpdateOne) SetMenuItemType(mit menu.MenuItemType) *MenuUpdateOne {
+	muo.mutation.SetMenuItemType(mit)
+	return muo
+}
+
+// SetNillableMenuItemType sets the "menuItemType" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableMenuItemType(mit *menu.MenuItemType) *MenuUpdateOne {
+	if mit != nil {
+		muo.SetMenuItemType(*mit)
+	}
+	return muo
+}
+
+// ClearMenuItemType clears the value of the "menuItemType" field.
+func (muo *MenuUpdateOne) ClearMenuItemType() *MenuUpdateOne {
+	muo.mutation.ClearMenuItemType()
+	return muo
+}
+
+// SetDrinkType sets the "drinkType" field.
+func (muo *MenuUpdateOne) SetDrinkType(mt menu.DrinkType) *MenuUpdateOne {
+	muo.mutation.SetDrinkType(mt)
+	return muo
+}
+
+// SetNillableDrinkType sets the "drinkType" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableDrinkType(mt *menu.DrinkType) *MenuUpdateOne {
+	if mt != nil {
+		muo.SetDrinkType(*mt)
+	}
+	return muo
+}
+
+// ClearDrinkType clears the value of the "drinkType" field.
+func (muo *MenuUpdateOne) ClearDrinkType() *MenuUpdateOne {
+	muo.mutation.ClearDrinkType()
+	return muo
+}
+
+// SetDietaryType sets the "dietaryType" field.
+func (muo *MenuUpdateOne) SetDietaryType(mt menu.DietaryType) *MenuUpdateOne {
+	muo.mutation.SetDietaryType(mt)
+	return muo
+}
+
+// SetNillableDietaryType sets the "dietaryType" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableDietaryType(mt *menu.DietaryType) *MenuUpdateOne {
+	if mt != nil {
+		muo.SetDietaryType(*mt)
+	}
+	return muo
+}
+
+// ClearDietaryType clears the value of the "dietaryType" field.
+func (muo *MenuUpdateOne) ClearDietaryType() *MenuUpdateOne {
+	muo.mutation.ClearDietaryType()
 	return muo
 }
 
@@ -720,6 +1030,26 @@ func (muo *MenuUpdateOne) SetNillableIsAvailable(b *bool) *MenuUpdateOne {
 	if b != nil {
 		muo.SetIsAvailable(*b)
 	}
+	return muo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (muo *MenuUpdateOne) SetUpdatedAt(t time.Time) *MenuUpdateOne {
+	muo.mutation.SetUpdatedAt(t)
+	return muo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableUpdatedAt(t *time.Time) *MenuUpdateOne {
+	if t != nil {
+		muo.SetUpdatedAt(*t)
+	}
+	return muo
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (muo *MenuUpdateOne) ClearUpdatedAt() *MenuUpdateOne {
+	muo.mutation.ClearUpdatedAt()
 	return muo
 }
 
@@ -781,6 +1111,36 @@ func (muo *MenuUpdateOne) AddMedia(m ...*Media) *MenuUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return muo.AddMediumIDs(ids...)
+}
+
+// AddCreatedByIDs adds the "created_by" edge to the User entity by IDs.
+func (muo *MenuUpdateOne) AddCreatedByIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.AddCreatedByIDs(ids...)
+	return muo
+}
+
+// AddCreatedBy adds the "created_by" edges to the User entity.
+func (muo *MenuUpdateOne) AddCreatedBy(u ...*User) *MenuUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return muo.AddCreatedByIDs(ids...)
+}
+
+// AddUpdatedByIDs adds the "updated_by" edge to the User entity by IDs.
+func (muo *MenuUpdateOne) AddUpdatedByIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.AddUpdatedByIDs(ids...)
+	return muo
+}
+
+// AddUpdatedBy adds the "updated_by" edges to the User entity.
+func (muo *MenuUpdateOne) AddUpdatedBy(u ...*User) *MenuUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return muo.AddUpdatedByIDs(ids...)
 }
 
 // Mutation returns the MenuMutation object of the builder.
@@ -872,6 +1232,48 @@ func (muo *MenuUpdateOne) RemoveMedia(m ...*Media) *MenuUpdateOne {
 	return muo.RemoveMediumIDs(ids...)
 }
 
+// ClearCreatedBy clears all "created_by" edges to the User entity.
+func (muo *MenuUpdateOne) ClearCreatedBy() *MenuUpdateOne {
+	muo.mutation.ClearCreatedBy()
+	return muo
+}
+
+// RemoveCreatedByIDs removes the "created_by" edge to User entities by IDs.
+func (muo *MenuUpdateOne) RemoveCreatedByIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.RemoveCreatedByIDs(ids...)
+	return muo
+}
+
+// RemoveCreatedBy removes "created_by" edges to User entities.
+func (muo *MenuUpdateOne) RemoveCreatedBy(u ...*User) *MenuUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return muo.RemoveCreatedByIDs(ids...)
+}
+
+// ClearUpdatedBy clears all "updated_by" edges to the User entity.
+func (muo *MenuUpdateOne) ClearUpdatedBy() *MenuUpdateOne {
+	muo.mutation.ClearUpdatedBy()
+	return muo
+}
+
+// RemoveUpdatedByIDs removes the "updated_by" edge to User entities by IDs.
+func (muo *MenuUpdateOne) RemoveUpdatedByIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.RemoveUpdatedByIDs(ids...)
+	return muo
+}
+
+// RemoveUpdatedBy removes "updated_by" edges to User entities.
+func (muo *MenuUpdateOne) RemoveUpdatedBy(u ...*User) *MenuUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return muo.RemoveUpdatedByIDs(ids...)
+}
+
 // Where appends a list predicates to the MenuUpdate builder.
 func (muo *MenuUpdateOne) Where(ps ...predicate.Menu) *MenuUpdateOne {
 	muo.mutation.Where(ps...)
@@ -912,7 +1314,35 @@ func (muo *MenuUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (muo *MenuUpdateOne) check() error {
+	if v, ok := muo.mutation.FoodType(); ok {
+		if err := menu.FoodTypeValidator(v); err != nil {
+			return &ValidationError{Name: "foodType", err: fmt.Errorf(`ent: validator failed for field "Menu.foodType": %w`, err)}
+		}
+	}
+	if v, ok := muo.mutation.MenuItemType(); ok {
+		if err := menu.MenuItemTypeValidator(v); err != nil {
+			return &ValidationError{Name: "menuItemType", err: fmt.Errorf(`ent: validator failed for field "Menu.menuItemType": %w`, err)}
+		}
+	}
+	if v, ok := muo.mutation.DrinkType(); ok {
+		if err := menu.DrinkTypeValidator(v); err != nil {
+			return &ValidationError{Name: "drinkType", err: fmt.Errorf(`ent: validator failed for field "Menu.drinkType": %w`, err)}
+		}
+	}
+	if v, ok := muo.mutation.DietaryType(); ok {
+		if err := menu.DietaryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "dietaryType", err: fmt.Errorf(`ent: validator failed for field "Menu.dietaryType": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) {
+	if err := muo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(menu.Table, menu.Columns, sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString))
 	id, ok := muo.mutation.ID()
 	if !ok {
@@ -956,26 +1386,44 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	if muo.mutation.DescriptionCleared() {
 		_spec.ClearField(menu.FieldDescription, field.TypeString)
 	}
-	if value, ok := muo.mutation.PreparationTime(); ok {
-		_spec.SetField(menu.FieldPreparationTime, field.TypeString, value)
-	}
-	if muo.mutation.PreparationTimeCleared() {
-		_spec.ClearField(menu.FieldPreparationTime, field.TypeString)
-	}
 	if value, ok := muo.mutation.Options(); ok {
 		_spec.SetField(menu.FieldOptions, field.TypeString, value)
 	}
 	if muo.mutation.OptionsCleared() {
 		_spec.ClearField(menu.FieldOptions, field.TypeString)
 	}
-	if value, ok := muo.mutation.Price(); ok {
-		_spec.SetField(menu.FieldPrice, field.TypeString, value)
+	if value, ok := muo.mutation.FoodType(); ok {
+		_spec.SetField(menu.FieldFoodType, field.TypeEnum, value)
 	}
-	if muo.mutation.PriceCleared() {
-		_spec.ClearField(menu.FieldPrice, field.TypeString)
+	if muo.mutation.FoodTypeCleared() {
+		_spec.ClearField(menu.FieldFoodType, field.TypeEnum)
+	}
+	if value, ok := muo.mutation.MenuItemType(); ok {
+		_spec.SetField(menu.FieldMenuItemType, field.TypeEnum, value)
+	}
+	if muo.mutation.MenuItemTypeCleared() {
+		_spec.ClearField(menu.FieldMenuItemType, field.TypeEnum)
+	}
+	if value, ok := muo.mutation.DrinkType(); ok {
+		_spec.SetField(menu.FieldDrinkType, field.TypeEnum, value)
+	}
+	if muo.mutation.DrinkTypeCleared() {
+		_spec.ClearField(menu.FieldDrinkType, field.TypeEnum)
+	}
+	if value, ok := muo.mutation.DietaryType(); ok {
+		_spec.SetField(menu.FieldDietaryType, field.TypeEnum, value)
+	}
+	if muo.mutation.DietaryTypeCleared() {
+		_spec.ClearField(menu.FieldDietaryType, field.TypeEnum)
 	}
 	if value, ok := muo.mutation.IsAvailable(); ok {
 		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
+	}
+	if value, ok := muo.mutation.UpdatedAt(); ok {
+		_spec.SetField(menu.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if muo.mutation.UpdatedAtCleared() {
+		_spec.ClearField(menu.FieldUpdatedAt, field.TypeTime)
 	}
 	if muo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1150,6 +1598,96 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedCreatedByIDs(); len(nodes) > 0 && !muo.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedUpdatedByIDs(); len(nodes) > 0 && !muo.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

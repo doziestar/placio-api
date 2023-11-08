@@ -3,11 +3,13 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
 	"placio-app/ent/user"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -44,6 +46,30 @@ type PlaceTable struct {
 	IsVip bool `json:"is_vip,omitempty"`
 	// IsPremium holds the value of the "is_premium" field.
 	IsPremium bool `json:"is_premium,omitempty"`
+	// LocationDescription holds the value of the "location_description" field.
+	LocationDescription string `json:"location_description,omitempty"`
+	// MinimumSpend holds the value of the "minimum_spend" field.
+	MinimumSpend float64 `json:"minimum_spend,omitempty"`
+	// ReservationTime holds the value of the "reservation_time" field.
+	ReservationTime *time.Time `json:"reservation_time,omitempty"`
+	// NextAvailableTime holds the value of the "next_available_time" field.
+	NextAvailableTime *time.Time `json:"next_available_time,omitempty"`
+	// SpecialRequirements holds the value of the "special_requirements" field.
+	SpecialRequirements []string `json:"special_requirements,omitempty"`
+	// Layout holds the value of the "layout" field.
+	Layout string `json:"layout,omitempty"`
+	// ServiceArea holds the value of the "service_area" field.
+	ServiceArea string `json:"service_area,omitempty"`
+	// Ambient holds the value of the "ambient" field.
+	Ambient string `json:"ambient,omitempty"`
+	// ImageURL holds the value of the "image_url" field.
+	ImageURL string `json:"image_url,omitempty"`
+	// Rating holds the value of the "rating" field.
+	Rating *float64 `json:"rating,omitempty"`
+	// Tags holds the value of the "tags" field.
+	Tags []string `json:"tags,omitempty"`
+	// Metadata holds the value of the "metadata" field.
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlaceTableQuery when eager-loading is set.
 	Edges                PlaceTableEdges `json:"edges"`
@@ -169,12 +195,18 @@ func (*PlaceTable) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case placetable.FieldSpecialRequirements, placetable.FieldTags, placetable.FieldMetadata:
+			values[i] = new([]byte)
 		case placetable.FieldIsDeleted, placetable.FieldIsActive, placetable.FieldIsReserved, placetable.FieldIsVip, placetable.FieldIsPremium:
 			values[i] = new(sql.NullBool)
+		case placetable.FieldMinimumSpend, placetable.FieldRating:
+			values[i] = new(sql.NullFloat64)
 		case placetable.FieldNumber, placetable.FieldCapacity:
 			values[i] = new(sql.NullInt64)
-		case placetable.FieldID, placetable.FieldName, placetable.FieldDeletedAt, placetable.FieldQrCode, placetable.FieldDescription, placetable.FieldStatus, placetable.FieldType:
+		case placetable.FieldID, placetable.FieldName, placetable.FieldDeletedAt, placetable.FieldQrCode, placetable.FieldDescription, placetable.FieldStatus, placetable.FieldType, placetable.FieldLocationDescription, placetable.FieldLayout, placetable.FieldServiceArea, placetable.FieldAmbient, placetable.FieldImageURL:
 			values[i] = new(sql.NullString)
+		case placetable.FieldReservationTime, placetable.FieldNextAvailableTime:
+			values[i] = new(sql.NullTime)
 		case placetable.ForeignKeys[0]: // place_tables
 			values[i] = new(sql.NullString)
 		case placetable.ForeignKeys[1]: // user_tables_created
@@ -285,6 +317,87 @@ func (pt *PlaceTable) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_premium", values[i])
 			} else if value.Valid {
 				pt.IsPremium = value.Bool
+			}
+		case placetable.FieldLocationDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field location_description", values[i])
+			} else if value.Valid {
+				pt.LocationDescription = value.String
+			}
+		case placetable.FieldMinimumSpend:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field minimum_spend", values[i])
+			} else if value.Valid {
+				pt.MinimumSpend = value.Float64
+			}
+		case placetable.FieldReservationTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field reservation_time", values[i])
+			} else if value.Valid {
+				pt.ReservationTime = new(time.Time)
+				*pt.ReservationTime = value.Time
+			}
+		case placetable.FieldNextAvailableTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field next_available_time", values[i])
+			} else if value.Valid {
+				pt.NextAvailableTime = new(time.Time)
+				*pt.NextAvailableTime = value.Time
+			}
+		case placetable.FieldSpecialRequirements:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field special_requirements", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pt.SpecialRequirements); err != nil {
+					return fmt.Errorf("unmarshal field special_requirements: %w", err)
+				}
+			}
+		case placetable.FieldLayout:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field layout", values[i])
+			} else if value.Valid {
+				pt.Layout = value.String
+			}
+		case placetable.FieldServiceArea:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field service_area", values[i])
+			} else if value.Valid {
+				pt.ServiceArea = value.String
+			}
+		case placetable.FieldAmbient:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ambient", values[i])
+			} else if value.Valid {
+				pt.Ambient = value.String
+			}
+		case placetable.FieldImageURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field image_url", values[i])
+			} else if value.Valid {
+				pt.ImageURL = value.String
+			}
+		case placetable.FieldRating:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field rating", values[i])
+			} else if value.Valid {
+				pt.Rating = new(float64)
+				*pt.Rating = value.Float64
+			}
+		case placetable.FieldTags:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field tags", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pt.Tags); err != nil {
+					return fmt.Errorf("unmarshal field tags: %w", err)
+				}
+			}
+		case placetable.FieldMetadata:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field metadata", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pt.Metadata); err != nil {
+					return fmt.Errorf("unmarshal field metadata: %w", err)
+				}
 			}
 		case placetable.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -437,6 +550,48 @@ func (pt *PlaceTable) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_premium=")
 	builder.WriteString(fmt.Sprintf("%v", pt.IsPremium))
+	builder.WriteString(", ")
+	builder.WriteString("location_description=")
+	builder.WriteString(pt.LocationDescription)
+	builder.WriteString(", ")
+	builder.WriteString("minimum_spend=")
+	builder.WriteString(fmt.Sprintf("%v", pt.MinimumSpend))
+	builder.WriteString(", ")
+	if v := pt.ReservationTime; v != nil {
+		builder.WriteString("reservation_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := pt.NextAvailableTime; v != nil {
+		builder.WriteString("next_available_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("special_requirements=")
+	builder.WriteString(fmt.Sprintf("%v", pt.SpecialRequirements))
+	builder.WriteString(", ")
+	builder.WriteString("layout=")
+	builder.WriteString(pt.Layout)
+	builder.WriteString(", ")
+	builder.WriteString("service_area=")
+	builder.WriteString(pt.ServiceArea)
+	builder.WriteString(", ")
+	builder.WriteString("ambient=")
+	builder.WriteString(pt.Ambient)
+	builder.WriteString(", ")
+	builder.WriteString("image_url=")
+	builder.WriteString(pt.ImageURL)
+	builder.WriteString(", ")
+	if v := pt.Rating; v != nil {
+		builder.WriteString("rating=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("tags=")
+	builder.WriteString(fmt.Sprintf("%v", pt.Tags))
+	builder.WriteString(", ")
+	builder.WriteString("metadata=")
+	builder.WriteString(fmt.Sprintf("%v", pt.Metadata))
 	builder.WriteByte(')')
 	return builder.String()
 }

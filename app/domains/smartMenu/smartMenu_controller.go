@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"placio-app/ent"
+	"placio-app/ent/menu"
 	"placio-app/utility"
 	"placio-pkg/errors"
 	"placio-pkg/middleware"
@@ -291,52 +292,77 @@ func (c *SmartMenuController) restoreMenuItem(ctx *gin.Context) error {
 func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 	log.Println("createMenu")
 	placeId := ctx.Param("placeId")
-	var menu ent.Menu
+	var menuData ent.Menu
+
+	userId := ctx.MustGet("user").(string)
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		log.Println("Error parsing form:", err)
-		return nil
+		return errors.New("error parsing form")
 	}
 
-	// It's a good practice to check if the form values exist before accessing them
-	if name, exists := form.Value["name"]; exists {
-		menu.Name = name[0]
+	// Basic form value checks
+	if name, exists := form.Value["name"]; exists && len(name) > 0 {
+		menuData.Name = name[0]
+	} else {
+		return errors.New("name must be specified")
 	}
+
+	if menuItemType, exists := form.Value["menuItemType"]; exists && len(menuItemType) > 0 {
+		menuData.MenuItemType = menu.MenuItemType(menuItemType[0])
+
+		switch menuData.MenuItemType {
+		case "drink":
+			if drinkType, exists := form.Value["drinkType"]; exists && len(drinkType) > 0 {
+				menuData.DrinkType = menu.DrinkType(drinkType[0])
+			} else {
+				return errors.New("drinkType must be specified when menuItemType is 'drink'")
+			}
+		case "food":
+			// Food type is required for food
+			if foodType, exists := form.Value["foodType"]; exists && len(foodType) > 0 {
+				menuData.FoodType = menu.FoodType(foodType[0])
+			} else {
+				return errors.New("foodType must be specified when menuItemType is 'food'")
+			}
+			// Dietary type is required for food
+			if dietaryType, exists := form.Value["dietaryType"]; exists && len(dietaryType) > 0 {
+				menuData.DietaryType = menu.DietaryType(dietaryType[0])
+			} else {
+				return errors.New("dietaryType must be specified when menuItemType is 'food'")
+			}
+		default:
+			return errors.New("invalid menuItemType")
+		}
+	} else {
+		return errors.New("menuItemType must be specified")
+	}
+
+	// Optional fields
 	if description, exists := form.Value["description"]; exists {
-		menu.Description = description[0]
-	}
-	if price, exists := form.Value["price"]; exists {
-		menu.Price = price[0]
-	}
-	if preparationTime, exists := form.Value["preparationTime"]; exists {
-		menu.PreparationTime = preparationTime[0]
-	}
-	if isAvailable, exists := form.Value["isAvailable"]; exists {
-		menu.IsAvailable = isAvailable[0] == "true"
+		menuData.Description = description[0]
 	}
 	if options, exists := form.Value["options"]; exists {
-		menu.Options = options[0]
+		menuData.Options = options[0]
+	}
+	if isAvailable, exists := form.Value["isAvailable"]; exists {
+		menuData.IsAvailable = isAvailable[0] == "true"
 	}
 
-	log.Println("menu", menu)
-	if category, exists := form.Value["category"]; exists && len(category) > 0 {
-		log.Println("category", category[0])
-		medias := form.File["medias"]
-		log.Println("menu", menu, "category", category[0], "medias", medias)
+	// Media files are optional
+	medias := form.File["medias"]
 
-		createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, &menu, category[0], medias)
-		if err != nil {
-			log.Println("Error creating menu:", err)
-			return nil
-		}
-
-		ctx.JSON(http.StatusOK, utility.ProcessResponse(createdMenu))
-		return nil
+	// Attempt to create the menu
+	createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, userId, &menuData, medias)
+	if err != nil {
+		log.Println("Error creating menu:", err)
+		return err
 	}
 
-	return errors.ErrUnprocessable
-
+	// Successfully created menu
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(createdMenu))
+	return nil
 }
 
 // GetMenus returns a list of menus.
@@ -395,10 +421,12 @@ func (c *SmartMenuController) getMenuByID(ctx *gin.Context) error {
 func (c *SmartMenuController) updateMenu(ctx *gin.Context) error {
 	menuId := ctx.Param("menuId")
 	var menu *ent.Menu
+
+	userId := ctx.MustGet("user").(string)
 	if err := ctx.ShouldBindJSON(&menu); err != nil {
 		return err
 	}
-	updatedMenu, err := c.smartMenuService.UpdateMenu(ctx, menuId, menu)
+	updatedMenu, err := c.smartMenuService.UpdateMenu(ctx, menuId, userId, menu)
 	if err != nil {
 		return err
 	}
@@ -603,8 +631,10 @@ func (c *SmartMenuController) restoreTable(ctx *gin.Context) error {
 // @Router /tables/{tableId}/regenerate-qr [post]
 func (c *SmartMenuController) regenerateQRCode(ctx *gin.Context) error {
 	tableId := ctx.Param("tableId")
+	log.Println("regenerateQRCode", tableId)
 	qrcode, err := c.smartMenuService.RegenerateQRCode(ctx, tableId)
 	if err != nil {
+		log.Println("Error regenerating QR code:", err)
 		return err
 	}
 

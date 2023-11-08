@@ -40,6 +40,30 @@ const (
 	FieldIsVip = "is_vip"
 	// FieldIsPremium holds the string denoting the is_premium field in the database.
 	FieldIsPremium = "is_premium"
+	// FieldLocationDescription holds the string denoting the location_description field in the database.
+	FieldLocationDescription = "location_description"
+	// FieldMinimumSpend holds the string denoting the minimum_spend field in the database.
+	FieldMinimumSpend = "minimum_spend"
+	// FieldReservationTime holds the string denoting the reservation_time field in the database.
+	FieldReservationTime = "reservation_time"
+	// FieldNextAvailableTime holds the string denoting the next_available_time field in the database.
+	FieldNextAvailableTime = "next_available_time"
+	// FieldSpecialRequirements holds the string denoting the special_requirements field in the database.
+	FieldSpecialRequirements = "special_requirements"
+	// FieldLayout holds the string denoting the layout field in the database.
+	FieldLayout = "layout"
+	// FieldServiceArea holds the string denoting the service_area field in the database.
+	FieldServiceArea = "service_area"
+	// FieldAmbient holds the string denoting the ambient field in the database.
+	FieldAmbient = "ambient"
+	// FieldImageURL holds the string denoting the image_url field in the database.
+	FieldImageURL = "image_url"
+	// FieldRating holds the string denoting the rating field in the database.
+	FieldRating = "rating"
+	// FieldTags holds the string denoting the tags field in the database.
+	FieldTags = "tags"
+	// FieldMetadata holds the string denoting the metadata field in the database.
+	FieldMetadata = "metadata"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeCreatedBy holds the string denoting the created_by edge name in mutations.
@@ -121,6 +145,18 @@ var Columns = []string{
 	FieldIsReserved,
 	FieldIsVip,
 	FieldIsPremium,
+	FieldLocationDescription,
+	FieldMinimumSpend,
+	FieldReservationTime,
+	FieldNextAvailableTime,
+	FieldSpecialRequirements,
+	FieldLayout,
+	FieldServiceArea,
+	FieldAmbient,
+	FieldImageURL,
+	FieldRating,
+	FieldTags,
+	FieldMetadata,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "place_tables"
@@ -269,6 +305,51 @@ func ByIsVip(opts ...sql.OrderTermOption) OrderOption {
 // ByIsPremium orders the results by the is_premium field.
 func ByIsPremium(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsPremium, opts...).ToFunc()
+}
+
+// ByLocationDescription orders the results by the location_description field.
+func ByLocationDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLocationDescription, opts...).ToFunc()
+}
+
+// ByMinimumSpend orders the results by the minimum_spend field.
+func ByMinimumSpend(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMinimumSpend, opts...).ToFunc()
+}
+
+// ByReservationTime orders the results by the reservation_time field.
+func ByReservationTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReservationTime, opts...).ToFunc()
+}
+
+// ByNextAvailableTime orders the results by the next_available_time field.
+func ByNextAvailableTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNextAvailableTime, opts...).ToFunc()
+}
+
+// ByLayout orders the results by the layout field.
+func ByLayout(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLayout, opts...).ToFunc()
+}
+
+// ByServiceArea orders the results by the service_area field.
+func ByServiceArea(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldServiceArea, opts...).ToFunc()
+}
+
+// ByAmbient orders the results by the ambient field.
+func ByAmbient(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAmbient, opts...).ToFunc()
+}
+
+// ByImageURL orders the results by the image_url field.
+func ByImageURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldImageURL, opts...).ToFunc()
+}
+
+// ByRating orders the results by the rating field.
+func ByRating(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRating, opts...).ToFunc()
 }
 
 // ByPlaceField orders the results by place field.

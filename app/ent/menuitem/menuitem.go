@@ -3,6 +3,8 @@
 package menuitem
 
 import (
+	"fmt"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -28,8 +30,62 @@ const (
 	FieldOptions = "options"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldDrinkType holds the string denoting the drinktype field in the database.
+	FieldDrinkType = "drink_type"
+	// FieldDietaryType holds the string denoting the dietarytype field in the database.
+	FieldDietaryType = "dietary_type"
 	// FieldIsDeleted holds the string denoting the is_deleted field in the database.
 	FieldIsDeleted = "is_deleted"
+	// FieldCalories holds the string denoting the calories field in the database.
+	FieldCalories = "calories"
+	// FieldServeSize holds the string denoting the serve_size field in the database.
+	FieldServeSize = "serve_size"
+	// FieldAvailableFrom holds the string denoting the available_from field in the database.
+	FieldAvailableFrom = "available_from"
+	// FieldAvailableUntil holds the string denoting the available_until field in the database.
+	FieldAvailableUntil = "available_until"
+	// FieldImageURL holds the string denoting the image_url field in the database.
+	FieldImageURL = "image_url"
+	// FieldSpicinessLevel holds the string denoting the spiciness_level field in the database.
+	FieldSpicinessLevel = "spiciness_level"
+	// FieldAllergens holds the string denoting the allergens field in the database.
+	FieldAllergens = "allergens"
+	// FieldChefSpecialNote holds the string denoting the chef_special_note field in the database.
+	FieldChefSpecialNote = "chef_special_note"
+	// FieldRating holds the string denoting the rating field in the database.
+	FieldRating = "rating"
+	// FieldReviewCount holds the string denoting the review_count field in the database.
+	FieldReviewCount = "review_count"
+	// FieldCategory holds the string denoting the category field in the database.
+	FieldCategory = "category"
+	// FieldOrderCount holds the string denoting the order_count field in the database.
+	FieldOrderCount = "order_count"
+	// FieldSku holds the string denoting the sku field in the database.
+	FieldSku = "sku"
+	// FieldIsFeatured holds the string denoting the is_featured field in the database.
+	FieldIsFeatured = "is_featured"
+	// FieldIsNew holds the string denoting the is_new field in the database.
+	FieldIsNew = "is_new"
+	// FieldIsSeasonal holds the string denoting the is_seasonal field in the database.
+	FieldIsSeasonal = "is_seasonal"
+	// FieldSeason holds the string denoting the season field in the database.
+	FieldSeason = "season"
+	// FieldDiscountPercentage holds the string denoting the discount_percentage field in the database.
+	FieldDiscountPercentage = "discount_percentage"
+	// FieldPromotionDescription holds the string denoting the promotion_description field in the database.
+	FieldPromotionDescription = "promotion_description"
+	// FieldPromotionStart holds the string denoting the promotion_start field in the database.
+	FieldPromotionStart = "promotion_start"
+	// FieldPromotionEnd holds the string denoting the promotion_end field in the database.
+	FieldPromotionEnd = "promotion_end"
+	// FieldTags holds the string denoting the tags field in the database.
+	FieldTags = "tags"
+	// FieldRelatedItems holds the string denoting the related_items field in the database.
+	FieldRelatedItems = "related_items"
 	// EdgeMenu holds the string denoting the menu edge name in mutations.
 	EdgeMenu = "menu"
 	// EdgeInventory holds the string denoting the inventory edge name in mutations.
@@ -77,7 +133,34 @@ var Columns = []string{
 	FieldPreparationTime,
 	FieldOptions,
 	FieldDeletedAt,
+	FieldType,
+	FieldStatus,
+	FieldDrinkType,
+	FieldDietaryType,
 	FieldIsDeleted,
+	FieldCalories,
+	FieldServeSize,
+	FieldAvailableFrom,
+	FieldAvailableUntil,
+	FieldImageURL,
+	FieldSpicinessLevel,
+	FieldAllergens,
+	FieldChefSpecialNote,
+	FieldRating,
+	FieldReviewCount,
+	FieldCategory,
+	FieldOrderCount,
+	FieldSku,
+	FieldIsFeatured,
+	FieldIsNew,
+	FieldIsSeasonal,
+	FieldSeason,
+	FieldDiscountPercentage,
+	FieldPromotionDescription,
+	FieldPromotionStart,
+	FieldPromotionEnd,
+	FieldTags,
+	FieldRelatedItems,
 }
 
 var (
@@ -104,9 +187,137 @@ var (
 	DefaultIsAvailable bool
 	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
 	DefaultIsDeleted bool
+	// DefaultIsFeatured holds the default value on creation for the "is_featured" field.
+	DefaultIsFeatured bool
+	// DefaultIsNew holds the default value on creation for the "is_new" field.
+	DefaultIsNew bool
+	// DefaultIsSeasonal holds the default value on creation for the "is_seasonal" field.
+	DefaultIsSeasonal bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
+
+// Type defines the type for the "type" enum field.
+type Type string
+
+// Type values.
+const (
+	TypeLocal            Type = "local"
+	TypeIntercontinental Type = "intercontinental"
+	TypeNational         Type = "national"
+	TypeRegional         Type = "regional"
+	TypeContinental      Type = "continental"
+)
+
+func (_type Type) String() string {
+	return string(_type)
+}
+
+// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
+func TypeValidator(_type Type) error {
+	switch _type {
+	case TypeLocal, TypeIntercontinental, TypeNational, TypeRegional, TypeContinental:
+		return nil
+	default:
+		return fmt.Errorf("menuitem: invalid enum value for type field: %q", _type)
+	}
+}
+
+// Status defines the type for the "status" enum field.
+type Status string
+
+// Status values.
+const (
+	StatusAvailable   Status = "available"
+	StatusUnavailable Status = "unavailable"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusAvailable, StatusUnavailable:
+		return nil
+	default:
+		return fmt.Errorf("menuitem: invalid enum value for status field: %q", s)
+	}
+}
+
+// DrinkType defines the type for the "DrinkType" enum field.
+type DrinkType string
+
+// DrinkType values.
+const (
+	DrinkTypeAlcoholic    DrinkType = "alcoholic"
+	DrinkTypeNonAlcoholic DrinkType = "non-alcoholic"
+	DrinkTypeBoth         DrinkType = "both"
+)
+
+func (_drinktype DrinkType) String() string {
+	return string(_drinktype)
+}
+
+// DrinkTypeValidator is a validator for the "DrinkType" field enum values. It is called by the builders before save.
+func DrinkTypeValidator(_drinktype DrinkType) error {
+	switch _drinktype {
+	case DrinkTypeAlcoholic, DrinkTypeNonAlcoholic, DrinkTypeBoth:
+		return nil
+	default:
+		return fmt.Errorf("menuitem: invalid enum value for DrinkType field: %q", _drinktype)
+	}
+}
+
+// DietaryType defines the type for the "DietaryType" enum field.
+type DietaryType string
+
+// DietaryType values.
+const (
+	DietaryTypeVegan         DietaryType = "vegan"
+	DietaryTypeVegetarian    DietaryType = "vegetarian"
+	DietaryTypeNonVegetarian DietaryType = "non-vegetarian"
+	DietaryTypeBoth          DietaryType = "both"
+)
+
+func (_dietarytype DietaryType) String() string {
+	return string(_dietarytype)
+}
+
+// DietaryTypeValidator is a validator for the "DietaryType" field enum values. It is called by the builders before save.
+func DietaryTypeValidator(_dietarytype DietaryType) error {
+	switch _dietarytype {
+	case DietaryTypeVegan, DietaryTypeVegetarian, DietaryTypeNonVegetarian, DietaryTypeBoth:
+		return nil
+	default:
+		return fmt.Errorf("menuitem: invalid enum value for DietaryType field: %q", _dietarytype)
+	}
+}
+
+// SpicinessLevel defines the type for the "spiciness_level" enum field.
+type SpicinessLevel string
+
+// SpicinessLevel values.
+const (
+	SpicinessLevelMild   SpicinessLevel = "mild"
+	SpicinessLevelMedium SpicinessLevel = "medium"
+	SpicinessLevelHot    SpicinessLevel = "hot"
+)
+
+func (sl SpicinessLevel) String() string {
+	return string(sl)
+}
+
+// SpicinessLevelValidator is a validator for the "spiciness_level" field enum values. It is called by the builders before save.
+func SpicinessLevelValidator(sl SpicinessLevel) error {
+	switch sl {
+	case SpicinessLevelMild, SpicinessLevelMedium, SpicinessLevelHot:
+		return nil
+	default:
+		return fmt.Errorf("menuitem: invalid enum value for spiciness_level field: %q", sl)
+	}
+}
 
 // OrderOption defines the ordering options for the MenuItem queries.
 type OrderOption func(*sql.Selector)
@@ -151,9 +362,129 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
 }
 
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByDrinkType orders the results by the DrinkType field.
+func ByDrinkType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDrinkType, opts...).ToFunc()
+}
+
+// ByDietaryType orders the results by the DietaryType field.
+func ByDietaryType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDietaryType, opts...).ToFunc()
+}
+
 // ByIsDeleted orders the results by the is_deleted field.
 func ByIsDeleted(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsDeleted, opts...).ToFunc()
+}
+
+// ByCalories orders the results by the calories field.
+func ByCalories(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCalories, opts...).ToFunc()
+}
+
+// ByServeSize orders the results by the serve_size field.
+func ByServeSize(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldServeSize, opts...).ToFunc()
+}
+
+// ByAvailableFrom orders the results by the available_from field.
+func ByAvailableFrom(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAvailableFrom, opts...).ToFunc()
+}
+
+// ByAvailableUntil orders the results by the available_until field.
+func ByAvailableUntil(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAvailableUntil, opts...).ToFunc()
+}
+
+// ByImageURL orders the results by the image_url field.
+func ByImageURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldImageURL, opts...).ToFunc()
+}
+
+// BySpicinessLevel orders the results by the spiciness_level field.
+func BySpicinessLevel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSpicinessLevel, opts...).ToFunc()
+}
+
+// ByChefSpecialNote orders the results by the chef_special_note field.
+func ByChefSpecialNote(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldChefSpecialNote, opts...).ToFunc()
+}
+
+// ByRating orders the results by the rating field.
+func ByRating(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRating, opts...).ToFunc()
+}
+
+// ByReviewCount orders the results by the review_count field.
+func ByReviewCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReviewCount, opts...).ToFunc()
+}
+
+// ByCategory orders the results by the category field.
+func ByCategory(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCategory, opts...).ToFunc()
+}
+
+// ByOrderCount orders the results by the order_count field.
+func ByOrderCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrderCount, opts...).ToFunc()
+}
+
+// BySku orders the results by the sku field.
+func BySku(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSku, opts...).ToFunc()
+}
+
+// ByIsFeatured orders the results by the is_featured field.
+func ByIsFeatured(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsFeatured, opts...).ToFunc()
+}
+
+// ByIsNew orders the results by the is_new field.
+func ByIsNew(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsNew, opts...).ToFunc()
+}
+
+// ByIsSeasonal orders the results by the is_seasonal field.
+func ByIsSeasonal(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsSeasonal, opts...).ToFunc()
+}
+
+// BySeason orders the results by the season field.
+func BySeason(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSeason, opts...).ToFunc()
+}
+
+// ByDiscountPercentage orders the results by the discount_percentage field.
+func ByDiscountPercentage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDiscountPercentage, opts...).ToFunc()
+}
+
+// ByPromotionDescription orders the results by the promotion_description field.
+func ByPromotionDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPromotionDescription, opts...).ToFunc()
+}
+
+// ByPromotionStart orders the results by the promotion_start field.
+func ByPromotionStart(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPromotionStart, opts...).ToFunc()
+}
+
+// ByPromotionEnd orders the results by the promotion_end field.
+func ByPromotionEnd(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPromotionEnd, opts...).ToFunc()
 }
 
 // ByMenuCount orders the results by menu count.

@@ -30,6 +30,18 @@ func (PlaceTable) Fields() []ent.Field {
 		field.Bool("is_reserved").Default(false),
 		field.Bool("is_vip").Default(false),
 		field.Bool("is_premium").Default(false),
+		field.String("location_description").Optional(),
+		field.Float("minimum_spend").Optional(),
+		field.Time("reservation_time").Optional().Nillable(),
+		field.Time("next_available_time").Optional().Nillable(),
+		field.JSON("special_requirements", []string{}).Optional(),
+		field.String("layout").Optional(),
+		field.String("service_area").Optional(),
+		field.String("ambient").Optional(),
+		field.String("image_url").Optional(),
+		field.Float("rating").Optional().Nillable(),
+		field.JSON("tags", []string{}).Optional(),
+		field.JSON("metadata", map[string]interface{}{}).Optional(),
 	}
 }
 

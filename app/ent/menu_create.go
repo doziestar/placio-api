@@ -11,6 +11,8 @@ import (
 	"placio-app/ent/menu"
 	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
+	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -71,20 +73,6 @@ func (mc *MenuCreate) SetNillableDescription(s *string) *MenuCreate {
 	return mc
 }
 
-// SetPreparationTime sets the "preparation_time" field.
-func (mc *MenuCreate) SetPreparationTime(s string) *MenuCreate {
-	mc.mutation.SetPreparationTime(s)
-	return mc
-}
-
-// SetNillablePreparationTime sets the "preparation_time" field if the given value is not nil.
-func (mc *MenuCreate) SetNillablePreparationTime(s *string) *MenuCreate {
-	if s != nil {
-		mc.SetPreparationTime(*s)
-	}
-	return mc
-}
-
 // SetOptions sets the "options" field.
 func (mc *MenuCreate) SetOptions(s string) *MenuCreate {
 	mc.mutation.SetOptions(s)
@@ -99,16 +87,58 @@ func (mc *MenuCreate) SetNillableOptions(s *string) *MenuCreate {
 	return mc
 }
 
-// SetPrice sets the "price" field.
-func (mc *MenuCreate) SetPrice(s string) *MenuCreate {
-	mc.mutation.SetPrice(s)
+// SetFoodType sets the "foodType" field.
+func (mc *MenuCreate) SetFoodType(mt menu.FoodType) *MenuCreate {
+	mc.mutation.SetFoodType(mt)
 	return mc
 }
 
-// SetNillablePrice sets the "price" field if the given value is not nil.
-func (mc *MenuCreate) SetNillablePrice(s *string) *MenuCreate {
-	if s != nil {
-		mc.SetPrice(*s)
+// SetNillableFoodType sets the "foodType" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableFoodType(mt *menu.FoodType) *MenuCreate {
+	if mt != nil {
+		mc.SetFoodType(*mt)
+	}
+	return mc
+}
+
+// SetMenuItemType sets the "menuItemType" field.
+func (mc *MenuCreate) SetMenuItemType(mit menu.MenuItemType) *MenuCreate {
+	mc.mutation.SetMenuItemType(mit)
+	return mc
+}
+
+// SetNillableMenuItemType sets the "menuItemType" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableMenuItemType(mit *menu.MenuItemType) *MenuCreate {
+	if mit != nil {
+		mc.SetMenuItemType(*mit)
+	}
+	return mc
+}
+
+// SetDrinkType sets the "drinkType" field.
+func (mc *MenuCreate) SetDrinkType(mt menu.DrinkType) *MenuCreate {
+	mc.mutation.SetDrinkType(mt)
+	return mc
+}
+
+// SetNillableDrinkType sets the "drinkType" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableDrinkType(mt *menu.DrinkType) *MenuCreate {
+	if mt != nil {
+		mc.SetDrinkType(*mt)
+	}
+	return mc
+}
+
+// SetDietaryType sets the "dietaryType" field.
+func (mc *MenuCreate) SetDietaryType(mt menu.DietaryType) *MenuCreate {
+	mc.mutation.SetDietaryType(mt)
+	return mc
+}
+
+// SetNillableDietaryType sets the "dietaryType" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableDietaryType(mt *menu.DietaryType) *MenuCreate {
+	if mt != nil {
+		mc.SetDietaryType(*mt)
 	}
 	return mc
 }
@@ -123,6 +153,20 @@ func (mc *MenuCreate) SetIsAvailable(b bool) *MenuCreate {
 func (mc *MenuCreate) SetNillableIsAvailable(b *bool) *MenuCreate {
 	if b != nil {
 		mc.SetIsAvailable(*b)
+	}
+	return mc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (mc *MenuCreate) SetUpdatedAt(t time.Time) *MenuCreate {
+	mc.mutation.SetUpdatedAt(t)
+	return mc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableUpdatedAt(t *time.Time) *MenuCreate {
+	if t != nil {
+		mc.SetUpdatedAt(*t)
 	}
 	return mc
 }
@@ -193,6 +237,36 @@ func (mc *MenuCreate) AddMedia(m ...*Media) *MenuCreate {
 	return mc.AddMediumIDs(ids...)
 }
 
+// AddCreatedByIDs adds the "created_by" edge to the User entity by IDs.
+func (mc *MenuCreate) AddCreatedByIDs(ids ...string) *MenuCreate {
+	mc.mutation.AddCreatedByIDs(ids...)
+	return mc
+}
+
+// AddCreatedBy adds the "created_by" edges to the User entity.
+func (mc *MenuCreate) AddCreatedBy(u ...*User) *MenuCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mc.AddCreatedByIDs(ids...)
+}
+
+// AddUpdatedByIDs adds the "updated_by" edge to the User entity by IDs.
+func (mc *MenuCreate) AddUpdatedByIDs(ids ...string) *MenuCreate {
+	mc.mutation.AddUpdatedByIDs(ids...)
+	return mc
+}
+
+// AddUpdatedBy adds the "updated_by" edges to the User entity.
+func (mc *MenuCreate) AddUpdatedBy(u ...*User) *MenuCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mc.AddUpdatedByIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (mc *MenuCreate) Mutation() *MenuMutation {
 	return mc.mutation
@@ -236,6 +310,10 @@ func (mc *MenuCreate) defaults() {
 		v := menu.DefaultIsAvailable
 		mc.mutation.SetIsAvailable(v)
 	}
+	if _, ok := mc.mutation.UpdatedAt(); !ok {
+		v := menu.DefaultUpdatedAt
+		mc.mutation.SetUpdatedAt(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -245,6 +323,26 @@ func (mc *MenuCreate) check() error {
 	}
 	if _, ok := mc.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "Menu.is_deleted"`)}
+	}
+	if v, ok := mc.mutation.FoodType(); ok {
+		if err := menu.FoodTypeValidator(v); err != nil {
+			return &ValidationError{Name: "foodType", err: fmt.Errorf(`ent: validator failed for field "Menu.foodType": %w`, err)}
+		}
+	}
+	if v, ok := mc.mutation.MenuItemType(); ok {
+		if err := menu.MenuItemTypeValidator(v); err != nil {
+			return &ValidationError{Name: "menuItemType", err: fmt.Errorf(`ent: validator failed for field "Menu.menuItemType": %w`, err)}
+		}
+	}
+	if v, ok := mc.mutation.DrinkType(); ok {
+		if err := menu.DrinkTypeValidator(v); err != nil {
+			return &ValidationError{Name: "drinkType", err: fmt.Errorf(`ent: validator failed for field "Menu.drinkType": %w`, err)}
+		}
+	}
+	if v, ok := mc.mutation.DietaryType(); ok {
+		if err := menu.DietaryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "dietaryType", err: fmt.Errorf(`ent: validator failed for field "Menu.dietaryType": %w`, err)}
+		}
 	}
 	if _, ok := mc.mutation.IsAvailable(); !ok {
 		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "Menu.is_available"`)}
@@ -305,21 +403,33 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 		_spec.SetField(menu.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
-	if value, ok := mc.mutation.PreparationTime(); ok {
-		_spec.SetField(menu.FieldPreparationTime, field.TypeString, value)
-		_node.PreparationTime = value
-	}
 	if value, ok := mc.mutation.Options(); ok {
 		_spec.SetField(menu.FieldOptions, field.TypeString, value)
 		_node.Options = value
 	}
-	if value, ok := mc.mutation.Price(); ok {
-		_spec.SetField(menu.FieldPrice, field.TypeString, value)
-		_node.Price = value
+	if value, ok := mc.mutation.FoodType(); ok {
+		_spec.SetField(menu.FieldFoodType, field.TypeEnum, value)
+		_node.FoodType = value
+	}
+	if value, ok := mc.mutation.MenuItemType(); ok {
+		_spec.SetField(menu.FieldMenuItemType, field.TypeEnum, value)
+		_node.MenuItemType = value
+	}
+	if value, ok := mc.mutation.DrinkType(); ok {
+		_spec.SetField(menu.FieldDrinkType, field.TypeEnum, value)
+		_node.DrinkType = value
+	}
+	if value, ok := mc.mutation.DietaryType(); ok {
+		_spec.SetField(menu.FieldDietaryType, field.TypeEnum, value)
+		_node.DietaryType = value
 	}
 	if value, ok := mc.mutation.IsAvailable(); ok {
 		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
 		_node.IsAvailable = value
+	}
+	if value, ok := mc.mutation.UpdatedAt(); ok {
+		_spec.SetField(menu.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
 	}
 	if nodes := mc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -378,6 +488,38 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

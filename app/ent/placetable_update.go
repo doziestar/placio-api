@@ -11,9 +11,11 @@ import (
 	"placio-app/ent/placetable"
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -245,6 +247,248 @@ func (ptu *PlaceTableUpdate) SetNillableIsPremium(b *bool) *PlaceTableUpdate {
 	if b != nil {
 		ptu.SetIsPremium(*b)
 	}
+	return ptu
+}
+
+// SetLocationDescription sets the "location_description" field.
+func (ptu *PlaceTableUpdate) SetLocationDescription(s string) *PlaceTableUpdate {
+	ptu.mutation.SetLocationDescription(s)
+	return ptu
+}
+
+// SetNillableLocationDescription sets the "location_description" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableLocationDescription(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetLocationDescription(*s)
+	}
+	return ptu
+}
+
+// ClearLocationDescription clears the value of the "location_description" field.
+func (ptu *PlaceTableUpdate) ClearLocationDescription() *PlaceTableUpdate {
+	ptu.mutation.ClearLocationDescription()
+	return ptu
+}
+
+// SetMinimumSpend sets the "minimum_spend" field.
+func (ptu *PlaceTableUpdate) SetMinimumSpend(f float64) *PlaceTableUpdate {
+	ptu.mutation.ResetMinimumSpend()
+	ptu.mutation.SetMinimumSpend(f)
+	return ptu
+}
+
+// SetNillableMinimumSpend sets the "minimum_spend" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableMinimumSpend(f *float64) *PlaceTableUpdate {
+	if f != nil {
+		ptu.SetMinimumSpend(*f)
+	}
+	return ptu
+}
+
+// AddMinimumSpend adds f to the "minimum_spend" field.
+func (ptu *PlaceTableUpdate) AddMinimumSpend(f float64) *PlaceTableUpdate {
+	ptu.mutation.AddMinimumSpend(f)
+	return ptu
+}
+
+// ClearMinimumSpend clears the value of the "minimum_spend" field.
+func (ptu *PlaceTableUpdate) ClearMinimumSpend() *PlaceTableUpdate {
+	ptu.mutation.ClearMinimumSpend()
+	return ptu
+}
+
+// SetReservationTime sets the "reservation_time" field.
+func (ptu *PlaceTableUpdate) SetReservationTime(t time.Time) *PlaceTableUpdate {
+	ptu.mutation.SetReservationTime(t)
+	return ptu
+}
+
+// SetNillableReservationTime sets the "reservation_time" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableReservationTime(t *time.Time) *PlaceTableUpdate {
+	if t != nil {
+		ptu.SetReservationTime(*t)
+	}
+	return ptu
+}
+
+// ClearReservationTime clears the value of the "reservation_time" field.
+func (ptu *PlaceTableUpdate) ClearReservationTime() *PlaceTableUpdate {
+	ptu.mutation.ClearReservationTime()
+	return ptu
+}
+
+// SetNextAvailableTime sets the "next_available_time" field.
+func (ptu *PlaceTableUpdate) SetNextAvailableTime(t time.Time) *PlaceTableUpdate {
+	ptu.mutation.SetNextAvailableTime(t)
+	return ptu
+}
+
+// SetNillableNextAvailableTime sets the "next_available_time" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableNextAvailableTime(t *time.Time) *PlaceTableUpdate {
+	if t != nil {
+		ptu.SetNextAvailableTime(*t)
+	}
+	return ptu
+}
+
+// ClearNextAvailableTime clears the value of the "next_available_time" field.
+func (ptu *PlaceTableUpdate) ClearNextAvailableTime() *PlaceTableUpdate {
+	ptu.mutation.ClearNextAvailableTime()
+	return ptu
+}
+
+// SetSpecialRequirements sets the "special_requirements" field.
+func (ptu *PlaceTableUpdate) SetSpecialRequirements(s []string) *PlaceTableUpdate {
+	ptu.mutation.SetSpecialRequirements(s)
+	return ptu
+}
+
+// AppendSpecialRequirements appends s to the "special_requirements" field.
+func (ptu *PlaceTableUpdate) AppendSpecialRequirements(s []string) *PlaceTableUpdate {
+	ptu.mutation.AppendSpecialRequirements(s)
+	return ptu
+}
+
+// ClearSpecialRequirements clears the value of the "special_requirements" field.
+func (ptu *PlaceTableUpdate) ClearSpecialRequirements() *PlaceTableUpdate {
+	ptu.mutation.ClearSpecialRequirements()
+	return ptu
+}
+
+// SetLayout sets the "layout" field.
+func (ptu *PlaceTableUpdate) SetLayout(s string) *PlaceTableUpdate {
+	ptu.mutation.SetLayout(s)
+	return ptu
+}
+
+// SetNillableLayout sets the "layout" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableLayout(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetLayout(*s)
+	}
+	return ptu
+}
+
+// ClearLayout clears the value of the "layout" field.
+func (ptu *PlaceTableUpdate) ClearLayout() *PlaceTableUpdate {
+	ptu.mutation.ClearLayout()
+	return ptu
+}
+
+// SetServiceArea sets the "service_area" field.
+func (ptu *PlaceTableUpdate) SetServiceArea(s string) *PlaceTableUpdate {
+	ptu.mutation.SetServiceArea(s)
+	return ptu
+}
+
+// SetNillableServiceArea sets the "service_area" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableServiceArea(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetServiceArea(*s)
+	}
+	return ptu
+}
+
+// ClearServiceArea clears the value of the "service_area" field.
+func (ptu *PlaceTableUpdate) ClearServiceArea() *PlaceTableUpdate {
+	ptu.mutation.ClearServiceArea()
+	return ptu
+}
+
+// SetAmbient sets the "ambient" field.
+func (ptu *PlaceTableUpdate) SetAmbient(s string) *PlaceTableUpdate {
+	ptu.mutation.SetAmbient(s)
+	return ptu
+}
+
+// SetNillableAmbient sets the "ambient" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableAmbient(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetAmbient(*s)
+	}
+	return ptu
+}
+
+// ClearAmbient clears the value of the "ambient" field.
+func (ptu *PlaceTableUpdate) ClearAmbient() *PlaceTableUpdate {
+	ptu.mutation.ClearAmbient()
+	return ptu
+}
+
+// SetImageURL sets the "image_url" field.
+func (ptu *PlaceTableUpdate) SetImageURL(s string) *PlaceTableUpdate {
+	ptu.mutation.SetImageURL(s)
+	return ptu
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableImageURL(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetImageURL(*s)
+	}
+	return ptu
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (ptu *PlaceTableUpdate) ClearImageURL() *PlaceTableUpdate {
+	ptu.mutation.ClearImageURL()
+	return ptu
+}
+
+// SetRating sets the "rating" field.
+func (ptu *PlaceTableUpdate) SetRating(f float64) *PlaceTableUpdate {
+	ptu.mutation.ResetRating()
+	ptu.mutation.SetRating(f)
+	return ptu
+}
+
+// SetNillableRating sets the "rating" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableRating(f *float64) *PlaceTableUpdate {
+	if f != nil {
+		ptu.SetRating(*f)
+	}
+	return ptu
+}
+
+// AddRating adds f to the "rating" field.
+func (ptu *PlaceTableUpdate) AddRating(f float64) *PlaceTableUpdate {
+	ptu.mutation.AddRating(f)
+	return ptu
+}
+
+// ClearRating clears the value of the "rating" field.
+func (ptu *PlaceTableUpdate) ClearRating() *PlaceTableUpdate {
+	ptu.mutation.ClearRating()
+	return ptu
+}
+
+// SetTags sets the "tags" field.
+func (ptu *PlaceTableUpdate) SetTags(s []string) *PlaceTableUpdate {
+	ptu.mutation.SetTags(s)
+	return ptu
+}
+
+// AppendTags appends s to the "tags" field.
+func (ptu *PlaceTableUpdate) AppendTags(s []string) *PlaceTableUpdate {
+	ptu.mutation.AppendTags(s)
+	return ptu
+}
+
+// ClearTags clears the value of the "tags" field.
+func (ptu *PlaceTableUpdate) ClearTags() *PlaceTableUpdate {
+	ptu.mutation.ClearTags()
+	return ptu
+}
+
+// SetMetadata sets the "metadata" field.
+func (ptu *PlaceTableUpdate) SetMetadata(m map[string]interface{}) *PlaceTableUpdate {
+	ptu.mutation.SetMetadata(m)
+	return ptu
+}
+
+// ClearMetadata clears the value of the "metadata" field.
+func (ptu *PlaceTableUpdate) ClearMetadata() *PlaceTableUpdate {
+	ptu.mutation.ClearMetadata()
 	return ptu
 }
 
@@ -547,6 +791,94 @@ func (ptu *PlaceTableUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ptu.mutation.IsPremium(); ok {
 		_spec.SetField(placetable.FieldIsPremium, field.TypeBool, value)
+	}
+	if value, ok := ptu.mutation.LocationDescription(); ok {
+		_spec.SetField(placetable.FieldLocationDescription, field.TypeString, value)
+	}
+	if ptu.mutation.LocationDescriptionCleared() {
+		_spec.ClearField(placetable.FieldLocationDescription, field.TypeString)
+	}
+	if value, ok := ptu.mutation.MinimumSpend(); ok {
+		_spec.SetField(placetable.FieldMinimumSpend, field.TypeFloat64, value)
+	}
+	if value, ok := ptu.mutation.AddedMinimumSpend(); ok {
+		_spec.AddField(placetable.FieldMinimumSpend, field.TypeFloat64, value)
+	}
+	if ptu.mutation.MinimumSpendCleared() {
+		_spec.ClearField(placetable.FieldMinimumSpend, field.TypeFloat64)
+	}
+	if value, ok := ptu.mutation.ReservationTime(); ok {
+		_spec.SetField(placetable.FieldReservationTime, field.TypeTime, value)
+	}
+	if ptu.mutation.ReservationTimeCleared() {
+		_spec.ClearField(placetable.FieldReservationTime, field.TypeTime)
+	}
+	if value, ok := ptu.mutation.NextAvailableTime(); ok {
+		_spec.SetField(placetable.FieldNextAvailableTime, field.TypeTime, value)
+	}
+	if ptu.mutation.NextAvailableTimeCleared() {
+		_spec.ClearField(placetable.FieldNextAvailableTime, field.TypeTime)
+	}
+	if value, ok := ptu.mutation.SpecialRequirements(); ok {
+		_spec.SetField(placetable.FieldSpecialRequirements, field.TypeJSON, value)
+	}
+	if value, ok := ptu.mutation.AppendedSpecialRequirements(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, placetable.FieldSpecialRequirements, value)
+		})
+	}
+	if ptu.mutation.SpecialRequirementsCleared() {
+		_spec.ClearField(placetable.FieldSpecialRequirements, field.TypeJSON)
+	}
+	if value, ok := ptu.mutation.Layout(); ok {
+		_spec.SetField(placetable.FieldLayout, field.TypeString, value)
+	}
+	if ptu.mutation.LayoutCleared() {
+		_spec.ClearField(placetable.FieldLayout, field.TypeString)
+	}
+	if value, ok := ptu.mutation.ServiceArea(); ok {
+		_spec.SetField(placetable.FieldServiceArea, field.TypeString, value)
+	}
+	if ptu.mutation.ServiceAreaCleared() {
+		_spec.ClearField(placetable.FieldServiceArea, field.TypeString)
+	}
+	if value, ok := ptu.mutation.Ambient(); ok {
+		_spec.SetField(placetable.FieldAmbient, field.TypeString, value)
+	}
+	if ptu.mutation.AmbientCleared() {
+		_spec.ClearField(placetable.FieldAmbient, field.TypeString)
+	}
+	if value, ok := ptu.mutation.ImageURL(); ok {
+		_spec.SetField(placetable.FieldImageURL, field.TypeString, value)
+	}
+	if ptu.mutation.ImageURLCleared() {
+		_spec.ClearField(placetable.FieldImageURL, field.TypeString)
+	}
+	if value, ok := ptu.mutation.Rating(); ok {
+		_spec.SetField(placetable.FieldRating, field.TypeFloat64, value)
+	}
+	if value, ok := ptu.mutation.AddedRating(); ok {
+		_spec.AddField(placetable.FieldRating, field.TypeFloat64, value)
+	}
+	if ptu.mutation.RatingCleared() {
+		_spec.ClearField(placetable.FieldRating, field.TypeFloat64)
+	}
+	if value, ok := ptu.mutation.Tags(); ok {
+		_spec.SetField(placetable.FieldTags, field.TypeJSON, value)
+	}
+	if value, ok := ptu.mutation.AppendedTags(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, placetable.FieldTags, value)
+		})
+	}
+	if ptu.mutation.TagsCleared() {
+		_spec.ClearField(placetable.FieldTags, field.TypeJSON)
+	}
+	if value, ok := ptu.mutation.Metadata(); ok {
+		_spec.SetField(placetable.FieldMetadata, field.TypeJSON, value)
+	}
+	if ptu.mutation.MetadataCleared() {
+		_spec.ClearField(placetable.FieldMetadata, field.TypeJSON)
 	}
 	if ptu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1005,6 +1337,248 @@ func (ptuo *PlaceTableUpdateOne) SetNillableIsPremium(b *bool) *PlaceTableUpdate
 	return ptuo
 }
 
+// SetLocationDescription sets the "location_description" field.
+func (ptuo *PlaceTableUpdateOne) SetLocationDescription(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetLocationDescription(s)
+	return ptuo
+}
+
+// SetNillableLocationDescription sets the "location_description" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableLocationDescription(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetLocationDescription(*s)
+	}
+	return ptuo
+}
+
+// ClearLocationDescription clears the value of the "location_description" field.
+func (ptuo *PlaceTableUpdateOne) ClearLocationDescription() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearLocationDescription()
+	return ptuo
+}
+
+// SetMinimumSpend sets the "minimum_spend" field.
+func (ptuo *PlaceTableUpdateOne) SetMinimumSpend(f float64) *PlaceTableUpdateOne {
+	ptuo.mutation.ResetMinimumSpend()
+	ptuo.mutation.SetMinimumSpend(f)
+	return ptuo
+}
+
+// SetNillableMinimumSpend sets the "minimum_spend" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableMinimumSpend(f *float64) *PlaceTableUpdateOne {
+	if f != nil {
+		ptuo.SetMinimumSpend(*f)
+	}
+	return ptuo
+}
+
+// AddMinimumSpend adds f to the "minimum_spend" field.
+func (ptuo *PlaceTableUpdateOne) AddMinimumSpend(f float64) *PlaceTableUpdateOne {
+	ptuo.mutation.AddMinimumSpend(f)
+	return ptuo
+}
+
+// ClearMinimumSpend clears the value of the "minimum_spend" field.
+func (ptuo *PlaceTableUpdateOne) ClearMinimumSpend() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearMinimumSpend()
+	return ptuo
+}
+
+// SetReservationTime sets the "reservation_time" field.
+func (ptuo *PlaceTableUpdateOne) SetReservationTime(t time.Time) *PlaceTableUpdateOne {
+	ptuo.mutation.SetReservationTime(t)
+	return ptuo
+}
+
+// SetNillableReservationTime sets the "reservation_time" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableReservationTime(t *time.Time) *PlaceTableUpdateOne {
+	if t != nil {
+		ptuo.SetReservationTime(*t)
+	}
+	return ptuo
+}
+
+// ClearReservationTime clears the value of the "reservation_time" field.
+func (ptuo *PlaceTableUpdateOne) ClearReservationTime() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearReservationTime()
+	return ptuo
+}
+
+// SetNextAvailableTime sets the "next_available_time" field.
+func (ptuo *PlaceTableUpdateOne) SetNextAvailableTime(t time.Time) *PlaceTableUpdateOne {
+	ptuo.mutation.SetNextAvailableTime(t)
+	return ptuo
+}
+
+// SetNillableNextAvailableTime sets the "next_available_time" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableNextAvailableTime(t *time.Time) *PlaceTableUpdateOne {
+	if t != nil {
+		ptuo.SetNextAvailableTime(*t)
+	}
+	return ptuo
+}
+
+// ClearNextAvailableTime clears the value of the "next_available_time" field.
+func (ptuo *PlaceTableUpdateOne) ClearNextAvailableTime() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearNextAvailableTime()
+	return ptuo
+}
+
+// SetSpecialRequirements sets the "special_requirements" field.
+func (ptuo *PlaceTableUpdateOne) SetSpecialRequirements(s []string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetSpecialRequirements(s)
+	return ptuo
+}
+
+// AppendSpecialRequirements appends s to the "special_requirements" field.
+func (ptuo *PlaceTableUpdateOne) AppendSpecialRequirements(s []string) *PlaceTableUpdateOne {
+	ptuo.mutation.AppendSpecialRequirements(s)
+	return ptuo
+}
+
+// ClearSpecialRequirements clears the value of the "special_requirements" field.
+func (ptuo *PlaceTableUpdateOne) ClearSpecialRequirements() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearSpecialRequirements()
+	return ptuo
+}
+
+// SetLayout sets the "layout" field.
+func (ptuo *PlaceTableUpdateOne) SetLayout(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetLayout(s)
+	return ptuo
+}
+
+// SetNillableLayout sets the "layout" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableLayout(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetLayout(*s)
+	}
+	return ptuo
+}
+
+// ClearLayout clears the value of the "layout" field.
+func (ptuo *PlaceTableUpdateOne) ClearLayout() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearLayout()
+	return ptuo
+}
+
+// SetServiceArea sets the "service_area" field.
+func (ptuo *PlaceTableUpdateOne) SetServiceArea(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetServiceArea(s)
+	return ptuo
+}
+
+// SetNillableServiceArea sets the "service_area" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableServiceArea(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetServiceArea(*s)
+	}
+	return ptuo
+}
+
+// ClearServiceArea clears the value of the "service_area" field.
+func (ptuo *PlaceTableUpdateOne) ClearServiceArea() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearServiceArea()
+	return ptuo
+}
+
+// SetAmbient sets the "ambient" field.
+func (ptuo *PlaceTableUpdateOne) SetAmbient(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetAmbient(s)
+	return ptuo
+}
+
+// SetNillableAmbient sets the "ambient" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableAmbient(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetAmbient(*s)
+	}
+	return ptuo
+}
+
+// ClearAmbient clears the value of the "ambient" field.
+func (ptuo *PlaceTableUpdateOne) ClearAmbient() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearAmbient()
+	return ptuo
+}
+
+// SetImageURL sets the "image_url" field.
+func (ptuo *PlaceTableUpdateOne) SetImageURL(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetImageURL(s)
+	return ptuo
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableImageURL(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetImageURL(*s)
+	}
+	return ptuo
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (ptuo *PlaceTableUpdateOne) ClearImageURL() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearImageURL()
+	return ptuo
+}
+
+// SetRating sets the "rating" field.
+func (ptuo *PlaceTableUpdateOne) SetRating(f float64) *PlaceTableUpdateOne {
+	ptuo.mutation.ResetRating()
+	ptuo.mutation.SetRating(f)
+	return ptuo
+}
+
+// SetNillableRating sets the "rating" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableRating(f *float64) *PlaceTableUpdateOne {
+	if f != nil {
+		ptuo.SetRating(*f)
+	}
+	return ptuo
+}
+
+// AddRating adds f to the "rating" field.
+func (ptuo *PlaceTableUpdateOne) AddRating(f float64) *PlaceTableUpdateOne {
+	ptuo.mutation.AddRating(f)
+	return ptuo
+}
+
+// ClearRating clears the value of the "rating" field.
+func (ptuo *PlaceTableUpdateOne) ClearRating() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearRating()
+	return ptuo
+}
+
+// SetTags sets the "tags" field.
+func (ptuo *PlaceTableUpdateOne) SetTags(s []string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetTags(s)
+	return ptuo
+}
+
+// AppendTags appends s to the "tags" field.
+func (ptuo *PlaceTableUpdateOne) AppendTags(s []string) *PlaceTableUpdateOne {
+	ptuo.mutation.AppendTags(s)
+	return ptuo
+}
+
+// ClearTags clears the value of the "tags" field.
+func (ptuo *PlaceTableUpdateOne) ClearTags() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearTags()
+	return ptuo
+}
+
+// SetMetadata sets the "metadata" field.
+func (ptuo *PlaceTableUpdateOne) SetMetadata(m map[string]interface{}) *PlaceTableUpdateOne {
+	ptuo.mutation.SetMetadata(m)
+	return ptuo
+}
+
+// ClearMetadata clears the value of the "metadata" field.
+func (ptuo *PlaceTableUpdateOne) ClearMetadata() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearMetadata()
+	return ptuo
+}
+
 // SetPlaceID sets the "place" edge to the Place entity by ID.
 func (ptuo *PlaceTableUpdateOne) SetPlaceID(id string) *PlaceTableUpdateOne {
 	ptuo.mutation.SetPlaceID(id)
@@ -1334,6 +1908,94 @@ func (ptuo *PlaceTableUpdateOne) sqlSave(ctx context.Context) (_node *PlaceTable
 	}
 	if value, ok := ptuo.mutation.IsPremium(); ok {
 		_spec.SetField(placetable.FieldIsPremium, field.TypeBool, value)
+	}
+	if value, ok := ptuo.mutation.LocationDescription(); ok {
+		_spec.SetField(placetable.FieldLocationDescription, field.TypeString, value)
+	}
+	if ptuo.mutation.LocationDescriptionCleared() {
+		_spec.ClearField(placetable.FieldLocationDescription, field.TypeString)
+	}
+	if value, ok := ptuo.mutation.MinimumSpend(); ok {
+		_spec.SetField(placetable.FieldMinimumSpend, field.TypeFloat64, value)
+	}
+	if value, ok := ptuo.mutation.AddedMinimumSpend(); ok {
+		_spec.AddField(placetable.FieldMinimumSpend, field.TypeFloat64, value)
+	}
+	if ptuo.mutation.MinimumSpendCleared() {
+		_spec.ClearField(placetable.FieldMinimumSpend, field.TypeFloat64)
+	}
+	if value, ok := ptuo.mutation.ReservationTime(); ok {
+		_spec.SetField(placetable.FieldReservationTime, field.TypeTime, value)
+	}
+	if ptuo.mutation.ReservationTimeCleared() {
+		_spec.ClearField(placetable.FieldReservationTime, field.TypeTime)
+	}
+	if value, ok := ptuo.mutation.NextAvailableTime(); ok {
+		_spec.SetField(placetable.FieldNextAvailableTime, field.TypeTime, value)
+	}
+	if ptuo.mutation.NextAvailableTimeCleared() {
+		_spec.ClearField(placetable.FieldNextAvailableTime, field.TypeTime)
+	}
+	if value, ok := ptuo.mutation.SpecialRequirements(); ok {
+		_spec.SetField(placetable.FieldSpecialRequirements, field.TypeJSON, value)
+	}
+	if value, ok := ptuo.mutation.AppendedSpecialRequirements(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, placetable.FieldSpecialRequirements, value)
+		})
+	}
+	if ptuo.mutation.SpecialRequirementsCleared() {
+		_spec.ClearField(placetable.FieldSpecialRequirements, field.TypeJSON)
+	}
+	if value, ok := ptuo.mutation.Layout(); ok {
+		_spec.SetField(placetable.FieldLayout, field.TypeString, value)
+	}
+	if ptuo.mutation.LayoutCleared() {
+		_spec.ClearField(placetable.FieldLayout, field.TypeString)
+	}
+	if value, ok := ptuo.mutation.ServiceArea(); ok {
+		_spec.SetField(placetable.FieldServiceArea, field.TypeString, value)
+	}
+	if ptuo.mutation.ServiceAreaCleared() {
+		_spec.ClearField(placetable.FieldServiceArea, field.TypeString)
+	}
+	if value, ok := ptuo.mutation.Ambient(); ok {
+		_spec.SetField(placetable.FieldAmbient, field.TypeString, value)
+	}
+	if ptuo.mutation.AmbientCleared() {
+		_spec.ClearField(placetable.FieldAmbient, field.TypeString)
+	}
+	if value, ok := ptuo.mutation.ImageURL(); ok {
+		_spec.SetField(placetable.FieldImageURL, field.TypeString, value)
+	}
+	if ptuo.mutation.ImageURLCleared() {
+		_spec.ClearField(placetable.FieldImageURL, field.TypeString)
+	}
+	if value, ok := ptuo.mutation.Rating(); ok {
+		_spec.SetField(placetable.FieldRating, field.TypeFloat64, value)
+	}
+	if value, ok := ptuo.mutation.AddedRating(); ok {
+		_spec.AddField(placetable.FieldRating, field.TypeFloat64, value)
+	}
+	if ptuo.mutation.RatingCleared() {
+		_spec.ClearField(placetable.FieldRating, field.TypeFloat64)
+	}
+	if value, ok := ptuo.mutation.Tags(); ok {
+		_spec.SetField(placetable.FieldTags, field.TypeJSON, value)
+	}
+	if value, ok := ptuo.mutation.AppendedTags(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, placetable.FieldTags, value)
+		})
+	}
+	if ptuo.mutation.TagsCleared() {
+		_spec.ClearField(placetable.FieldTags, field.TypeJSON)
+	}
+	if value, ok := ptuo.mutation.Metadata(); ok {
+		_spec.SetField(placetable.FieldMetadata, field.TypeJSON, value)
+	}
+	if ptuo.mutation.MetadataCleared() {
+		_spec.ClearField(placetable.FieldMetadata, field.TypeJSON)
 	}
 	if ptuo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
