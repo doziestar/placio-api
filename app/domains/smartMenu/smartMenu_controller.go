@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"placio-app/ent"
 	"placio-app/utility"
-	"placio-pkg/errors"
 	"placio-pkg/middleware"
 	"strconv"
 
@@ -306,37 +305,21 @@ func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 	if description, exists := form.Value["description"]; exists {
 		menu.Description = description[0]
 	}
-	if price, exists := form.Value["price"]; exists {
-		menu.Price = price[0]
-	}
-	if preparationTime, exists := form.Value["preparationTime"]; exists {
-		menu.PreparationTime = preparationTime[0]
-	}
-	if isAvailable, exists := form.Value["isAvailable"]; exists {
-		menu.IsAvailable = isAvailable[0] == "true"
-	}
+
 	if options, exists := form.Value["options"]; exists {
 		menu.Options = options[0]
 	}
 
-	log.Println("menu", menu)
-	if category, exists := form.Value["category"]; exists && len(category) > 0 {
-		log.Println("category", category[0])
-		medias := form.File["medias"]
-		log.Println("menu", menu, "category", category[0], "medias", medias)
+	medias := form.File["medias"]
 
-		createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, &menu, category[0], medias)
-		if err != nil {
-			log.Println("Error creating menu:", err)
-			return nil
-		}
-
-		ctx.JSON(http.StatusOK, utility.ProcessResponse(createdMenu))
-		return nil
+	createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, &menu, medias)
+	if err != nil {
+		log.Println("Error creating menu:", err)
+		return err
 	}
 
-	return errors.ErrUnprocessable
-
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(createdMenu))
+	return nil
 }
 
 // GetMenus returns a list of menus.
@@ -603,8 +586,10 @@ func (c *SmartMenuController) restoreTable(ctx *gin.Context) error {
 // @Router /tables/{tableId}/regenerate-qr [post]
 func (c *SmartMenuController) regenerateQRCode(ctx *gin.Context) error {
 	tableId := ctx.Param("tableId")
+	log.Println("regenerateQRCode", tableId)
 	qrcode, err := c.smartMenuService.RegenerateQRCode(ctx, tableId)
 	if err != nil {
+		log.Println("Error regenerating QR code:", err)
 		return err
 	}
 

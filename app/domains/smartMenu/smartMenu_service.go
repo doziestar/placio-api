@@ -31,7 +31,7 @@ type SmartMenuService struct {
 }
 
 type ISmartMenu interface {
-	CreateMenu(context.Context, string, *ent.Menu, string, []*multipart.FileHeader) (*ent.Menu, error)
+	CreateMenu(context.Context, string, *ent.Menu, []*multipart.FileHeader) (*ent.Menu, error)
 	GetMenus(context.Context, string) ([]*ent.Menu, error)
 	GetMenuByID(context.Context, string) (*ent.Menu, error)
 	UpdateMenu(context.Context, string, *ent.Menu) (*ent.Menu, error)
@@ -164,14 +164,7 @@ func (s *SmartMenuService) RestoreMenuItem(ctx context.Context, menuItemId strin
 	return nil, nil
 }
 
-func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuDto *ent.Menu, cat string, medias []*multipart.FileHeader) (*ent.Menu, error) {
-	lowercaseCategory := strings.ToLower(cat)
-
-	// Ensure the category exists in the database, creating it if necessary
-	catData, err := s.ensureCategoryExists(ctx, lowercaseCategory)
-	if err != nil {
-		return nil, err
-	}
+func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuDto *ent.Menu, medias []*multipart.FileHeader) (*ent.Menu, error) {
 
 	// Check if the menu already exists in the database for this place
 	existingMenu, err := s.client.Menu.
@@ -196,11 +189,7 @@ func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuD
 		SetID(uuid.New().String()).
 		SetName(menuDto.Name).
 		SetDescription(menuDto.Description).
-		SetPreparationTime(menuDto.PreparationTime).
 		SetOptions(menuDto.Options).
-		SetPrice(menuDto.Price).
-		SetIsAvailable(menuDto.IsAvailable).
-		AddCategories(catData).
 		AddPlaceIDs(placeId).
 		Save(ctx)
 
@@ -302,7 +291,8 @@ func (s *SmartMenuService) RestoreMenu(ctx context.Context, menuId string) (*ent
 }
 
 func (s *SmartMenuService) CreateTable(ctx context.Context, placeId, userId string, table *ent.PlaceTable) (*ent.PlaceTable, error) {
-	return s.client.PlaceTable.
+	log.Println("Creating table with number", table)
+	tableInfo, err := s.client.PlaceTable.
 		Create().
 		SetID(uuid.New().String()).
 		SetNumber(table.Number).
@@ -316,6 +306,13 @@ func (s *SmartMenuService) CreateTable(ctx context.Context, placeId, userId stri
 		SetCreatedByID(userId).
 		SetPlaceID(placeId).
 		Save(ctx)
+
+	if err != nil {
+		log.Println("Error creating table with number", table.Number, ":", err)
+		return nil, err
+	}
+
+	return tableInfo, nil
 }
 
 func (s *SmartMenuService) GetTables(ctx context.Context, placeId string) ([]*ent.PlaceTable, error) {
@@ -377,26 +374,39 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 		}).
 		Only(ctx)
 	if err != nil {
+		log.Println("Error fetching table with ID", tableId, ":", err)
 		return nil, fmt.Errorf("failed querying place table: %w", err)
 	}
 
+	log.Println("Regenerating QR code for table with ID", tableId, "and number", table.Number)
+	log.Println("Table:", table)
+
+	log.Println("Generating QR code URL", table.Edges.Place.Edges.Business.Edges.Websites.DomainName, table.Number, table.Edges.Place.ID)
 	url := fmt.Sprintf("https://placio.io/%s/menus/?table=%d&placeId=%s",
 		table.Edges.Place.Edges.Business.Edges.Websites.DomainName,
 		table.Number,
 		table.Edges.Place.ID,
 	)
+
+	log.Println("QR code URL:", url)
 	qr, err := qrcode.New(url, qrcode.Medium)
+	log.Println("QR code generated", err)
 	if err != nil {
+		log.Println("Error generating QR code:", err)
 		return nil, fmt.Errorf("failed to generate QR code: %w", err)
 	}
 
 	qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255}
 	qr.BackgroundColor = color.White
 
+	log.Println("Converting QR code to PNG")
 	png, err := qr.PNG(256)
 	if err != nil {
+		log.Println("Error converting QR code to PNG:", err)
 		return nil, fmt.Errorf("failed to convert QR code to PNG: %w", err)
 	}
+
+	log.Println("Uploading QR code to Cloudinary")
 
 	reader := bytes.NewReader(png)
 
@@ -410,11 +420,14 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 		return nil, fmt.Errorf("failed to upload QR code to Cloudinary: %w", err)
 	}
 
+	log.Println("QR code uploaded to Cloudinary")
+
 	updatedTable, err := s.client.PlaceTable.
 		UpdateOneID(table.ID).
 		SetQrCode(uploadResult.URL).
 		Save(ctx)
 	if err != nil {
+		log.Println("Error updating table with ID", tableId, ":", err)
 		return nil, fmt.Errorf("failed updating place table: %w", err)
 	}
 
