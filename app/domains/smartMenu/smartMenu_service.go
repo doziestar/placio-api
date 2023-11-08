@@ -14,6 +14,7 @@ import (
 	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
+	"placio-pkg/errors"
 	"strings"
 	"time"
 
@@ -183,52 +184,69 @@ func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId, userId strin
 
 	log.Println("Creating menu with name", menuDto.Name)
 
-	// Create and return the new menu
-	newMenu, err := s.client.Menu.
+	// Start creating the menu
+	menuCreate := s.client.Menu.
 		Create().
 		SetID(uuid.New().String()).
 		SetName(menuDto.Name).
 		SetDescription(menuDto.Description).
 		SetOptions(menuDto.Options).
-		SetFoodType(menuDto.FoodType).
 		SetMenuItemType(menuDto.MenuItemType).
-		SetDrinkType(menuDto.DrinkType).
 		SetIsAvailable(menuDto.IsAvailable).
 		AddPlaceIDs(placeId).
-		AddCreatedByIDs(userId).
-		Save(ctx)
+		AddCreatedByIDs(userId)
 
+	// Set the food type and dietary type if menuItemType is food
+	if menuDto.MenuItemType == menu.MenuItemType("food") {
+		if menuDto.FoodType == "" {
+			return nil, errors.New("foodType must be provided when menuItemType is 'food'")
+		}
+		if menuDto.DietaryType == "" {
+			return nil, errors.New("dietaryType must be provided when menuItemType is 'food'")
+		}
+		menuCreate = menuCreate.SetFoodType(menuDto.FoodType).SetDietaryType(menuDto.DietaryType)
+	}
+
+	// Set the drink type if menuItemType is drink
+	if menuDto.MenuItemType == menu.MenuItemType("drink") && menuDto.DrinkType != "" {
+		menuCreate = menuCreate.SetDrinkType(menuDto.DrinkType)
+	}
+
+	// Save the new menu
+	newMenu, err := menuCreate.Save(ctx)
 	if err != nil {
 		log.Println("Error creating menu with name", menuDto.Name, ":", err)
 		return nil, err
 	}
 
-	// Create the media for the menu
+	// Handle media files asynchronously if present
 	if len(medias) > 0 {
-		go func(menuID string, mediaFiles []*multipart.FileHeader) {
-			ctx := context.Background() // Use a background context for the asynchronous operation
-			log.Println("Uploading media for menu with ID", menuID)
-
-			media, err := s.mediaService.UploadAndCreateMedia(ctx, mediaFiles)
-			if err != nil {
-				log.Println("Error uploading media for menu with ID", menuID, ":", err)
-				return
-			}
-
-			_, err = s.client.Menu.
-				UpdateOneID(menuID).
-				AddMedia(media...).
-				Save(ctx)
-			if err != nil {
-				log.Println("Error adding media to menu with ID", menuID, ":", err)
-				return
-			}
-
-			log.Println("Media uploaded and added to menu with ID", menuID)
-		}(newMenu.ID, medias)
+		newCtx := context.Background() // Use a background context for the asynchronous operation
+		go s.handleMenuMedia(newCtx, newMenu.ID, medias)
 	}
 
 	return newMenu, nil
+}
+
+func (s *SmartMenuService) handleMenuMedia(ctx context.Context, menuID string, medias []*multipart.FileHeader) {
+	log.Println("Uploading media for menu with ID", menuID)
+
+	media, err := s.mediaService.UploadAndCreateMedia(ctx, medias)
+	if err != nil {
+		log.Println("Error uploading media for menu with ID", menuID, ":", err)
+		return
+	}
+
+	_, err = s.client.Menu.
+		UpdateOneID(menuID).
+		AddMedia(media...).
+		Save(ctx)
+	if err != nil {
+		log.Println("Error adding media to menu with ID", menuID, ":", err)
+		return
+	}
+
+	log.Println("Media uploaded and added to menu with ID", menuID)
 }
 
 func (s *SmartMenuService) ensureCategoryExists(ctx context.Context, categoryName string) (*ent.Category, error) {
@@ -282,6 +300,7 @@ func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId, userId string
 		SetMenuItemType(menu.MenuItemType).
 		SetDrinkType(menu.DrinkType).
 		SetIsAvailable(menu.IsAvailable).
+		SetDietaryType(menu.DietaryType).
 		SetUpdatedAt(time.Now().Local()).
 		AddUpdatedByIDs(userId).
 		Save(ctx)
