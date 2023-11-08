@@ -11,6 +11,8 @@ import (
 	"placio-app/ent/menu"
 	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
+	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -155,6 +157,20 @@ func (mc *MenuCreate) SetNillableIsAvailable(b *bool) *MenuCreate {
 	return mc
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (mc *MenuCreate) SetUpdatedAt(t time.Time) *MenuCreate {
+	mc.mutation.SetUpdatedAt(t)
+	return mc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableUpdatedAt(t *time.Time) *MenuCreate {
+	if t != nil {
+		mc.SetUpdatedAt(*t)
+	}
+	return mc
+}
+
 // SetID sets the "id" field.
 func (mc *MenuCreate) SetID(s string) *MenuCreate {
 	mc.mutation.SetID(s)
@@ -221,6 +237,36 @@ func (mc *MenuCreate) AddMedia(m ...*Media) *MenuCreate {
 	return mc.AddMediumIDs(ids...)
 }
 
+// AddCreatedByIDs adds the "created_by" edge to the User entity by IDs.
+func (mc *MenuCreate) AddCreatedByIDs(ids ...string) *MenuCreate {
+	mc.mutation.AddCreatedByIDs(ids...)
+	return mc
+}
+
+// AddCreatedBy adds the "created_by" edges to the User entity.
+func (mc *MenuCreate) AddCreatedBy(u ...*User) *MenuCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mc.AddCreatedByIDs(ids...)
+}
+
+// AddUpdatedByIDs adds the "updated_by" edge to the User entity by IDs.
+func (mc *MenuCreate) AddUpdatedByIDs(ids ...string) *MenuCreate {
+	mc.mutation.AddUpdatedByIDs(ids...)
+	return mc
+}
+
+// AddUpdatedBy adds the "updated_by" edges to the User entity.
+func (mc *MenuCreate) AddUpdatedBy(u ...*User) *MenuCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mc.AddUpdatedByIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (mc *MenuCreate) Mutation() *MenuMutation {
 	return mc.mutation
@@ -264,6 +310,10 @@ func (mc *MenuCreate) defaults() {
 		v := menu.DefaultIsAvailable
 		mc.mutation.SetIsAvailable(v)
 	}
+	if _, ok := mc.mutation.UpdatedAt(); !ok {
+		v := menu.DefaultUpdatedAt
+		mc.mutation.SetUpdatedAt(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -296,6 +346,9 @@ func (mc *MenuCreate) check() error {
 	}
 	if _, ok := mc.mutation.IsAvailable(); !ok {
 		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "Menu.is_available"`)}
+	}
+	if _, ok := mc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Menu.updated_at"`)}
 	}
 	if v, ok := mc.mutation.ID(); ok {
 		if err := menu.IDValidator(v); err != nil {
@@ -377,6 +430,10 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
 		_node.IsAvailable = value
 	}
+	if value, ok := mc.mutation.UpdatedAt(); ok {
+		_spec.SetField(menu.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if nodes := mc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -434,6 +491,38 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

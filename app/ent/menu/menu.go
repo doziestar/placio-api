@@ -4,6 +4,7 @@ package menu
 
 import (
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -34,6 +35,8 @@ const (
 	FieldDietaryType = "dietary_type"
 	// FieldIsAvailable holds the string denoting the is_available field in the database.
 	FieldIsAvailable = "is_available"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
@@ -42,6 +45,10 @@ const (
 	EdgeMenuItems = "menu_items"
 	// EdgeMedia holds the string denoting the media edge name in mutations.
 	EdgeMedia = "media"
+	// EdgeCreatedBy holds the string denoting the created_by edge name in mutations.
+	EdgeCreatedBy = "created_by"
+	// EdgeUpdatedBy holds the string denoting the updated_by edge name in mutations.
+	EdgeUpdatedBy = "updated_by"
 	// Table holds the table name of the menu in the database.
 	Table = "menus"
 	// PlaceTable is the table that holds the place relation/edge. The primary key declared below.
@@ -64,6 +71,20 @@ const (
 	// MediaInverseTable is the table name for the Media entity.
 	// It exists in this package in order to avoid circular dependency with the "media" package.
 	MediaInverseTable = "media"
+	// CreatedByTable is the table that holds the created_by relation/edge.
+	CreatedByTable = "users"
+	// CreatedByInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	CreatedByInverseTable = "users"
+	// CreatedByColumn is the table column denoting the created_by relation/edge.
+	CreatedByColumn = "menu_created_by"
+	// UpdatedByTable is the table that holds the updated_by relation/edge.
+	UpdatedByTable = "users"
+	// UpdatedByInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UpdatedByInverseTable = "users"
+	// UpdatedByColumn is the table column denoting the updated_by relation/edge.
+	UpdatedByColumn = "menu_updated_by"
 )
 
 // Columns holds all SQL columns for menu fields.
@@ -79,6 +100,7 @@ var Columns = []string{
 	FieldDrinkType,
 	FieldDietaryType,
 	FieldIsAvailable,
+	FieldUpdatedAt,
 }
 
 var (
@@ -111,6 +133,8 @@ var (
 	DefaultIsDeleted bool
 	// DefaultIsAvailable holds the default value on creation for the "is_available" field.
 	DefaultIsAvailable bool
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt time.Time
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -271,6 +295,11 @@ func ByIsAvailable(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsAvailable, opts...).ToFunc()
 }
 
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
 // ByPlaceCount orders the results by place count.
 func ByPlaceCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -326,6 +355,34 @@ func ByMedia(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newMediaStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCreatedByCount orders the results by created_by count.
+func ByCreatedByCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCreatedByStep(), opts...)
+	}
+}
+
+// ByCreatedBy orders the results by created_by terms.
+func ByCreatedBy(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatedByStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByUpdatedByCount orders the results by updated_by count.
+func ByUpdatedByCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUpdatedByStep(), opts...)
+	}
+}
+
+// ByUpdatedBy orders the results by updated_by terms.
+func ByUpdatedBy(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUpdatedByStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPlaceStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -352,5 +409,19 @@ func newMediaStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MediaInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, MediaTable, MediaPrimaryKey...),
+	)
+}
+func newCreatedByStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatedByInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CreatedByTable, CreatedByColumn),
+	)
+}
+func newUpdatedByStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UpdatedByInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, UpdatedByTable, UpdatedByColumn),
 	)
 }

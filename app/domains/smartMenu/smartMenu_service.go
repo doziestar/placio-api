@@ -31,10 +31,10 @@ type SmartMenuService struct {
 }
 
 type ISmartMenu interface {
-	CreateMenu(context.Context, string, *ent.Menu, []*multipart.FileHeader) (*ent.Menu, error)
+	CreateMenu(context.Context, string, string, *ent.Menu, []*multipart.FileHeader) (*ent.Menu, error)
 	GetMenus(context.Context, string) ([]*ent.Menu, error)
 	GetMenuByID(context.Context, string) (*ent.Menu, error)
-	UpdateMenu(context.Context, string, *ent.Menu) (*ent.Menu, error)
+	UpdateMenu(context.Context, string, string, *ent.Menu) (*ent.Menu, error)
 	DeleteMenu(context.Context, string) error
 	RestoreMenu(context.Context, string) (*ent.Menu, error)
 
@@ -164,7 +164,7 @@ func (s *SmartMenuService) RestoreMenuItem(ctx context.Context, menuItemId strin
 	return nil, nil
 }
 
-func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuDto *ent.Menu, medias []*multipart.FileHeader) (*ent.Menu, error) {
+func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId, userId string, menuDto *ent.Menu, medias []*multipart.FileHeader) (*ent.Menu, error) {
 
 	// Check if the menu already exists in the database for this place
 	existingMenu, err := s.client.Menu.
@@ -190,7 +190,12 @@ func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuD
 		SetName(menuDto.Name).
 		SetDescription(menuDto.Description).
 		SetOptions(menuDto.Options).
+		SetFoodType(menuDto.FoodType).
+		SetMenuItemType(menuDto.MenuItemType).
+		SetDrinkType(menuDto.DrinkType).
+		SetIsAvailable(menuDto.IsAvailable).
 		AddPlaceIDs(placeId).
+		AddCreatedByIDs(userId).
 		Save(ctx)
 
 	if err != nil {
@@ -267,10 +272,18 @@ func (s *SmartMenuService) GetMenuByID(ctx context.Context, menuId string) (*ent
 		Only(ctx)
 }
 
-func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId string, menu *ent.Menu) (*ent.Menu, error) {
+func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId, userId string, menu *ent.Menu) (*ent.Menu, error) {
 	return s.client.Menu.
 		UpdateOneID(menuId).
 		SetName(menu.Name).
+		SetDescription(menu.Description).
+		SetOptions(menu.Options).
+		SetFoodType(menu.FoodType).
+		SetMenuItemType(menu.MenuItemType).
+		SetDrinkType(menu.DrinkType).
+		SetIsAvailable(menu.IsAvailable).
+		SetUpdatedAt(time.Now().Local()).
+		AddUpdatedByIDs(userId).
 		Save(ctx)
 }
 

@@ -365,6 +365,10 @@ func init() {
 	menuDescIsAvailable := menuFields[10].Descriptor()
 	// menu.DefaultIsAvailable holds the default value on creation for the is_available field.
 	menu.DefaultIsAvailable = menuDescIsAvailable.Default.(bool)
+	// menuDescUpdatedAt is the schema descriptor for updated_at field.
+	menuDescUpdatedAt := menuFields[11].Descriptor()
+	// menu.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	menu.DefaultUpdatedAt = menuDescUpdatedAt.Default.(time.Time)
 	// menuDescID is the schema descriptor for id field.
 	menuDescID := menuFields[0].Descriptor()
 	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.

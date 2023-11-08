@@ -709,6 +709,7 @@ var (
 		{Name: "drink_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"alcoholic", "non-alcoholic", "both"}},
 		{Name: "dietary_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"vegan", "vegetarian", "non-vegetarian", "both"}},
 		{Name: "is_available", Type: field.TypeBool, Default: true},
+		{Name: "updated_at", Type: field.TypeTime},
 	}
 	// MenusTable holds the schema information for the "menus" table.
 	MenusTable = &schema.Table{
@@ -1480,12 +1481,28 @@ var (
 		{Name: "role", Type: field.TypeEnum, Enums: []string{"user", "admin", "business_owner", "staff"}, Default: "user"},
 		{Name: "permissions", Type: field.TypeJSON, Nullable: true},
 		{Name: "is_premium", Type: field.TypeBool, Default: false},
+		{Name: "menu_created_by", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "menu_updated_by", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "users_menus_created_by",
+				Columns:    []*schema.Column{UsersColumns[22]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "users_menus_updated_by",
+				Columns:    []*schema.Column{UsersColumns[23]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// UserBusinessesColumns holds the columns for the "user_businesses" table.
 	UserBusinessesColumns = []*schema.Column{
@@ -2450,6 +2467,8 @@ func init() {
 	TicketOptionsTable.ForeignKeys[1].RefTable = TicketsTable
 	TransactionHistoriesTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	TransactionHistoriesTable.ForeignKeys[1].RefTable = UsersTable
+	UsersTable.ForeignKeys[0].RefTable = MenusTable
+	UsersTable.ForeignKeys[1].RefTable = MenusTable
 	UserBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	UserBusinessesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable

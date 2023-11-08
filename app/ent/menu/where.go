@@ -4,6 +4,7 @@ package menu
 
 import (
 	"placio-app/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -92,6 +93,11 @@ func Options(v string) predicate.Menu {
 // IsAvailable applies equality check predicate on the "is_available" field. It's identical to IsAvailableEQ.
 func IsAvailable(v bool) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldIsAvailable, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -524,6 +530,46 @@ func IsAvailableNEQ(v bool) predicate.Menu {
 	return predicate.Menu(sql.FieldNEQ(FieldIsAvailable, v))
 }
 
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.Menu {
+	return predicate.Menu(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
 // HasPlace applies the HasEdge predicate on the "place" edge.
 func HasPlace() predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
@@ -608,6 +654,52 @@ func HasMedia() predicate.Menu {
 func HasMediaWith(preds ...predicate.Media) predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
 		step := newMediaStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCreatedBy applies the HasEdge predicate on the "created_by" edge.
+func HasCreatedBy() predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CreatedByTable, CreatedByColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCreatedByWith applies the HasEdge predicate on the "created_by" edge with a given conditions (other predicates).
+func HasCreatedByWith(preds ...predicate.User) predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := newCreatedByStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUpdatedBy applies the HasEdge predicate on the "updated_by" edge.
+func HasUpdatedBy() predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, UpdatedByTable, UpdatedByColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUpdatedByWith applies the HasEdge predicate on the "updated_by" edge with a given conditions (other predicates).
+func HasUpdatedByWith(preds ...predicate.User) predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := newUpdatedByStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

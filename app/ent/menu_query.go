@@ -13,6 +13,7 @@ import (
 	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -30,6 +31,8 @@ type MenuQuery struct {
 	withCategories *CategoryQuery
 	withMenuItems  *MenuItemQuery
 	withMedia      *MediaQuery
+	withCreatedBy  *UserQuery
+	withUpdatedBy  *UserQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -147,6 +150,50 @@ func (mq *MenuQuery) QueryMedia() *MediaQuery {
 			sqlgraph.From(menu.Table, menu.FieldID, selector),
 			sqlgraph.To(media.Table, media.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, menu.MediaTable, menu.MediaPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCreatedBy chains the current query on the "created_by" edge.
+func (mq *MenuQuery) QueryCreatedBy() *UserQuery {
+	query := (&UserClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, menu.CreatedByTable, menu.CreatedByColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUpdatedBy chains the current query on the "updated_by" edge.
+func (mq *MenuQuery) QueryUpdatedBy() *UserQuery {
+	query := (&UserClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, menu.UpdatedByTable, menu.UpdatedByColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -350,6 +397,8 @@ func (mq *MenuQuery) Clone() *MenuQuery {
 		withCategories: mq.withCategories.Clone(),
 		withMenuItems:  mq.withMenuItems.Clone(),
 		withMedia:      mq.withMedia.Clone(),
+		withCreatedBy:  mq.withCreatedBy.Clone(),
+		withUpdatedBy:  mq.withUpdatedBy.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -397,6 +446,28 @@ func (mq *MenuQuery) WithMedia(opts ...func(*MediaQuery)) *MenuQuery {
 		opt(query)
 	}
 	mq.withMedia = query
+	return mq
+}
+
+// WithCreatedBy tells the query-builder to eager-load the nodes that are connected to
+// the "created_by" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MenuQuery) WithCreatedBy(opts ...func(*UserQuery)) *MenuQuery {
+	query := (&UserClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withCreatedBy = query
+	return mq
+}
+
+// WithUpdatedBy tells the query-builder to eager-load the nodes that are connected to
+// the "updated_by" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MenuQuery) WithUpdatedBy(opts ...func(*UserQuery)) *MenuQuery {
+	query := (&UserClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withUpdatedBy = query
 	return mq
 }
 
@@ -478,11 +549,13 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 	var (
 		nodes       = []*Menu{}
 		_spec       = mq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [6]bool{
 			mq.withPlace != nil,
 			mq.withCategories != nil,
 			mq.withMenuItems != nil,
 			mq.withMedia != nil,
+			mq.withCreatedBy != nil,
+			mq.withUpdatedBy != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -528,6 +601,20 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 		if err := mq.loadMedia(ctx, query, nodes,
 			func(n *Menu) { n.Edges.Media = []*Media{} },
 			func(n *Menu, e *Media) { n.Edges.Media = append(n.Edges.Media, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withCreatedBy; query != nil {
+		if err := mq.loadCreatedBy(ctx, query, nodes,
+			func(n *Menu) { n.Edges.CreatedBy = []*User{} },
+			func(n *Menu, e *User) { n.Edges.CreatedBy = append(n.Edges.CreatedBy, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withUpdatedBy; query != nil {
+		if err := mq.loadUpdatedBy(ctx, query, nodes,
+			func(n *Menu) { n.Edges.UpdatedBy = []*User{} },
+			func(n *Menu, e *User) { n.Edges.UpdatedBy = append(n.Edges.UpdatedBy, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -775,6 +862,68 @@ func (mq *MenuQuery) loadMedia(ctx context.Context, query *MediaQuery, nodes []*
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (mq *MenuQuery) loadCreatedBy(ctx context.Context, query *UserQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *User)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Menu)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.User(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(menu.CreatedByColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.menu_created_by
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "menu_created_by" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "menu_created_by" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (mq *MenuQuery) loadUpdatedBy(ctx context.Context, query *UserQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *User)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Menu)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.User(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(menu.UpdatedByColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.menu_updated_by
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "menu_updated_by" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "menu_updated_by" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

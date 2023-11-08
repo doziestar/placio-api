@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"placio-app/ent/menu"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -36,6 +37,8 @@ type Menu struct {
 	DietaryType menu.DietaryType `json:"dietaryType,omitempty"`
 	// IsAvailable holds the value of the "is_available" field.
 	IsAvailable bool `json:"is_available,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuQuery when eager-loading is set.
 	Edges        MenuEdges `json:"edges"`
@@ -52,9 +55,13 @@ type MenuEdges struct {
 	MenuItems []*MenuItem `json:"menu_items,omitempty"`
 	// Media holds the value of the media edge.
 	Media []*Media `json:"media,omitempty"`
+	// CreatedBy holds the value of the created_by edge.
+	CreatedBy []*User `json:"created_by,omitempty"`
+	// UpdatedBy holds the value of the updated_by edge.
+	UpdatedBy []*User `json:"updated_by,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [6]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -93,6 +100,24 @@ func (e MenuEdges) MediaOrErr() ([]*Media, error) {
 	return nil, &NotLoadedError{edge: "media"}
 }
 
+// CreatedByOrErr returns the CreatedBy value or an error if the edge
+// was not loaded in eager-loading.
+func (e MenuEdges) CreatedByOrErr() ([]*User, error) {
+	if e.loadedTypes[4] {
+		return e.CreatedBy, nil
+	}
+	return nil, &NotLoadedError{edge: "created_by"}
+}
+
+// UpdatedByOrErr returns the UpdatedBy value or an error if the edge
+// was not loaded in eager-loading.
+func (e MenuEdges) UpdatedByOrErr() ([]*User, error) {
+	if e.loadedTypes[5] {
+		return e.UpdatedBy, nil
+	}
+	return nil, &NotLoadedError{edge: "updated_by"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Menu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -102,6 +127,8 @@ func (*Menu) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case menu.FieldID, menu.FieldName, menu.FieldDeletedAt, menu.FieldDescription, menu.FieldOptions, menu.FieldFoodType, menu.FieldMenuItemType, menu.FieldDrinkType, menu.FieldDietaryType:
 			values[i] = new(sql.NullString)
+		case menu.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -183,6 +210,12 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.IsAvailable = value.Bool
 			}
+		case menu.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				m.UpdatedAt = value.Time
+			}
 		default:
 			m.selectValues.Set(columns[i], values[i])
 		}
@@ -214,6 +247,16 @@ func (m *Menu) QueryMenuItems() *MenuItemQuery {
 // QueryMedia queries the "media" edge of the Menu entity.
 func (m *Menu) QueryMedia() *MediaQuery {
 	return NewMenuClient(m.config).QueryMedia(m)
+}
+
+// QueryCreatedBy queries the "created_by" edge of the Menu entity.
+func (m *Menu) QueryCreatedBy() *UserQuery {
+	return NewMenuClient(m.config).QueryCreatedBy(m)
+}
+
+// QueryUpdatedBy queries the "updated_by" edge of the Menu entity.
+func (m *Menu) QueryUpdatedBy() *UserQuery {
+	return NewMenuClient(m.config).QueryUpdatedBy(m)
 }
 
 // Update returns a builder for updating this Menu.
@@ -268,6 +311,9 @@ func (m *Menu) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_available=")
 	builder.WriteString(fmt.Sprintf("%v", m.IsAvailable))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

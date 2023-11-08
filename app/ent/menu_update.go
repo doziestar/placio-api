@@ -12,6 +12,8 @@ import (
 	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -205,6 +207,20 @@ func (mu *MenuUpdate) SetNillableIsAvailable(b *bool) *MenuUpdate {
 	return mu
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (mu *MenuUpdate) SetUpdatedAt(t time.Time) *MenuUpdate {
+	mu.mutation.SetUpdatedAt(t)
+	return mu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableUpdatedAt(t *time.Time) *MenuUpdate {
+	if t != nil {
+		mu.SetUpdatedAt(*t)
+	}
+	return mu
+}
+
 // AddPlaceIDs adds the "place" edge to the Place entity by IDs.
 func (mu *MenuUpdate) AddPlaceIDs(ids ...string) *MenuUpdate {
 	mu.mutation.AddPlaceIDs(ids...)
@@ -263,6 +279,36 @@ func (mu *MenuUpdate) AddMedia(m ...*Media) *MenuUpdate {
 		ids[i] = m[i].ID
 	}
 	return mu.AddMediumIDs(ids...)
+}
+
+// AddCreatedByIDs adds the "created_by" edge to the User entity by IDs.
+func (mu *MenuUpdate) AddCreatedByIDs(ids ...string) *MenuUpdate {
+	mu.mutation.AddCreatedByIDs(ids...)
+	return mu
+}
+
+// AddCreatedBy adds the "created_by" edges to the User entity.
+func (mu *MenuUpdate) AddCreatedBy(u ...*User) *MenuUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mu.AddCreatedByIDs(ids...)
+}
+
+// AddUpdatedByIDs adds the "updated_by" edge to the User entity by IDs.
+func (mu *MenuUpdate) AddUpdatedByIDs(ids ...string) *MenuUpdate {
+	mu.mutation.AddUpdatedByIDs(ids...)
+	return mu
+}
+
+// AddUpdatedBy adds the "updated_by" edges to the User entity.
+func (mu *MenuUpdate) AddUpdatedBy(u ...*User) *MenuUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mu.AddUpdatedByIDs(ids...)
 }
 
 // Mutation returns the MenuMutation object of the builder.
@@ -352,6 +398,48 @@ func (mu *MenuUpdate) RemoveMedia(m ...*Media) *MenuUpdate {
 		ids[i] = m[i].ID
 	}
 	return mu.RemoveMediumIDs(ids...)
+}
+
+// ClearCreatedBy clears all "created_by" edges to the User entity.
+func (mu *MenuUpdate) ClearCreatedBy() *MenuUpdate {
+	mu.mutation.ClearCreatedBy()
+	return mu
+}
+
+// RemoveCreatedByIDs removes the "created_by" edge to User entities by IDs.
+func (mu *MenuUpdate) RemoveCreatedByIDs(ids ...string) *MenuUpdate {
+	mu.mutation.RemoveCreatedByIDs(ids...)
+	return mu
+}
+
+// RemoveCreatedBy removes "created_by" edges to User entities.
+func (mu *MenuUpdate) RemoveCreatedBy(u ...*User) *MenuUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mu.RemoveCreatedByIDs(ids...)
+}
+
+// ClearUpdatedBy clears all "updated_by" edges to the User entity.
+func (mu *MenuUpdate) ClearUpdatedBy() *MenuUpdate {
+	mu.mutation.ClearUpdatedBy()
+	return mu
+}
+
+// RemoveUpdatedByIDs removes the "updated_by" edge to User entities by IDs.
+func (mu *MenuUpdate) RemoveUpdatedByIDs(ids ...string) *MenuUpdate {
+	mu.mutation.RemoveUpdatedByIDs(ids...)
+	return mu
+}
+
+// RemoveUpdatedBy removes "updated_by" edges to User entities.
+func (mu *MenuUpdate) RemoveUpdatedBy(u ...*User) *MenuUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return mu.RemoveUpdatedByIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -468,6 +556,9 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := mu.mutation.IsAvailable(); ok {
 		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
+	}
+	if value, ok := mu.mutation.UpdatedAt(); ok {
+		_spec.SetField(menu.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if mu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -642,6 +733,96 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedCreatedByIDs(); len(nodes) > 0 && !mu.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedUpdatedByIDs(); len(nodes) > 0 && !mu.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -843,6 +1024,20 @@ func (muo *MenuUpdateOne) SetNillableIsAvailable(b *bool) *MenuUpdateOne {
 	return muo
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (muo *MenuUpdateOne) SetUpdatedAt(t time.Time) *MenuUpdateOne {
+	muo.mutation.SetUpdatedAt(t)
+	return muo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableUpdatedAt(t *time.Time) *MenuUpdateOne {
+	if t != nil {
+		muo.SetUpdatedAt(*t)
+	}
+	return muo
+}
+
 // AddPlaceIDs adds the "place" edge to the Place entity by IDs.
 func (muo *MenuUpdateOne) AddPlaceIDs(ids ...string) *MenuUpdateOne {
 	muo.mutation.AddPlaceIDs(ids...)
@@ -901,6 +1096,36 @@ func (muo *MenuUpdateOne) AddMedia(m ...*Media) *MenuUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return muo.AddMediumIDs(ids...)
+}
+
+// AddCreatedByIDs adds the "created_by" edge to the User entity by IDs.
+func (muo *MenuUpdateOne) AddCreatedByIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.AddCreatedByIDs(ids...)
+	return muo
+}
+
+// AddCreatedBy adds the "created_by" edges to the User entity.
+func (muo *MenuUpdateOne) AddCreatedBy(u ...*User) *MenuUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return muo.AddCreatedByIDs(ids...)
+}
+
+// AddUpdatedByIDs adds the "updated_by" edge to the User entity by IDs.
+func (muo *MenuUpdateOne) AddUpdatedByIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.AddUpdatedByIDs(ids...)
+	return muo
+}
+
+// AddUpdatedBy adds the "updated_by" edges to the User entity.
+func (muo *MenuUpdateOne) AddUpdatedBy(u ...*User) *MenuUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return muo.AddUpdatedByIDs(ids...)
 }
 
 // Mutation returns the MenuMutation object of the builder.
@@ -990,6 +1215,48 @@ func (muo *MenuUpdateOne) RemoveMedia(m ...*Media) *MenuUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return muo.RemoveMediumIDs(ids...)
+}
+
+// ClearCreatedBy clears all "created_by" edges to the User entity.
+func (muo *MenuUpdateOne) ClearCreatedBy() *MenuUpdateOne {
+	muo.mutation.ClearCreatedBy()
+	return muo
+}
+
+// RemoveCreatedByIDs removes the "created_by" edge to User entities by IDs.
+func (muo *MenuUpdateOne) RemoveCreatedByIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.RemoveCreatedByIDs(ids...)
+	return muo
+}
+
+// RemoveCreatedBy removes "created_by" edges to User entities.
+func (muo *MenuUpdateOne) RemoveCreatedBy(u ...*User) *MenuUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return muo.RemoveCreatedByIDs(ids...)
+}
+
+// ClearUpdatedBy clears all "updated_by" edges to the User entity.
+func (muo *MenuUpdateOne) ClearUpdatedBy() *MenuUpdateOne {
+	muo.mutation.ClearUpdatedBy()
+	return muo
+}
+
+// RemoveUpdatedByIDs removes the "updated_by" edge to User entities by IDs.
+func (muo *MenuUpdateOne) RemoveUpdatedByIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.RemoveUpdatedByIDs(ids...)
+	return muo
+}
+
+// RemoveUpdatedBy removes "updated_by" edges to User entities.
+func (muo *MenuUpdateOne) RemoveUpdatedBy(u ...*User) *MenuUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return muo.RemoveUpdatedByIDs(ids...)
 }
 
 // Where appends a list predicates to the MenuUpdate builder.
@@ -1136,6 +1403,9 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if value, ok := muo.mutation.IsAvailable(); ok {
 		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
+	}
+	if value, ok := muo.mutation.UpdatedAt(); ok {
+		_spec.SetField(menu.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if muo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1310,6 +1580,96 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedCreatedByIDs(); len(nodes) > 0 && !muo.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CreatedByTable,
+			Columns: []string{menu.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedUpdatedByIDs(); len(nodes) > 0 && !muo.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.UpdatedByTable,
+			Columns: []string{menu.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

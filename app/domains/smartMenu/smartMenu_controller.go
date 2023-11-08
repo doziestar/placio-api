@@ -293,6 +293,8 @@ func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 	placeId := ctx.Param("placeId")
 	var menuData ent.Menu
 
+	userId := ctx.MustGet("user").(string)
+
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		log.Println("Error parsing form:", err)
@@ -334,7 +336,7 @@ func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 
 	medias := form.File["medias"]
 
-	createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, &menuData, medias)
+	createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, userId, &menuData, medias)
 	if err != nil {
 		log.Println("Error creating menuData:", err)
 		return err
@@ -400,10 +402,12 @@ func (c *SmartMenuController) getMenuByID(ctx *gin.Context) error {
 func (c *SmartMenuController) updateMenu(ctx *gin.Context) error {
 	menuId := ctx.Param("menuId")
 	var menu *ent.Menu
+
+	userId := ctx.MustGet("user").(string)
 	if err := ctx.ShouldBindJSON(&menu); err != nil {
 		return err
 	}
-	updatedMenu, err := c.smartMenuService.UpdateMenu(ctx, menuId, menu)
+	updatedMenu, err := c.smartMenuService.UpdateMenu(ctx, menuId, userId, menu)
 	if err != nil {
 		return err
 	}

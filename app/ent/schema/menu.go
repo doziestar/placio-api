@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"time"
 )
 
 type Menu struct {
@@ -27,6 +28,7 @@ func (Menu) Fields() []ent.Field {
 		field.Enum("drinkType").Optional().Values("alcoholic", "non-alcoholic", "both"),
 		field.Enum("dietaryType").Optional().Values("vegan", "vegetarian", "non-vegetarian", "both"),
 		field.Bool("is_available").Default(true),
+		field.Time("updated_at").Default(time.Now().Local()).Optional(),
 	}
 }
 
@@ -38,7 +40,8 @@ func (Menu) Edges() []ent.Edge {
 		edge.To("categories", Category.Type),
 		edge.To("menu_items", MenuItem.Type),
 		edge.To("media", Media.Type),
-		// add any other edges that a Menu would have
+		edge.To("created_by", User.Type),
+		edge.To("updated_by", User.Type),
 	}
 }
 
