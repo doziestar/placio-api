@@ -264,17 +264,16 @@ func (s *SmartMenuService) ensureCategoryExists(ctx context.Context, categoryNam
 }
 
 func (s *SmartMenuService) GetMenus(ctx context.Context, placeId string) ([]*ent.Menu, error) {
-	return s.client.Place.
+	return s.client.Menu.
 		Query().
-		Where(place.ID(placeId)).
-		QueryMenus().
-		WithCategories().
+		Where(menu.HasPlaceWith(place.ID(placeId))).
+		Where(menu.IsDeleted(false)).
 		WithMedia().
-		WithMenuItems().
 		WithPlace(func(q *ent.PlaceQuery) {
-			q.WithBusiness()
-		}).
-		All(ctx)
+			q.WithBusiness(func(bq *ent.BusinessQuery) {
+			})
+			q.WithMedias()
+		}).All(ctx)
 }
 
 func (s *SmartMenuService) GetMenuByID(ctx context.Context, menuId string) (*ent.Menu, error) {
@@ -299,7 +298,6 @@ func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId, userId string
     // Prepare update operation
     updateOp := s.client.Menu.UpdateOneID(menuId)
 
-    // Set fields if they are provided (example shown for Name and Description)
     if menuData.Name != "" {
         updateOp = updateOp.SetName(menuData.Name)
     }
@@ -318,6 +316,7 @@ func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId, userId string
         AddUpdatedByIDs(userId)
 
     // Handle menu type-specific updates
+	if menuData.MenuItemType != "" {
     switch menuData.MenuItemType {
     case menu.MenuItemType("food"):
         if menuData.FoodType == "" || menuData.DietaryType == "" {
@@ -331,6 +330,7 @@ func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId, userId string
         }
         updateOp = updateOp.SetDrinkType(menuData.DrinkType)
     }
+	}
 
     // Perform the update
     updatedMenu, err := updateOp.Save(ctx)
