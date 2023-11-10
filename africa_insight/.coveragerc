@@ -1,0 +1,2 @@
+[run]
+omit = ./africa_insight/main.py,*/__init__.py

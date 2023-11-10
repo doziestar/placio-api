@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
-	"github.com/google/uuid"
 	"log"
 	"mime/multipart"
 	"placio-app/ent"
 	"sync"
+
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
+	"github.com/google/uuid"
 )
 
 type MediaService interface {
@@ -62,6 +63,7 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 			}
 			defer openedFile.Close()
 
+			log.Println("uploading media: ", openedFile)
 			uploadResp, err := s.cloud.Upload.Upload(ctx, openedFile, uploader.UploadParams{})
 			if err != nil {
 				log.Println("Error uploading file", err)
@@ -89,6 +91,7 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 		select {
 		case info, ok := <-ch:
 			if ok {
+				// log.Println("media uploaded: ", mediaInfos[0].URL)
 				mediaInfos = append(mediaInfos, info)
 			}
 		case err, ok := <-errCh:
@@ -146,6 +149,8 @@ func (s *MediaServiceImpl) UploadAndCreateMedia(ctx context.Context, files []*mu
 		return nil, fmt.Errorf("failed uploading files: %w", err)
 	}
 
+	log.Println("image uploaded successfully: ", uploadedFiles)
+
 	// Prepare media creations
 	mediaCreations := make([]*ent.MediaCreate, len(uploadedFiles))
 
@@ -165,7 +170,7 @@ func (s *MediaServiceImpl) UploadAndCreateMedia(ctx context.Context, files []*mu
 		return nil, err
 	}
 
-	log.Println("upload complete")
+	log.Println("upload complete", mediaList)
 
 	return mediaList, nil
 }

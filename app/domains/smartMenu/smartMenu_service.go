@@ -92,6 +92,10 @@ func (s *SmartMenuService) CreateMenuItem(ctx context.Context, menuId string, me
 		SetDescription(menuItemDto.Description).
 		SetPrice(menuItemDto.Price).
 		SetIsAvailable(menuItemDto.IsAvailable).
+		SetAvailableFrom(menuItemDto.AvailableFrom).
+		SetOptions(menuItemDto.Options).
+		SetPrice(menuItemDto.Price).
+		SetIsNew(true).
 		AddMenuIDs(menuId).
 		Save(ctx)
 	if err != nil {
