@@ -13,6 +13,8 @@ import (
 	"github.com/getsentry/sentry-go"
 )
 
+// Initialises the gin engine and starts the http server.
+// It also initializes sentry for error tracking and performance monitoring.
 func Initialize(app *gin.Engine) {
 
 	err := sentry.Init(sentry.ClientOptions{

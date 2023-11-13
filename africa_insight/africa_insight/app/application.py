@@ -55,6 +55,6 @@ def create_application() -> FastAPI:
     application.add_middleware(BaseHTTPMiddleware, dispatch=log_time)
 
     # create tables in db
-    create_db_tables()
+    # create_db_tables()
 
     return application

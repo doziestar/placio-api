@@ -63,7 +63,7 @@ func main() {
 
 	// initialize middleware
 	cmd.Middleware(app)
-
+	
 	// initialize db
 	client := db.EntClient(context.Background())
 

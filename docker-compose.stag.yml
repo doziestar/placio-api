@@ -4,7 +4,6 @@ volumes:
   grafana_data:
   portainer_data:
 
-
 services:
   placio-proxy:
     image: traefik:latest
@@ -112,10 +111,10 @@ services:
       - ./prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prod.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - "--config.file=/etc/prometheus/prod.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
     ports:
       - "9090:9090"
     labels:
@@ -178,14 +177,63 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - portainer_data:/data
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=default'
-      - 'traefik.http.routers.portainer-secure.entrypoints=websecure'
-      - 'traefik.http.routers.portainer-secure.rule=Host(`portainer.palnight.com`)'
-      - 'traefik.http.routers.portainer-secure.service=portainer'
-      - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
+      - "traefik.enable=true"
+      - "traefik.docker.network=default"
+      - "traefik.http.routers.portainer-secure.entrypoints=websecure"
+      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.palnight.com`)"
+      - "traefik.http.routers.portainer-secure.service=portainer"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: "918273645dozie"
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    networks:
+      - traefik-public
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  africa_insight:
+    build:
+      context: ./africa_insight
+      dockerfile: ./docker/Dockerfile
+      args:
+        DB_CONNECTION: "postgresql://postgres:918273645dozie@db:5432/postgres"
+        MODE: "TEST"
+    entrypoint: >
+      sh -c "sleep 5 && python main.py"
+    volumes:
+      - ../:/app/
+    environment:
+      - PYTHONPATH=/app/africa_insight
+    ports:
+      - "8383:8383"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://gpt.palnight.com/api/v1/version"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - traefik-public
+    links:
+      - "db:db"
+    depends_on:
+      - db
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.africa_insight-secure.entrypoints=websecure"
+      - "traefik.http.routers.africa_insight-secure.rule=Host(`gpt.palnight.com`)"
+      - "traefik.http.routers.africa_insight-secure.service=africa_insight"
+      - "traefik.http.services.africa_insight.loadbalancer.server.port=8383"
 
 networks:
   default:
