@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"io"
 	"log"
-	"math/rand"
 	"mime/multipart"
 	"path/filepath"
 	"placio-app/ent"
@@ -15,12 +16,17 @@ import (
 	firebase "firebase.google.com/go"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/google/uuid"
 	"google.golang.org/api/option"
+	// firebase "firebase.google.com/go"
+	// "github.com/aws/aws-sdk-go/aws"
+	// "github.com/aws/aws-sdk-go/aws/session"
+	// "github.com/aws/aws-sdk-go/service/s3/s3manager"
+	// "github.com/cloudinary/cloudinary-go/v2"
+	// "github.com/cloudinary/cloudinary-go/v2/api/uploader"
+	// "github.com/google/uuid"
+	// "google.golang.org/api/option"
 )
 
 type MediaService interface {
@@ -39,11 +45,41 @@ type MediaInfo struct {
 	MediaType string
 }
 
+// const firebaseConfig = {
+//   apiKey: "AIzaSyC5bn4Rg5Lbl2agYj6IKoO1jyZc7p2DAQE",
+//   authDomain: "placio-383019.firebaseapp.com",
+//   projectId: "placio-383019",
+//   storageBucket: "placio-383019.appspot.com",
+//   messagingSenderId: "669181149397",
+//   appId: "1:669181149397:web:99fab16681f8d93ef4625c",
+//   measurementId: "G-VV9ZPXL9TV"
+// };
+
+// Import the functions you need from the SDKs you need
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// // TODO: Add SDKs for Firebase products that you want to use
+// // https://firebase.google.com/docs/web/setup#available-libraries
+
+// // Your web app's Firebase configuration
+// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// const firebaseConfig = {
+//   apiKey: "AIzaSyC5bn4Rg5Lbl2agYj6IKoO1jyZc7p2DAQE",
+//   authDomain: "placio-383019.firebaseapp.com",
+//   projectId: "placio-383019",
+//   storageBucket: "placio-383019.appspot.com",
+//   messagingSenderId: "669181149397",
+//   appId: "1:669181149397:web:99fab16681f8d93ef4625c",
+//   measurementId: "G-VV9ZPXL9TV"
+// };
+
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
+
 type MediaServiceImpl struct {
 	client *ent.Client
 	cloud  *cloudinary.Cloudinary
-	s3Client    *s3.S3
-    firebase    *firebase.App
 }
 
 func NewMediaService(client *ent.Client, cloud *cloudinary.Cloudinary) MediaService {
@@ -51,25 +87,25 @@ func NewMediaService(client *ent.Client, cloud *cloudinary.Cloudinary) MediaServ
 }
 
 func (s *MediaServiceImpl) uploadToS3(ctx context.Context, file *multipart.FileHeader) ([]MediaInfo, error) {
-    sess, err := session.NewSession(&aws.Config{
-        Region: aws.String("your-region"), // e.g., "us-west-2"
-    })
-    if err != nil {
-        return nil, fmt.Errorf("failed to create AWS session: %w", err)
-    }
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-west-2"), // e.g., "us-west-2"
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create AWS session: %w", err)
+	}
 
-    uploader := s3manager.NewUploader(sess)
+	uploader := s3manager.NewUploader(sess)
 
-    var mediaInfos []MediaInfo
+	var mediaInfos []MediaInfo
 	openedFile, err := file.Open()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
 	}
 
-	key := "your-path-prefix/" + filepath.Base(file.Filename) // Customize your S3 key path
+	key := "placio/" + filepath.Base(file.Filename) // Customize your S3 key path
 	// Define the bucket and key
 	uploadOutput, err := uploader.UploadWithContext(ctx, &s3manager.UploadInput{
-		Bucket: aws.String("your-bucket-name"),
+		Bucket: aws.String("placio"),
 		Key:    aws.String(key),
 		Body:   openedFile,
 	})
@@ -84,38 +120,37 @@ func (s *MediaServiceImpl) uploadToS3(ctx context.Context, file *multipart.FileH
 		MediaType: file.Header.Get("Content-Type"), // Or determine the type in another way
 	})
 
-    return mediaInfos, nil
+	return mediaInfos, nil
 }
 
-
 func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart.FileHeader) ([]MediaInfo, error) {
-    conf := &firebase.Config{
-        StorageBucket: "your-firebase-storage-bucket.appspot.com",
-    }
-    opt := option.WithCredentialsFile("path/to/your/serviceAccountKey.json")
-    app, err := firebase.NewApp(ctx, conf, opt)
-    if err != nil {
-        return nil, fmt.Errorf("error initializing firebase app: %w", err)
-    }
+	conf := &firebase.Config{
+		StorageBucket: "placio-383019.appspot.com",
+	}
+	opt := option.WithCredentialsFile("path/to/your/serviceAccountKey.json")
+	app, err := firebase.NewApp(ctx, conf, opt)
+	if err != nil {
+		return nil, fmt.Errorf("error initializing firebase app: %w", err)
+	}
 
-    client, err := app.Storage(ctx)
-    if err != nil {
-        return nil, fmt.Errorf("error getting Storage client: %w", err)
-    }
+	client, err := app.Storage(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error getting Storage client: %w", err)
+	}
 
-    var mediaInfos []MediaInfo
+	var mediaInfos []MediaInfo
 	openedFile, err := file.Open()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
 	}
 	defer openedFile.Close()
 
-	bucket, err := client.DefaultBucket()
+	bucket, err := client.Bucket("placio-383019.appspot.com")
 	if err != nil {
 		return nil, fmt.Errorf("error getting default bucket: %w", err)
 	}
 
-	object := bucket.Object("your-path-prefix/" + filepath.Base(file.Filename)) // Customize your Firebase Storage path
+	object := bucket.Object("placio/" + filepath.Base(file.Filename)) // Customize your Firebase Storage path
 	wc := object.NewWriter(ctx)
 
 	if _, err = io.Copy(wc, openedFile); err != nil {
@@ -134,108 +169,104 @@ func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart
 		URL:       attrs.MediaLink,
 		MediaType: file.Header.Get("Content-Type"), // Or determine the type in another way
 	})
-    
 
-    return mediaInfos, nil
+	return mediaInfos, nil
 }
-
 
 func (s *MediaServiceImpl) uploadToCloudinary(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error) {
-    var mediaInfos []MediaInfo
+	var mediaInfos []MediaInfo
 
-    for _, file := range files {
-        openedFile, err := file.Open()
-        if err != nil {
-            return nil, fmt.Errorf("failed to open file: %w", err)
-        }
-        defer openedFile.Close()
+	for _, file := range files {
+		openedFile, err := file.Open()
+		if err != nil {
+			return nil, fmt.Errorf("failed to open file: %w", err)
+		}
+		defer openedFile.Close()
 
-        uploadParams := uploader.UploadParams{Folder: "your-folder-path"} // Customize your path in Cloudinary
-        uploadResult, err := s.cloud.Upload.Upload(ctx, openedFile, uploadParams)
-        if err != nil {
-            return nil, fmt.Errorf("error uploading file to Cloudinary: %w", err)
-        }
+		uploadParams := uploader.UploadParams{Folder: "placio"} // Customize your path in Cloudinary
+		uploadResult, err := s.cloud.Upload.Upload(ctx, openedFile, uploadParams)
+		if err != nil {
+			return nil, fmt.Errorf("error uploading file to Cloudinary: %w", err)
+		}
 
-        mediaInfos = append(mediaInfos, MediaInfo{
-            URL:       uploadResult.SecureURL,
-            MediaType: uploadResult.ResourceType, // This is typically 'image' or 'video'
-        })
-    }
+		mediaInfos = append(mediaInfos, MediaInfo{
+			URL:       uploadResult.SecureURL,
+			MediaType: uploadResult.ResourceType, // This is typically 'image' or 'video'
+		})
+	}
 
-    return mediaInfos, nil
+	return mediaInfos, nil
 }
-
 
 func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error) {
-    const maxWorkers = 5 // Adjust this to a suitable number
+	const maxWorkers = 5 // Adjust this to a suitable number
 
-    ch := make(chan MediaInfo)
-    errCh := make(chan error, len(files)) // Buffer this channel to prevent goroutine leaks
-    wg := sync.WaitGroup{}
-    sem := make(chan struct{}, maxWorkers)
+	ch := make(chan MediaInfo)
+	errCh := make(chan error, len(files)) // Buffer this channel to prevent goroutine leaks
+	wg := sync.WaitGroup{}
+	sem := make(chan struct{}, maxWorkers)
 
-    for _, file := range files {
-        wg.Add(1)
-        go func(file *multipart.FileHeader) {
-            defer wg.Done()
+	for _, file := range files {
+		wg.Add(1)
+		go func(file *multipart.FileHeader) {
+			defer wg.Done()
 
-            sem <- struct{}{}
-            defer func() { <-sem }()
+			sem <- struct{}{}
+			defer func() { <-sem }()
 
-            var mediaInfo []MediaInfo
-            var err error
+			var mediaInfo []MediaInfo
+			var err error
 
-            // Randomly select a storage service
-            switch rand.Intn(2) { 
-            case 0:
-                mediaInfo, err = s.uploadToS3(ctx, file)
-            case 1:
-                mediaInfo, err = s.uploadToFirebase(ctx, file)
-            // case 2:
-            //     mediaInfo, err = s.uploadToCloudinary(ctx, []*multipart.FileHeader{file})
-            }
+			// Randomly select a storage service
+			// switch rand.Intn(1) {
+			// case 0:
+			//     mediaInfo, err = s.uploadToS3(ctx, file)
+			// case 0:
+			mediaInfo, err = s.uploadToFirebase(ctx, file)
+			// case 2:
+			//     mediaInfo, err = s.uploadToCloudinary(ctx, []*multipart.FileHeader{file})
+			// }
 
-            if err != nil {
-                log.Println("Error uploading file: ", err)
-                errCh <- err
-                return
-            }
+			if err != nil {
+				log.Println("Error uploading file: ", err)
+				errCh <- err
+				return
+			}
 
-            // Assuming mediaInfo is a slice, even though it contains only one element
-            for _, info := range mediaInfo {
-                ch <- info
-            }
-        }(file)
-    }
+			// Assuming mediaInfo is a slice, even though it contains only one element
+			for _, info := range mediaInfo {
+				ch <- info
+			}
+		}(file)
+	}
 
-    // Close the channels after all goroutines complete
-    go func() {
-        wg.Wait()
-        close(ch)
-        close(errCh)
-    }()
+	// Close the channels after all goroutines complete
+	go func() {
+		wg.Wait()
+		close(ch)
+		close(errCh)
+	}()
 
-    mediaInfos := make([]MediaInfo, 0, len(files))
-    var firstError error
-    for i := 0; i < len(files); i++ {
-        select {
-        case info := <-ch:
-            mediaInfos = append(mediaInfos, info)
-        case err := <-errCh:
-            if firstError == nil {
-                firstError = err
-            }
-        }
-    }
+	mediaInfos := make([]MediaInfo, 0, len(files))
+	var firstError error
+	for i := 0; i < len(files); i++ {
+		select {
+		case info := <-ch:
+			mediaInfos = append(mediaInfos, info)
+		case err := <-errCh:
+			if firstError == nil {
+				firstError = err
+			}
+		}
+	}
 
-    if firstError != nil {
-        return nil, firstError
-    }
+	if firstError != nil {
+		return nil, firstError
+	}
 
-    log.Println("Uploaded media info: ", mediaInfos)
-    return mediaInfos, nil
+	log.Println("Uploaded media info: ", mediaInfos)
+	return mediaInfos, nil
 }
-
 
 // func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error) {
 // 	const maxWorkers = 5 // adjust this to a suitable number
