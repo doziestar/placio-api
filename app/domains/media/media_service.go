@@ -127,7 +127,7 @@ func (s *MediaServiceImpl) uploadToS3(ctx context.Context, file *multipart.FileH
 	return mediaInfos, nil
 }
 
-func generateSignedURL(ctx context.Context, bucketName, objectName string) (string, error) {
+func GenerateSignedURL(ctx context.Context, bucketName, objectName string) (string, error) {
 	// Initialize the Google Cloud Storage client
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile("serviceAccount.json"))
 	if err != nil {
@@ -164,6 +164,8 @@ func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart
 		return nil, fmt.Errorf("error getting Storage client: %w", err)
 	}
 
+	log.Println("Attempting to open file for upload:", file.Filename)
+
 	openedFile, err := file.Open()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
@@ -185,7 +187,7 @@ func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart
 	}
 
 	// Generate a signed URL
-	signedURL, err := generateSignedURL(ctx, "placio-383019.appspot.com", "placio/"+filepath.Base(file.Filename))
+	signedURL, err := GenerateSignedURL(ctx, "placio-383019.appspot.com", "placio/"+filepath.Base(file.Filename))
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate signed URL: %w", err)
 	}
@@ -314,6 +316,7 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 			// case 0:
 			//     mediaInfo, err = s.uploadToS3(ctx, file)
 			// case 0:
+			log.Println("uploading to firebase", file)
 			mediaInfo, err = s.uploadToFirebase(ctx, file)
 			// case 2:
 			//     mediaInfo, err = s.uploadToCloudinary(ctx, []*multipart.FileHeader{file})
