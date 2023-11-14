@@ -70,7 +70,7 @@ services:
     networks:
       - default
     volumes:
-      - /home/placio/placio/_work/placio-api/placio-api/app/domains/media/serviceAccount.json:/app/serviceAccount.json
+      - /home/placio/placio/_work/placio-api/placio-api/app/domains/media/serviceAccount.json:/root/serviceAccount.json
     labels:
       - traefik.enable=true
       - traefik.docker.network=default
