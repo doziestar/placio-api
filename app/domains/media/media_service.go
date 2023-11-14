@@ -1,17 +1,19 @@
 package media
 
 import (
+	"cloud.google.com/go/storage"
 	"context"
 	"errors"
 	"fmt"
-	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"io"
 	"log"
 	"mime/multipart"
 	"path/filepath"
 	"placio-app/ent"
 	"sync"
+
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 
 	firebase "firebase.google.com/go"
 	"github.com/aws/aws-sdk-go/aws"
@@ -127,7 +129,7 @@ func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart
 	conf := &firebase.Config{
 		StorageBucket: "placio-383019.appspot.com",
 	}
-	opt := option.WithCredentialsFile("path/to/your/serviceAccountKey.json")
+	opt := option.WithCredentialsFile("app/domains/media/serviceAccount.json")
 	app, err := firebase.NewApp(ctx, conf, opt)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing firebase app: %w", err)
@@ -160,9 +162,22 @@ func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart
 		return nil, fmt.Errorf("error closing writer: %w", err)
 	}
 
+	acl := object.ACL()
+	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		return nil, fmt.Errorf("error setting ACL to public read: %w", err)
+	}
+
 	attrs, err := object.Attrs(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error getting object attributes: %w", err)
+	}
+
+	objectAttrsToUpdate := storage.ObjectAttrsToUpdate{
+		ContentDisposition: "inline; filename=\"" + file.Filename + "\"",
+	}
+
+	if _, err := object.Update(ctx, objectAttrsToUpdate); err != nil {
+		return nil, fmt.Errorf("error setting Content-Disposition to inline: %w", err)
 	}
 
 	mediaInfos = append(mediaInfos, MediaInfo{

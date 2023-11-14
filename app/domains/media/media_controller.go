@@ -3,10 +3,11 @@ package media
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	_ "placio-app/Dto"
 	_ "placio-app/ent"
-	"placio-app/utility"
+	"placio-pkg/middleware"
 )
 
 type MediaController struct {
@@ -22,7 +23,7 @@ func (mc *MediaController) RegisterRoutes(router *gin.RouterGroup) {
 	{
 		//mediaRouter.Get("/", mc.getAllMedia)
 		//mediaRouter.GET("/:id", utility.Use(mc.getMedia))
-		mediaRouter.POST("/", utility.Use(mc.uploadMedia))
+		mediaRouter.POST("/", middleware.ErrorMiddleware(mc.uploadMedia))
 		//mediaRouter.Put("/:id", mc.updateMedia)
 		//mediaRouter.POST("/:id", utility.Use(mc.deleteMedia))
 	}
@@ -40,17 +41,19 @@ func (mc *MediaController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/ [post]
 func (mc *MediaController) uploadMedia(ctx *gin.Context) error {
+	log.Println("uploadMedia")
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
-
+		log.Println("err", err)
 		return err
 	}
-	files, ok := form.File["files"]
+	files, ok := form.File["medias"]
 	if !ok || len(files) == 0 {
-
 		return fmt.Errorf("file is required")
 	}
+
+	log.Println("medias", files)
 
 	uploadedMedia, err := mc.mediaService.UploadFiles(ctx, files)
 	if err != nil {
