@@ -294,58 +294,57 @@ func (s *SmartMenuService) GetMenuByID(ctx context.Context, menuId string) (*ent
 }
 
 func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId, userId string, menuData *ent.Menu) (*ent.Menu, error) {
-    // Validate input (example: check for non-empty name)
-    if menuData.Name == "" {
-        return nil, errors.New("menu name cannot be empty")
-    }
-
-    // Prepare update operation
-    updateOp := s.client.Menu.UpdateOneID(menuId)
-
-    if menuData.Name != "" {
-        updateOp = updateOp.SetName(menuData.Name)
-    }
-    if menuData.Description != "" {
-        updateOp = updateOp.SetDescription(menuData.Description)
-    }
-
-    updateOp = updateOp.SetUpdatedAt(time.Now().Local()).AddUpdatedByIDs(userId)
-
-    // Update common fields
-    updateOp = updateOp.SetName(menuData.Name).
-        SetDescription(menuData.Description).
-        SetOptions(menuData.Options).
-        SetIsAvailable(menuData.IsAvailable).
-        SetUpdatedAt(time.Now().Local()).
-        AddUpdatedByIDs(userId)
-
-    // Handle menu type-specific updates
-	if menuData.MenuItemType != "" {
-    switch menuData.MenuItemType {
-    case menu.MenuItemType("food"):
-        if menuData.FoodType == "" || menuData.DietaryType == "" {
-            return nil, errors.New("both foodType and dietaryType must be provided for 'food' menuItemType")
-        }
-        updateOp = updateOp.SetFoodType(menuData.FoodType).SetDietaryType(menuData.DietaryType)
-    
-    case menu.MenuItemType("drink"):
-        if menuData.DrinkType == "" {
-            return nil, errors.New("drinkType must be provided for 'drink' menuItemType")
-        }
-        updateOp = updateOp.SetDrinkType(menuData.DrinkType)
-    }
+	// Validate input (example: check for non-empty name)
+	if menuData.Name == "" {
+		return nil, errors.New("menu name cannot be empty")
 	}
 
-    // Perform the update
-    updatedMenu, err := updateOp.Save(ctx)
-    if err != nil {
-        log.Printf("Error updating menu with ID %s: %v", menuId, err)
-        return nil, err
-    }
+	// Prepare update operation
+	updateOp := s.client.Menu.UpdateOneID(menuId)
 
-    return updatedMenu, nil
+	if menuData.Name != "" {
+		updateOp = updateOp.SetName(menuData.Name)
+	}
+	if menuData.Description != "" {
+		updateOp = updateOp.SetDescription(menuData.Description)
+	}
+
+	updateOp = updateOp.SetUpdatedAt(time.Now().Local()).AddUpdatedByIDs(userId)
+
+	// Update common fields
+	updateOp = updateOp.SetName(menuData.Name).
+		SetDescription(menuData.Description).
+		SetOptions(menuData.Options).
+		SetIsAvailable(menuData.IsAvailable).
+		SetUpdatedAt(time.Now().Local()).
+		AddUpdatedByIDs(userId)
+
+	// Handle menu type-specific updates
+	if menuData.MenuItemType != "" {
+		switch menuData.MenuItemType {
+		case menu.MenuItemType("food"):
+			if menuData.FoodType == "" || menuData.DietaryType == "" {
+				return nil, errors.New("both foodType and dietaryType must be provided for 'food' menuItemType")
+			}
+			updateOp = updateOp.SetFoodType(menuData.FoodType).SetDietaryType(menuData.DietaryType)
+
+		case menu.MenuItemType("drink"):
+			if menuData.DrinkType == "" {
+				return nil, errors.New("drinkType must be provided for 'drink' menuItemType")
+			}
+			updateOp = updateOp.SetDrinkType(menuData.DrinkType)
+		}
+	}
+
+	// Perform the update
+	updatedMenu, err := updateOp.Save(ctx)
+	if err != nil {
+		log.Printf("Error updating menu with ID %s: %v", menuId, err)
+		return nil, err
+	}
+
+	return updatedMenu, nil
 }
-
 
 func (s *SmartMenuService) DeleteMenu(ctx context.Context, menuId string) error {
 	return s.client.Menu.

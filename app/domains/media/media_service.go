@@ -129,7 +129,7 @@ func (s *MediaServiceImpl) uploadToS3(ctx context.Context, file *multipart.FileH
 
 func generateSignedURL(ctx context.Context, bucketName, objectName string) (string, error) {
 	// Initialize the Google Cloud Storage client
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile("app/domains/media/serviceAccount.json"))
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile("serviceAccount.json"))
 	if err != nil {
 		return "", err
 	}
@@ -153,7 +153,7 @@ func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart
 	conf := &firebase.Config{
 		StorageBucket: "placio-383019.appspot.com",
 	}
-	opt := option.WithCredentialsFile("app/domains/media/serviceAccount.json")
+	opt := option.WithCredentialsFile("serviceAccount.json")
 	app, err := firebase.NewApp(ctx, conf, opt)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing firebase app: %w", err)

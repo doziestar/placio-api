@@ -69,6 +69,8 @@ services:
       dockerfile: ./app/stag.dockerfile
     networks:
       - default
+    volumes:
+      - ./app/domains/media/serviceAccount.json:/app/serviceAccount.json
     labels:
       - traefik.enable=true
       - traefik.docker.network=default
