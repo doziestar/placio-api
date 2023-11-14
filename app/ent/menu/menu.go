@@ -71,20 +71,16 @@ const (
 	// MediaInverseTable is the table name for the Media entity.
 	// It exists in this package in order to avoid circular dependency with the "media" package.
 	MediaInverseTable = "media"
-	// CreatedByTable is the table that holds the created_by relation/edge.
-	CreatedByTable = "users"
+	// CreatedByTable is the table that holds the created_by relation/edge. The primary key declared below.
+	CreatedByTable = "user_created_menus"
 	// CreatedByInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	CreatedByInverseTable = "users"
-	// CreatedByColumn is the table column denoting the created_by relation/edge.
-	CreatedByColumn = "menu_created_by"
-	// UpdatedByTable is the table that holds the updated_by relation/edge.
-	UpdatedByTable = "users"
+	// UpdatedByTable is the table that holds the updated_by relation/edge. The primary key declared below.
+	UpdatedByTable = "user_updated_menus"
 	// UpdatedByInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UpdatedByInverseTable = "users"
-	// UpdatedByColumn is the table column denoting the updated_by relation/edge.
-	UpdatedByColumn = "menu_updated_by"
 )
 
 // Columns holds all SQL columns for menu fields.
@@ -116,6 +112,12 @@ var (
 	// MediaPrimaryKey and MediaColumn2 are the table columns denoting the
 	// primary key for the media relation (M2M).
 	MediaPrimaryKey = []string{"menu_id", "media_id"}
+	// CreatedByPrimaryKey and CreatedByColumn2 are the table columns denoting the
+	// primary key for the created_by relation (M2M).
+	CreatedByPrimaryKey = []string{"user_id", "menu_id"}
+	// UpdatedByPrimaryKey and UpdatedByColumn2 are the table columns denoting the
+	// primary key for the updated_by relation (M2M).
+	UpdatedByPrimaryKey = []string{"user_id", "menu_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -415,13 +417,13 @@ func newCreatedByStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatedByInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CreatedByTable, CreatedByColumn),
+		sqlgraph.Edge(sqlgraph.M2M, true, CreatedByTable, CreatedByPrimaryKey...),
 	)
 }
 func newUpdatedByStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UpdatedByInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, UpdatedByTable, UpdatedByColumn),
+		sqlgraph.Edge(sqlgraph.M2M, true, UpdatedByTable, UpdatedByPrimaryKey...),
 	)
 }

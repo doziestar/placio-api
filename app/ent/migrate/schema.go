@@ -1481,28 +1481,12 @@ var (
 		{Name: "role", Type: field.TypeEnum, Enums: []string{"user", "admin", "business_owner", "staff"}, Default: "user"},
 		{Name: "permissions", Type: field.TypeJSON, Nullable: true},
 		{Name: "is_premium", Type: field.TypeBool, Default: false},
-		{Name: "menu_created_by", Type: field.TypeString, Nullable: true, Size: 36},
-		{Name: "menu_updated_by", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "users_menus_created_by",
-				Columns:    []*schema.Column{UsersColumns[22]},
-				RefColumns: []*schema.Column{MenusColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "users_menus_updated_by",
-				Columns:    []*schema.Column{UsersColumns[23]},
-				RefColumns: []*schema.Column{MenusColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
 	}
 	// UserBusinessesColumns holds the columns for the "user_businesses" table.
 	UserBusinessesColumns = []*schema.Column{
@@ -2301,6 +2285,56 @@ var (
 			},
 		},
 	}
+	// UserCreatedMenusColumns holds the columns for the "user_created_menus" table.
+	UserCreatedMenusColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "menu_id", Type: field.TypeString, Size: 36},
+	}
+	// UserCreatedMenusTable holds the schema information for the "user_created_menus" table.
+	UserCreatedMenusTable = &schema.Table{
+		Name:       "user_created_menus",
+		Columns:    UserCreatedMenusColumns,
+		PrimaryKey: []*schema.Column{UserCreatedMenusColumns[0], UserCreatedMenusColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_created_menus_user_id",
+				Columns:    []*schema.Column{UserCreatedMenusColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_created_menus_menu_id",
+				Columns:    []*schema.Column{UserCreatedMenusColumns[1]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// UserUpdatedMenusColumns holds the columns for the "user_updated_menus" table.
+	UserUpdatedMenusColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "menu_id", Type: field.TypeString, Size: 36},
+	}
+	// UserUpdatedMenusTable holds the schema information for the "user_updated_menus" table.
+	UserUpdatedMenusTable = &schema.Table{
+		Name:       "user_updated_menus",
+		Columns:    UserUpdatedMenusColumns,
+		PrimaryKey: []*schema.Column{UserUpdatedMenusColumns[0], UserUpdatedMenusColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_updated_menus_user_id",
+				Columns:    []*schema.Column{UserUpdatedMenusColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_updated_menus_menu_id",
+				Columns:    []*schema.Column{UserUpdatedMenusColumns[1]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountSettingsTable,
@@ -2378,6 +2412,8 @@ var (
 		StaffPermissionsTable,
 		UserPlacesTable,
 		UserNotificationsTable,
+		UserCreatedMenusTable,
+		UserUpdatedMenusTable,
 	}
 )
 
@@ -2467,8 +2503,6 @@ func init() {
 	TicketOptionsTable.ForeignKeys[1].RefTable = TicketsTable
 	TransactionHistoriesTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	TransactionHistoriesTable.ForeignKeys[1].RefTable = UsersTable
-	UsersTable.ForeignKeys[0].RefTable = MenusTable
-	UsersTable.ForeignKeys[1].RefTable = MenusTable
 	UserBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	UserBusinessesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
@@ -2528,4 +2562,8 @@ func init() {
 	UserPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	UserNotificationsTable.ForeignKeys[0].RefTable = UsersTable
 	UserNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
+	UserCreatedMenusTable.ForeignKeys[0].RefTable = UsersTable
+	UserCreatedMenusTable.ForeignKeys[1].RefTable = MenusTable
+	UserUpdatedMenusTable.ForeignKeys[0].RefTable = UsersTable
+	UserUpdatedMenusTable.ForeignKeys[1].RefTable = MenusTable
 }

@@ -40,8 +40,8 @@ func (Menu) Edges() []ent.Edge {
 		edge.To("categories", Category.Type),
 		edge.To("menu_items", MenuItem.Type),
 		edge.To("media", Media.Type),
-		edge.To("created_by", User.Type),
-		edge.To("updated_by", User.Type),
+		edge.From("created_by", User.Type).Ref("created_menus"),
+		edge.From("updated_by", User.Type).Ref("updated_menus"),
 	}
 }
 

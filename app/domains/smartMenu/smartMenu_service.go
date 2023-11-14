@@ -1,12 +1,17 @@
 package smartMenu
 
 import (
-	"bytes"
 	"context"
+	firebase "firebase.google.com/go"
 	"fmt"
+	"google.golang.org/api/option"
 	"image/color"
+	"io"
+	"io/ioutil"
 	"log"
 	"mime/multipart"
+	"os"
+	"path/filepath"
 	"placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/category"
@@ -19,7 +24,6 @@ import (
 	"time"
 
 	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	qrcode "github.com/skip2/go-qrcode"
 
 	"github.com/google/uuid"
@@ -92,6 +96,10 @@ func (s *SmartMenuService) CreateMenuItem(ctx context.Context, menuId string, me
 		SetDescription(menuItemDto.Description).
 		SetPrice(menuItemDto.Price).
 		SetIsAvailable(menuItemDto.IsAvailable).
+		SetAvailableFrom(menuItemDto.AvailableFrom).
+		SetOptions(menuItemDto.Options).
+		SetPrice(menuItemDto.Price).
+		SetIsNew(true).
 		AddMenuIDs(menuId).
 		Save(ctx)
 	if err != nil {
@@ -264,17 +272,16 @@ func (s *SmartMenuService) ensureCategoryExists(ctx context.Context, categoryNam
 }
 
 func (s *SmartMenuService) GetMenus(ctx context.Context, placeId string) ([]*ent.Menu, error) {
-	return s.client.Place.
+	return s.client.Menu.
 		Query().
-		Where(place.ID(placeId)).
-		QueryMenus().
-		WithCategories().
+		Where(menu.HasPlaceWith(place.ID(placeId))).
+		Where(menu.IsDeleted(false)).
 		WithMedia().
-		WithMenuItems().
 		WithPlace(func(q *ent.PlaceQuery) {
-			q.WithBusiness()
-		}).
-		All(ctx)
+			q.WithBusiness(func(bq *ent.BusinessQuery) {
+			})
+			q.WithMedias()
+		}).All(ctx)
 }
 
 func (s *SmartMenuService) GetMenuByID(ctx context.Context, menuId string) (*ent.Menu, error) {
@@ -290,20 +297,57 @@ func (s *SmartMenuService) GetMenuByID(ctx context.Context, menuId string) (*ent
 		Only(ctx)
 }
 
-func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId, userId string, menu *ent.Menu) (*ent.Menu, error) {
-	return s.client.Menu.
-		UpdateOneID(menuId).
-		SetName(menu.Name).
-		SetDescription(menu.Description).
-		SetOptions(menu.Options).
-		SetFoodType(menu.FoodType).
-		SetMenuItemType(menu.MenuItemType).
-		SetDrinkType(menu.DrinkType).
-		SetIsAvailable(menu.IsAvailable).
-		SetDietaryType(menu.DietaryType).
+func (s *SmartMenuService) UpdateMenu(ctx context.Context, menuId, userId string, menuData *ent.Menu) (*ent.Menu, error) {
+	// Validate input (example: check for non-empty name)
+	if menuData.Name == "" {
+		return nil, errors.New("menu name cannot be empty")
+	}
+
+	// Prepare update operation
+	updateOp := s.client.Menu.UpdateOneID(menuId)
+
+	if menuData.Name != "" {
+		updateOp = updateOp.SetName(menuData.Name)
+	}
+	if menuData.Description != "" {
+		updateOp = updateOp.SetDescription(menuData.Description)
+	}
+
+	updateOp = updateOp.SetUpdatedAt(time.Now().Local()).AddUpdatedByIDs(userId)
+
+	// Update common fields
+	updateOp = updateOp.SetName(menuData.Name).
+		SetDescription(menuData.Description).
+		SetOptions(menuData.Options).
+		SetIsAvailable(menuData.IsAvailable).
 		SetUpdatedAt(time.Now().Local()).
-		AddUpdatedByIDs(userId).
-		Save(ctx)
+		AddUpdatedByIDs(userId)
+
+	// Handle menu type-specific updates
+	if menuData.MenuItemType != "" {
+		switch menuData.MenuItemType {
+		case menu.MenuItemType("food"):
+			if menuData.FoodType == "" || menuData.DietaryType == "" {
+				return nil, errors.New("both foodType and dietaryType must be provided for 'food' menuItemType")
+			}
+			updateOp = updateOp.SetFoodType(menuData.FoodType).SetDietaryType(menuData.DietaryType)
+
+		case menu.MenuItemType("drink"):
+			if menuData.DrinkType == "" {
+				return nil, errors.New("drinkType must be provided for 'drink' menuItemType")
+			}
+			updateOp = updateOp.SetDrinkType(menuData.DrinkType)
+		}
+	}
+
+	// Perform the update
+	updatedMenu, err := updateOp.Save(ctx)
+	if err != nil {
+		log.Printf("Error updating menu with ID %s: %v", menuId, err)
+		return nil, err
+	}
+
+	return updatedMenu, nil
 }
 
 func (s *SmartMenuService) DeleteMenu(ctx context.Context, menuId string) error {
@@ -395,7 +439,6 @@ func (s *SmartMenuService) RestoreTable(ctx context.Context, tableId string) (*e
 }
 
 func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string) (*ent.PlaceTable, error) {
-	// 1. Fetch the table and related business and place information from the database
 	table, err := s.client.PlaceTable.
 		Query().
 		Where(placetable.IDEQ(tableId)).
@@ -410,19 +453,13 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 		return nil, fmt.Errorf("failed querying place table: %w", err)
 	}
 
-	log.Println("Regenerating QR code for table with ID", tableId, "and number", table.Number)
-	log.Println("Table:", table)
-
-	log.Println("Generating QR code URL", table.Edges.Place.Edges.Business.Edges.Websites.DomainName, table.Number, table.Edges.Place.ID)
 	url := fmt.Sprintf("https://placio.io/%s/menus/?table=%d&placeId=%s",
 		table.Edges.Place.Edges.Business.Edges.Websites.DomainName,
 		table.Number,
 		table.Edges.Place.ID,
 	)
 
-	log.Println("QR code URL:", url)
 	qr, err := qrcode.New(url, qrcode.Medium)
-	log.Println("QR code generated", err)
 	if err != nil {
 		log.Println("Error generating QR code:", err)
 		return nil, fmt.Errorf("failed to generate QR code: %w", err)
@@ -431,32 +468,34 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 	qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255}
 	qr.BackgroundColor = color.White
 
-	log.Println("Converting QR code to PNG")
 	png, err := qr.PNG(256)
 	if err != nil {
 		log.Println("Error converting QR code to PNG:", err)
 		return nil, fmt.Errorf("failed to convert QR code to PNG: %w", err)
 	}
 
-	log.Println("Uploading QR code to Cloudinary")
-
-	reader := bytes.NewReader(png)
-
-	uploadParams := uploader.UploadParams{
-		Folder: "tables",
-		Tags:   []string{"QRCode", "Placio"},
-	}
-
-	uploadResult, err := s.cloud.Upload.Upload(ctx, reader, uploadParams)
+	tmpFile, err := ioutil.TempFile("", "qr-code-*.png")
 	if err != nil {
-		return nil, fmt.Errorf("failed to upload QR code to Cloudinary: %w", err)
+		return nil, fmt.Errorf("failed to create temporary file: %w", err)
 	}
 
-	log.Println("QR code uploaded to Cloudinary")
+	_, err = tmpFile.Write(png)
+	if err != nil {
+		tmpFile.Close()
+		return nil, fmt.Errorf("failed to write to temporary file: %w", err)
+	}
+	tmpFile.Close()
+
+	signedURL, err := s.uploadQRCodeToFirebase(ctx, tmpFile.Name(), "image/png")
+	if err != nil {
+		return nil, err
+	}
+
+	os.Remove(tmpFile.Name())
 
 	updatedTable, err := s.client.PlaceTable.
 		UpdateOneID(table.ID).
-		SetQrCode(uploadResult.URL).
+		SetQrCode(signedURL).
 		Save(ctx)
 	if err != nil {
 		log.Println("Error updating table with ID", tableId, ":", err)
@@ -464,6 +503,47 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 	}
 
 	return updatedTable, nil
+}
+
+func (s *SmartMenuService) uploadQRCodeToFirebase(ctx context.Context, filePath, contentType string) (string, error) {
+	conf := &firebase.Config{StorageBucket: "placio-383019.appspot.com"}
+	opt := option.WithCredentialsFile("serviceAccount.json")
+	app, err := firebase.NewApp(ctx, conf, opt)
+	if err != nil {
+		return "", fmt.Errorf("error initializing firebase app: %w", err)
+	}
+
+	client, err := app.Storage(ctx)
+	if err != nil {
+		return "", fmt.Errorf("error getting Storage client: %w", err)
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	bucket, err := client.Bucket("placio-383019.appspot.com")
+	if err != nil {
+		return "", fmt.Errorf("error getting default bucket: %w", err)
+	}
+
+	object := bucket.Object("placio/" + filepath.Base(filePath))
+	wc := object.NewWriter(ctx)
+	if _, err = io.Copy(wc, file); err != nil {
+		return "", fmt.Errorf("error writing to Firebase Storage: %w", err)
+	}
+	if err = wc.Close(); err != nil {
+		return "", fmt.Errorf("error closing writer: %w", err)
+	}
+
+	signedURL, err := media.GenerateSignedURL(ctx, "placio-383019.appspot.com", "placio/"+filepath.Base(filePath))
+	if err != nil {
+		return "", fmt.Errorf("failed to generate signed URL: %w", err)
+	}
+
+	return signedURL, nil
 }
 
 func (s *SmartMenuService) CreateOrder(ctx context.Context, tableId string, placeId string, order *ent.Order) (*ent.Order, error) {

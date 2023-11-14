@@ -4796,7 +4796,7 @@ func (c *MenuClient) QueryCreatedBy(m *Menu) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(menu.Table, menu.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, menu.CreatedByTable, menu.CreatedByColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, menu.CreatedByTable, menu.CreatedByPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -4812,7 +4812,7 @@ func (c *MenuClient) QueryUpdatedBy(m *Menu) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(menu.Table, menu.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, menu.UpdatedByTable, menu.UpdatedByColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, menu.UpdatedByTable, menu.UpdatedByPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -9928,6 +9928,38 @@ func (c *UserClient) QueryStaffs(u *User) *StaffQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(staff.Table, staff.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.StaffsTable, user.StaffsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCreatedMenus queries the created_menus edge of a User.
+func (c *UserClient) QueryCreatedMenus(u *User) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.CreatedMenusTable, user.CreatedMenusPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUpdatedMenus queries the updated_menus edge of a User.
+func (c *UserClient) QueryUpdatedMenus(u *User) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.UpdatedMenusTable, user.UpdatedMenusPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

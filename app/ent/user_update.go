@@ -14,6 +14,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/like"
+	"placio-app/ent/menu"
 	"placio-app/ent/notification"
 	"placio-app/ent/order"
 	"placio-app/ent/place"
@@ -867,6 +868,36 @@ func (uu *UserUpdate) AddStaffs(s ...*Staff) *UserUpdate {
 	return uu.AddStaffIDs(ids...)
 }
 
+// AddCreatedMenuIDs adds the "created_menus" edge to the Menu entity by IDs.
+func (uu *UserUpdate) AddCreatedMenuIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddCreatedMenuIDs(ids...)
+	return uu
+}
+
+// AddCreatedMenus adds the "created_menus" edges to the Menu entity.
+func (uu *UserUpdate) AddCreatedMenus(m ...*Menu) *UserUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uu.AddCreatedMenuIDs(ids...)
+}
+
+// AddUpdatedMenuIDs adds the "updated_menus" edge to the Menu entity by IDs.
+func (uu *UserUpdate) AddUpdatedMenuIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddUpdatedMenuIDs(ids...)
+	return uu
+}
+
+// AddUpdatedMenus adds the "updated_menus" edges to the Menu entity.
+func (uu *UserUpdate) AddUpdatedMenus(m ...*Menu) *UserUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uu.AddUpdatedMenuIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1470,6 +1501,48 @@ func (uu *UserUpdate) RemoveStaffs(s ...*Staff) *UserUpdate {
 		ids[i] = s[i].ID
 	}
 	return uu.RemoveStaffIDs(ids...)
+}
+
+// ClearCreatedMenus clears all "created_menus" edges to the Menu entity.
+func (uu *UserUpdate) ClearCreatedMenus() *UserUpdate {
+	uu.mutation.ClearCreatedMenus()
+	return uu
+}
+
+// RemoveCreatedMenuIDs removes the "created_menus" edge to Menu entities by IDs.
+func (uu *UserUpdate) RemoveCreatedMenuIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveCreatedMenuIDs(ids...)
+	return uu
+}
+
+// RemoveCreatedMenus removes "created_menus" edges to Menu entities.
+func (uu *UserUpdate) RemoveCreatedMenus(m ...*Menu) *UserUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uu.RemoveCreatedMenuIDs(ids...)
+}
+
+// ClearUpdatedMenus clears all "updated_menus" edges to the Menu entity.
+func (uu *UserUpdate) ClearUpdatedMenus() *UserUpdate {
+	uu.mutation.ClearUpdatedMenus()
+	return uu
+}
+
+// RemoveUpdatedMenuIDs removes the "updated_menus" edge to Menu entities by IDs.
+func (uu *UserUpdate) RemoveUpdatedMenuIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveUpdatedMenuIDs(ids...)
+	return uu
+}
+
+// RemoveUpdatedMenus removes "updated_menus" edges to Menu entities.
+func (uu *UserUpdate) RemoveUpdatedMenus(m ...*Menu) *UserUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uu.RemoveUpdatedMenuIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -2961,6 +3034,96 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.CreatedMenusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.CreatedMenusTable,
+			Columns: user.CreatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedCreatedMenusIDs(); len(nodes) > 0 && !uu.mutation.CreatedMenusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.CreatedMenusTable,
+			Columns: user.CreatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.CreatedMenusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.CreatedMenusTable,
+			Columns: user.CreatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.UpdatedMenusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.UpdatedMenusTable,
+			Columns: user.UpdatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedUpdatedMenusIDs(); len(nodes) > 0 && !uu.mutation.UpdatedMenusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.UpdatedMenusTable,
+			Columns: user.UpdatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.UpdatedMenusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.UpdatedMenusTable,
+			Columns: user.UpdatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -3794,6 +3957,36 @@ func (uuo *UserUpdateOne) AddStaffs(s ...*Staff) *UserUpdateOne {
 	return uuo.AddStaffIDs(ids...)
 }
 
+// AddCreatedMenuIDs adds the "created_menus" edge to the Menu entity by IDs.
+func (uuo *UserUpdateOne) AddCreatedMenuIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddCreatedMenuIDs(ids...)
+	return uuo
+}
+
+// AddCreatedMenus adds the "created_menus" edges to the Menu entity.
+func (uuo *UserUpdateOne) AddCreatedMenus(m ...*Menu) *UserUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uuo.AddCreatedMenuIDs(ids...)
+}
+
+// AddUpdatedMenuIDs adds the "updated_menus" edge to the Menu entity by IDs.
+func (uuo *UserUpdateOne) AddUpdatedMenuIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddUpdatedMenuIDs(ids...)
+	return uuo
+}
+
+// AddUpdatedMenus adds the "updated_menus" edges to the Menu entity.
+func (uuo *UserUpdateOne) AddUpdatedMenus(m ...*Menu) *UserUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uuo.AddUpdatedMenuIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -4397,6 +4590,48 @@ func (uuo *UserUpdateOne) RemoveStaffs(s ...*Staff) *UserUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return uuo.RemoveStaffIDs(ids...)
+}
+
+// ClearCreatedMenus clears all "created_menus" edges to the Menu entity.
+func (uuo *UserUpdateOne) ClearCreatedMenus() *UserUpdateOne {
+	uuo.mutation.ClearCreatedMenus()
+	return uuo
+}
+
+// RemoveCreatedMenuIDs removes the "created_menus" edge to Menu entities by IDs.
+func (uuo *UserUpdateOne) RemoveCreatedMenuIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveCreatedMenuIDs(ids...)
+	return uuo
+}
+
+// RemoveCreatedMenus removes "created_menus" edges to Menu entities.
+func (uuo *UserUpdateOne) RemoveCreatedMenus(m ...*Menu) *UserUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uuo.RemoveCreatedMenuIDs(ids...)
+}
+
+// ClearUpdatedMenus clears all "updated_menus" edges to the Menu entity.
+func (uuo *UserUpdateOne) ClearUpdatedMenus() *UserUpdateOne {
+	uuo.mutation.ClearUpdatedMenus()
+	return uuo
+}
+
+// RemoveUpdatedMenuIDs removes the "updated_menus" edge to Menu entities by IDs.
+func (uuo *UserUpdateOne) RemoveUpdatedMenuIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveUpdatedMenuIDs(ids...)
+	return uuo
+}
+
+// RemoveUpdatedMenus removes "updated_menus" edges to Menu entities.
+func (uuo *UserUpdateOne) RemoveUpdatedMenus(m ...*Menu) *UserUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uuo.RemoveUpdatedMenuIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -5911,6 +6146,96 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.CreatedMenusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.CreatedMenusTable,
+			Columns: user.CreatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedCreatedMenusIDs(); len(nodes) > 0 && !uuo.mutation.CreatedMenusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.CreatedMenusTable,
+			Columns: user.CreatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.CreatedMenusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.CreatedMenusTable,
+			Columns: user.CreatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.UpdatedMenusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.UpdatedMenusTable,
+			Columns: user.UpdatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedUpdatedMenusIDs(); len(nodes) > 0 && !uuo.mutation.UpdatedMenusCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.UpdatedMenusTable,
+			Columns: user.UpdatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.UpdatedMenusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.UpdatedMenusTable,
+			Columns: user.UpdatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -26,3 +26,7 @@ logs
 docs/placio
 docs/placio/*
 askai/.env
+y.pub
+y.key
+y
+#serviceAccount.json
