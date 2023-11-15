@@ -2,13 +2,7 @@ package smartMenu
 
 import (
 	"context"
-	firebase "firebase.google.com/go"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"google.golang.org/api/option"
 	"image/color"
 	"io"
 	"io/ioutil"
@@ -26,6 +20,13 @@ import (
 	"placio-pkg/errors"
 	"strings"
 	"time"
+
+	firebase "firebase.google.com/go"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"google.golang.org/api/option"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	qrcode "github.com/skip2/go-qrcode"
@@ -548,9 +549,12 @@ func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, 
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket:      aws.String(spaceName),
 		Key:         aws.String(uniqueFileName),
+		ACL:                aws.String("public-read"),
 		Body:        file,
 		ContentType: aws.String(contentType),
+		ContentDisposition: aws.String("inline"), 
 	})
+
 	if err != nil {
 		return "", fmt.Errorf("failed to upload to DigitalOcean Space: %w", err)
 	}
