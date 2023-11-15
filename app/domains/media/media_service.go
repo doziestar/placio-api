@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"io"
 	"log"
 	"mime/multipart"
 	"path/filepath"
 	"placio-app/ent"
+	"strings"
 	"sync"
 	"time"
 
@@ -316,8 +318,8 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 			// case 0:
 			//     mediaInfo, err = s.uploadToS3(ctx, file)
 			// case 0:
-			log.Println("uploading to firebase", file)
-			mediaInfo, err = s.uploadToFirebase(ctx, file)
+			//mediaInfo, err = s.uploadToFirebase(ctx, file)
+			mediaInfo, err = s.uploadToDigitalOceanSpace(ctx, file)
 			// case 2:
 			//     mediaInfo, err = s.uploadToCloudinary(ctx, []*multipart.FileHeader{file})
 			// }
@@ -360,6 +362,69 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 	}
 
 	log.Println("Uploaded media info: ", mediaInfos)
+	return mediaInfos, nil
+}
+
+func (s *MediaServiceImpl) uploadToDigitalOceanSpace(ctx context.Context, file *multipart.FileHeader) ([]MediaInfo, error) {
+	// DigitalOcean Spaces credentials and configuration
+	accessKeyID := "DO00YJ68Y7KMTYP3J7HE"
+	secretAccessKey := "P55ReutOGyn1d4qThoPCMj+O7qCUggr/Y+DQIUwYtjc"
+	spaceName := "placio"
+	endpoint := "https://placio.fra1.digitaloceanspaces.com"
+	cdnEndpoint := "https://placio.fra1.cdn.digitaloceanspaces.com"
+
+	// Create a new session without specifying a region
+	sess, err := session.NewSession(&aws.Config{
+		Endpoint:         aws.String(endpoint),
+		Region:           aws.String("fra1"),
+		Credentials:      credentials.NewStaticCredentials(accessKeyID, secretAccessKey, ""),
+		S3ForcePathStyle: aws.Bool(true),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error creating session: %w", err)
+	}
+
+	// Create an uploader with the session
+	uploader := s3manager.NewUploader(sess)
+
+	// Open the file
+	openedFile, err := file.Open()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer openedFile.Close()
+
+	// Define a unique key for the file in the Space
+	fileName := filepath.Base(file.Filename)
+	uniqueKey := fmt.Sprintf("%s-%s", uuid.New().String(), fileName)
+
+	// Upload the file to the Space
+	uploadOutput, err := uploader.UploadWithContext(ctx, &s3manager.UploadInput{
+		Bucket:             aws.String(spaceName),
+		Key:                aws.String(uniqueKey),
+		Body:               openedFile,
+		ACL:                aws.String("public-read"), // If you want the file to be publicly accessible
+		ContentType:        aws.String(file.Header.Get("Content-Type")),
+		ContentDisposition: aws.String("inline"), // Ensure it opens in the browser
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload file to DigitalOcean Space: %w", err)
+	}
+
+	// Direct URL of the uploaded file
+	directURL := uploadOutput.Location
+
+	// Construct the CDN URL by replacing the direct URL's domain with the CDN endpoint
+	cdnURL := strings.Replace(directURL, endpoint, cdnEndpoint, 1)
+
+	// Prepare the media info
+	mediaInfos := []MediaInfo{
+		{
+			URL:       cdnURL,
+			MediaType: file.Header.Get("Content-Type"),
+		},
+	}
+
 	return mediaInfos, nil
 }
 

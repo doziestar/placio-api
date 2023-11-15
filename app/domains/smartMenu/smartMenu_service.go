@@ -4,6 +4,10 @@ import (
 	"context"
 	firebase "firebase.google.com/go"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"google.golang.org/api/option"
 	"image/color"
 	"io"
@@ -487,6 +491,7 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 	tmpFile.Close()
 
 	signedURL, err := s.uploadQRCodeToFirebase(ctx, tmpFile.Name(), "image/png")
+	//signedURL, err := s.uploadQRCodeToDigitalOceanSpace(ctx, tmpFile.Name(), "image/png")
 	if err != nil {
 		return nil, err
 	}
@@ -503,6 +508,51 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 	}
 
 	return updatedTable, nil
+}
+
+func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, filePath, contentType string) (string, error) {
+	// Get DigitalOcean Spaces credentials from environment variables
+	accessKeyID := "DO00YJ68Y7KMTYP3J7HE"
+	secretAccessKey := "P55ReutOGyn1d4qThoPCMj+O7qCUggr/Y+DQIUwYtjc"
+	//region := "fra1"
+	endpoint := "https://placio.fra1.digitaloceanspaces.com"
+	spaceName := "placio"
+	// Create a new session using DigitalOcean Spaces credentials
+	sess, err := session.NewSession(&aws.Config{
+		//Region:           aws.String(region),
+		Endpoint:         aws.String(endpoint),
+		Credentials:      credentials.NewStaticCredentials(accessKeyID, secretAccessKey, ""),
+		S3ForcePathStyle: aws.Bool(true),
+	})
+	if err != nil {
+		return "", fmt.Errorf("error creating session: %w", err)
+	}
+
+	// Open the file to upload
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	// Get the file's name from the path
+	fileName := filepath.Base(filePath)
+
+	// Create an uploader with the session and default options
+	uploader := s3manager.NewUploader(sess)
+
+	// Upload the file and get the URL in return
+	result, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket:      aws.String(spaceName),
+		Key:         aws.String(fileName),
+		Body:        file,
+		ContentType: aws.String(contentType),
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to upload to DigitalOcean Space: %w", err)
+	}
+
+	return result.Location, nil
 }
 
 func (s *SmartMenuService) uploadQRCodeToFirebase(ctx context.Context, filePath, contentType string) (string, error) {
