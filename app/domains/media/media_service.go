@@ -204,69 +204,6 @@ func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart
 	return mediaInfos, nil
 }
 
-// func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart.FileHeader) ([]MediaInfo, error) {
-// 	conf := &firebase.Config{
-// 		StorageBucket: "placio-383019.appspot.com",
-// 	}
-// 	opt := option.WithCredentialsFile("app/domains/media/serviceAccount.json")
-// 	app, err := firebase.NewApp(ctx, conf, opt)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error initializing firebase app: %w", err)
-// 	}
-
-// 	client, err := app.Storage(ctx)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error getting Storage client: %w", err)
-// 	}
-
-// 	var mediaInfos []MediaInfo
-// 	openedFile, err := file.Open()
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to open file: %w", err)
-// 	}
-// 	defer openedFile.Close()
-
-// 	bucket, err := client.Bucket("placio-383019.appspot.com")
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error getting default bucket: %w", err)
-// 	}
-
-// 	object := bucket.Object("placio/" + filepath.Base(file.Filename)) // Customize your Firebase Storage path
-// 	wc := object.NewWriter(ctx)
-
-// 	if _, err = io.Copy(wc, openedFile); err != nil {
-// 		return nil, fmt.Errorf("error writing to Firebase Storage: %w", err)
-// 	}
-// 	if err = wc.Close(); err != nil {
-// 		return nil, fmt.Errorf("error closing writer: %w", err)
-// 	}
-
-// 	acl := object.ACL()
-// 	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-// 		return nil, fmt.Errorf("error setting ACL to public read: %w", err)
-// 	}
-
-// 	attrs, err := object.Attrs(ctx)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error getting object attributes: %w", err)
-// 	}
-
-// 	objectAttrsToUpdate := storage.ObjectAttrsToUpdate{
-// 		ContentDisposition: "inline; filename=\"" + file.Filename + "\"",
-// 	}
-
-// 	if _, err := object.Update(ctx, objectAttrsToUpdate); err != nil {
-// 		return nil, fmt.Errorf("error setting Content-Disposition to inline: %w", err)
-// 	}
-
-// 	mediaInfos = append(mediaInfos, MediaInfo{
-// 		URL:       attrs.MediaLink,
-// 		MediaType: file.Header.Get("Content-Type"), // Or determine the type in another way
-// 	})
-
-// 	return mediaInfos, nil
-// }
-
 func (s *MediaServiceImpl) uploadToCloudinary(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error) {
 	var mediaInfos []MediaInfo
 
@@ -311,19 +248,8 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 			var mediaInfo []MediaInfo
 			var err error
 
-			// TODO: Unpload to aws s3, azure, oracle, ibm, etc.
-
-			// Randomly select a storage service
-			// switch rand.Intn(1) {
-			// case 0:
-			//     mediaInfo, err = s.uploadToS3(ctx, file)
-			// case 0:
-			//mediaInfo, err = s.uploadToFirebase(ctx, file)
+			// TODO: Unpload to aws s3, azure, oracle, ibm, etc
 			mediaInfo, err = s.uploadToDigitalOceanSpace(ctx, file)
-			// case 2:
-			//     mediaInfo, err = s.uploadToCloudinary(ctx, []*multipart.FileHeader{file})
-			// }
-
 			if err != nil {
 				log.Println("Error uploading file: ", err)
 				errCh <- err

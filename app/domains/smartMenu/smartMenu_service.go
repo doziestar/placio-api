@@ -490,8 +490,8 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 	}
 	tmpFile.Close()
 
-	signedURL, err := s.uploadQRCodeToFirebase(ctx, tmpFile.Name(), "image/png")
-	//signedURL, err := s.uploadQRCodeToDigitalOceanSpace(ctx, tmpFile.Name(), "image/png")
+	//signedURL, err := s.uploadQRCodeToFirebase(ctx, tmpFile.Name(), "image/png")
+	signedURL, err := s.uploadQRCodeToDigitalOceanSpace(ctx, table, tmpFile.Name(), "image/png")
 	if err != nil {
 		return nil, err
 	}
@@ -510,17 +510,18 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 	return updatedTable, nil
 }
 
-func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, filePath, contentType string) (string, error) {
-	// Get DigitalOcean Spaces credentials from environment variables
+func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, table *ent.PlaceTable, filePath, contentType string) (string, error) {
+	// DigitalOcean Spaces credentials and configuration
 	accessKeyID := "DO00YJ68Y7KMTYP3J7HE"
 	secretAccessKey := "P55ReutOGyn1d4qThoPCMj+O7qCUggr/Y+DQIUwYtjc"
-	//region := "fra1"
-	endpoint := "https://placio.fra1.digitaloceanspaces.com"
 	spaceName := "placio"
-	// Create a new session using DigitalOcean Spaces credentials
+	endpoint := "https://placio.fra1.digitaloceanspaces.com"
+	cdnEndpoint := "https://placio.fra1.cdn.digitaloceanspaces.com"
+
+	// Create a new session without specifying a region
 	sess, err := session.NewSession(&aws.Config{
-		//Region:           aws.String(region),
 		Endpoint:         aws.String(endpoint),
+		Region:           aws.String("fra1"),
 		Credentials:      credentials.NewStaticCredentials(accessKeyID, secretAccessKey, ""),
 		S3ForcePathStyle: aws.Bool(true),
 	})
@@ -535,8 +536,10 @@ func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, 
 	}
 	defer file.Close()
 
-	// Get the file's name from the path
-	fileName := filepath.Base(filePath)
+	// Construct the unique file name
+	domainName := table.Edges.Place.Edges.Business.Edges.Websites.DomainName
+	tableNumber := table.Number
+	uniqueFileName := fmt.Sprintf("barcode/%s-%s-%s", domainName, string(tableNumber), filepath.Base(filePath))
 
 	// Create an uploader with the session and default options
 	uploader := s3manager.NewUploader(sess)
@@ -544,7 +547,7 @@ func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, 
 	// Upload the file and get the URL in return
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket:      aws.String(spaceName),
-		Key:         aws.String(fileName),
+		Key:         aws.String(uniqueFileName),
 		Body:        file,
 		ContentType: aws.String(contentType),
 	})
@@ -552,7 +555,13 @@ func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, 
 		return "", fmt.Errorf("failed to upload to DigitalOcean Space: %w", err)
 	}
 
-	return result.Location, nil
+	// Direct URL of the uploaded file
+	directURL := result.Location
+
+	// Construct the CDN URL by replacing the direct URL's domain with the CDN endpoint
+	cdnURL := strings.Replace(directURL, endpoint, cdnEndpoint, 1)
+
+	return cdnURL, nil
 }
 
 func (s *SmartMenuService) uploadQRCodeToFirebase(ctx context.Context, filePath, contentType string) (string, error) {
