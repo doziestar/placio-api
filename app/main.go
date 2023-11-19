@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"placio-app/cmd"
 	"placio-app/db"
 	_ "placio-app/ent/runtime"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // @title Placio Application Api
@@ -66,6 +67,9 @@ func main() {
 	
 	// initialize db
 	client := db.EntClient(context.Background())
+
+	// increase multipart memory limit to some gigabytes
+	app.MaxMultipartMemory = 8 << 20 // 8 MiB
 
 	// initialize routes
 	cmd.InitializeRoutes(app, client)
