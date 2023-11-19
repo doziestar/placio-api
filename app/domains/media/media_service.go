@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"io"
 	"log"
 	"mime/multipart"
@@ -13,6 +12,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/aws/aws-sdk-go/aws/credentials"
 
 	"cloud.google.com/go/storage"
 
@@ -343,11 +344,25 @@ func (s *MediaServiceImpl) uploadToDigitalOceanSpace(ctx context.Context, file *
 	// Construct the CDN URL by replacing the direct URL's domain with the CDN endpoint
 	cdnURL := strings.Replace(directURL, endpoint, cdnEndpoint, 1)
 
+
+	// media type is the content type of the file, but i need it to be either image, video, or gif and not image/png
+	mediatype := func ()  string {
+		if strings.Contains(file.Header.Get("Content-Type"), "image") {
+			return "image"
+		} else if strings.Contains(file.Header.Get("Content-Type"), "video") {
+			return "video"
+		} else if strings.Contains(file.Header.Get("Content-Type"), "gif") {
+			return "gif"
+		} else {
+			return file.Header.Get("Content-Type")
+		}
+	}()
+
 	// Prepare the media info
 	mediaInfos := []MediaInfo{
 		{
 			URL:       cdnURL,
-			MediaType: file.Header.Get("Content-Type"),
+			MediaType: mediatype,
 		},
 	}
 
