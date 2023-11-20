@@ -158,14 +158,82 @@ func (s *SmartMenuService) GetMenuItemByID(ctx context.Context, menuItemId strin
 }
 
 func (s *SmartMenuService) UpdateMenuItem(ctx context.Context, menuItemId string, menuItemDto *ent.MenuItem) (*ent.MenuItem, error) {
-	return s.client.MenuItem.
-		UpdateOneID(menuItemId).
-		SetName(menuItemDto.Name).
-		SetDescription(menuItemDto.Description).
-		SetPrice(menuItemDto.Price).
-		SetIsAvailable(menuItemDto.IsAvailable).
-		Save(ctx)
+    update := s.client.MenuItem.UpdateOneID(menuItemId)
+
+	if menuItemDto.Name != "" {
+	update.SetName(menuItemDto.Name)
+	}
+	if menuItemDto.Price != 0 {
+    update.SetPrice(menuItemDto.Price)
+	}
+	if menuItemDto.IsAvailable != true {
+    update.SetIsAvailable(menuItemDto.IsAvailable)
+	}
+
+    // Optional string fields
+    if menuItemDto.Description != "" {
+        update.SetDescription(menuItemDto.Description)
+    }
+    if menuItemDto.Currency != "" {
+        update.SetCurrency(menuItemDto.Currency)
+    }
+    if menuItemDto.DeletedAt != "" {
+        update.SetDeletedAt(menuItemDto.DeletedAt)
+    }
+    if menuItemDto.ImageURL != "" {
+        update.SetImageURL(menuItemDto.ImageURL)
+    }
+    if menuItemDto.ChefSpecialNote != ""{
+        update.SetChefSpecialNote(menuItemDto.ChefSpecialNote)
+    }
+    if menuItemDto.Category != "" {
+        update.SetCategory(menuItemDto.Category)
+    }
+   
+    if menuItemDto.Season != ""{
+        update.SetSeason(menuItemDto.Season)
+    }
+    if menuItemDto.PromotionDescription != "" {
+        update.SetPromotionDescription(menuItemDto.PromotionDescription)
+    }
+
+    // Optional int fields
+    if menuItemDto.PreparationTime != 0 {
+        update.SetPreparationTime(menuItemDto.PreparationTime)
+    }
+    if menuItemDto.Calories != 0 {
+        update.SetCalories(menuItemDto.Calories)
+    }
+    if menuItemDto.ServeSize != 0 {
+        update.SetServeSize(menuItemDto.ServeSize)
+    }
+  
+    if menuItemDto.DiscountPercentage != 0 {
+        update.SetDiscountPercentage(menuItemDto.DiscountPercentage)
+    }
+
+    // Optional boolean fields
+    update.SetIsDeleted(menuItemDto.IsDeleted)
+    update.SetIsFeatured(menuItemDto.IsFeatured)
+    update.SetIsNew(menuItemDto.IsNew)
+    update.SetIsSeasonal(menuItemDto.IsSeasonal)
+
+
+    if menuItemDto.Options != nil {
+        update.SetOptions(menuItemDto.Options)
+    }
+    if menuItemDto.Allergens != nil {
+        update.SetAllergens(menuItemDto.Allergens)
+    }
+    if menuItemDto.Tags != nil {
+        update.SetTags(menuItemDto.Tags)
+    }
+  
+
+    return update.Save(ctx)
 }
+
+
 
 func (s *SmartMenuService) DeleteMenuItem(ctx context.Context, menuItemId string) error {
 	return s.client.MenuItem.
