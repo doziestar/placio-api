@@ -465,12 +465,15 @@ func (s *SmartMenuService) CreateTable(ctx context.Context, placeId, userId stri
 }
 
 func (s *SmartMenuService) GetTables(ctx context.Context, placeId string) ([]*ent.PlaceTable, error) {
-	return s.client.Place.
-		Query().
-		Where(place.ID(placeId)).
-		QueryTables().
-		All(ctx)
+    return s.client.Place.
+        Query().
+        Where(place.ID(placeId)).
+        Where(place.HasTables()).
+        QueryTables().
+        Where(placetable.IsDeleted(false)). 
+        All(ctx)
 }
+
 
 func (s *SmartMenuService) GetTableByID(ctx context.Context, tableId string) (*ent.PlaceTable, error) {
 	return s.client.PlaceTable.
