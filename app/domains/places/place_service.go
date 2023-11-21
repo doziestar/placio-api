@@ -3,8 +3,6 @@ package places
 import (
 	"context"
 	"fmt"
-	"github.com/getsentry/sentry-go"
-	"github.com/google/uuid"
 	"log"
 	"mime/multipart"
 	"placio-app/domains/amenities"
@@ -21,6 +19,9 @@ import (
 	"placio-pkg/errors"
 	"strings"
 	"sync"
+
+	"github.com/getsentry/sentry-go"
+	"github.com/google/uuid"
 )
 
 type PlaceFilter struct {
@@ -708,9 +709,9 @@ func (s *PlaceServiceImpl) DeletePlace(ctx context.Context, placeID string) erro
 
 func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error) {
 	log.Println("getting places")
-	if limit == 0 {
-		limit = 10
-	}
+	// if limit == 0 {
+	// 	limit = 10
+	// }
 
 	log.Println("getting places", filter, lastId, limit)
 	query := s.client.Place.
@@ -722,8 +723,8 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 		WithFaqs().
 		WithInventories().
 		WithAmenities().
-		WithUsers().
-		Limit(limit + 1)
+		WithUsers()
+		// Limit(limit + 1)
 
 	// Apply filters
 	if filter.Name != "" {
