@@ -43,10 +43,26 @@ func (piu *PlaceInventoryUpdate) SetName(s string) *PlaceInventoryUpdate {
 	return piu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (piu *PlaceInventoryUpdate) SetNillableName(s *string) *PlaceInventoryUpdate {
+	if s != nil {
+		piu.SetName(*s)
+	}
+	return piu
+}
+
 // SetPrice sets the "price" field.
 func (piu *PlaceInventoryUpdate) SetPrice(f float64) *PlaceInventoryUpdate {
 	piu.mutation.ResetPrice()
 	piu.mutation.SetPrice(f)
+	return piu
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (piu *PlaceInventoryUpdate) SetNillablePrice(f *float64) *PlaceInventoryUpdate {
+	if f != nil {
+		piu.SetPrice(*f)
+	}
 	return piu
 }
 
@@ -60,6 +76,14 @@ func (piu *PlaceInventoryUpdate) AddPrice(f float64) *PlaceInventoryUpdate {
 func (piu *PlaceInventoryUpdate) SetStockQuantity(i int) *PlaceInventoryUpdate {
 	piu.mutation.ResetStockQuantity()
 	piu.mutation.SetStockQuantity(i)
+	return piu
+}
+
+// SetNillableStockQuantity sets the "stock_quantity" field if the given value is not nil.
+func (piu *PlaceInventoryUpdate) SetNillableStockQuantity(i *int) *PlaceInventoryUpdate {
+	if i != nil {
+		piu.SetStockQuantity(*i)
+	}
 	return piu
 }
 
@@ -954,10 +978,26 @@ func (piuo *PlaceInventoryUpdateOne) SetName(s string) *PlaceInventoryUpdateOne 
 	return piuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (piuo *PlaceInventoryUpdateOne) SetNillableName(s *string) *PlaceInventoryUpdateOne {
+	if s != nil {
+		piuo.SetName(*s)
+	}
+	return piuo
+}
+
 // SetPrice sets the "price" field.
 func (piuo *PlaceInventoryUpdateOne) SetPrice(f float64) *PlaceInventoryUpdateOne {
 	piuo.mutation.ResetPrice()
 	piuo.mutation.SetPrice(f)
+	return piuo
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (piuo *PlaceInventoryUpdateOne) SetNillablePrice(f *float64) *PlaceInventoryUpdateOne {
+	if f != nil {
+		piuo.SetPrice(*f)
+	}
 	return piuo
 }
 
@@ -971,6 +1011,14 @@ func (piuo *PlaceInventoryUpdateOne) AddPrice(f float64) *PlaceInventoryUpdateOn
 func (piuo *PlaceInventoryUpdateOne) SetStockQuantity(i int) *PlaceInventoryUpdateOne {
 	piuo.mutation.ResetStockQuantity()
 	piuo.mutation.SetStockQuantity(i)
+	return piuo
+}
+
+// SetNillableStockQuantity sets the "stock_quantity" field if the given value is not nil.
+func (piuo *PlaceInventoryUpdateOne) SetNillableStockQuantity(i *int) *PlaceInventoryUpdateOne {
+	if i != nil {
+		piuo.SetStockQuantity(*i)
+	}
 	return piuo
 }
 

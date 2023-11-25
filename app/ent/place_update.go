@@ -54,6 +54,14 @@ func (pu *PlaceUpdate) SetName(s string) *PlaceUpdate {
 	return pu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableName(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetName(*s)
+	}
+	return pu
+}
+
 // SetType sets the "type" field.
 func (pu *PlaceUpdate) SetType(s string) *PlaceUpdate {
 	pu.mutation.SetType(s)
@@ -2565,6 +2573,14 @@ type PlaceUpdateOne struct {
 // SetName sets the "name" field.
 func (puo *PlaceUpdateOne) SetName(s string) *PlaceUpdateOne {
 	puo.mutation.SetName(s)
+	return puo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableName(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetName(*s)
+	}
 	return puo
 }
 

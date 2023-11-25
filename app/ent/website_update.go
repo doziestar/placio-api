@@ -37,6 +37,14 @@ func (wu *WebsiteUpdate) SetDomainName(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableDomainName sets the "domainName" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableDomainName(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetDomainName(*s)
+	}
+	return wu
+}
+
 // SetHeadingText sets the "heading_text" field.
 func (wu *WebsiteUpdate) SetHeadingText(s string) *WebsiteUpdate {
 	wu.mutation.SetHeadingText(s)
@@ -1452,6 +1460,14 @@ type WebsiteUpdateOne struct {
 // SetDomainName sets the "domainName" field.
 func (wuo *WebsiteUpdateOne) SetDomainName(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetDomainName(s)
+	return wuo
+}
+
+// SetNillableDomainName sets the "domainName" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableDomainName(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetDomainName(*s)
+	}
 	return wuo
 }
 

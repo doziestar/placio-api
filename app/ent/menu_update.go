@@ -39,6 +39,14 @@ func (mu *MenuUpdate) SetName(s string) *MenuUpdate {
 	return mu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableName(s *string) *MenuUpdate {
+	if s != nil {
+		mu.SetName(*s)
+	}
+	return mu
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (mu *MenuUpdate) SetDeletedAt(s string) *MenuUpdate {
 	mu.mutation.SetDeletedAt(s)
@@ -862,6 +870,14 @@ type MenuUpdateOne struct {
 // SetName sets the "name" field.
 func (muo *MenuUpdateOne) SetName(s string) *MenuUpdateOne {
 	muo.mutation.SetName(s)
+	return muo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableName(s *string) *MenuUpdateOne {
+	if s != nil {
+		muo.SetName(*s)
+	}
 	return muo
 }
 

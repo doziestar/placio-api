@@ -61,6 +61,14 @@ func (uu *UserUpdate) SetAuth0ID(s string) *UserUpdate {
 	return uu
 }
 
+// SetNillableAuth0ID sets the "auth0_id" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableAuth0ID(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetAuth0ID(*s)
+	}
+	return uu
+}
+
 // SetName sets the "name" field.
 func (uu *UserUpdate) SetName(s string) *UserUpdate {
 	uu.mutation.SetName(s)
@@ -124,6 +132,14 @@ func (uu *UserUpdate) ClearCoverImage() *UserUpdate {
 // SetUsername sets the "username" field.
 func (uu *UserUpdate) SetUsername(s string) *UserUpdate {
 	uu.mutation.SetUsername(s)
+	return uu
+}
+
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableUsername(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetUsername(*s)
+	}
 	return uu
 }
 
@@ -3150,6 +3166,14 @@ func (uuo *UserUpdateOne) SetAuth0ID(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableAuth0ID sets the "auth0_id" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableAuth0ID(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetAuth0ID(*s)
+	}
+	return uuo
+}
+
 // SetName sets the "name" field.
 func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 	uuo.mutation.SetName(s)
@@ -3213,6 +3237,14 @@ func (uuo *UserUpdateOne) ClearCoverImage() *UserUpdateOne {
 // SetUsername sets the "username" field.
 func (uuo *UserUpdateOne) SetUsername(s string) *UserUpdateOne {
 	uuo.mutation.SetUsername(s)
+	return uuo
+}
+
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableUsername(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetUsername(*s)
+	}
 	return uuo
 }
 

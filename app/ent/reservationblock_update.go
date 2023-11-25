@@ -36,15 +36,39 @@ func (rbu *ReservationBlockUpdate) SetStartTime(t time.Time) *ReservationBlockUp
 	return rbu
 }
 
+// SetNillableStartTime sets the "start_time" field if the given value is not nil.
+func (rbu *ReservationBlockUpdate) SetNillableStartTime(t *time.Time) *ReservationBlockUpdate {
+	if t != nil {
+		rbu.SetStartTime(*t)
+	}
+	return rbu
+}
+
 // SetEndTime sets the "end_time" field.
 func (rbu *ReservationBlockUpdate) SetEndTime(t time.Time) *ReservationBlockUpdate {
 	rbu.mutation.SetEndTime(t)
 	return rbu
 }
 
+// SetNillableEndTime sets the "end_time" field if the given value is not nil.
+func (rbu *ReservationBlockUpdate) SetNillableEndTime(t *time.Time) *ReservationBlockUpdate {
+	if t != nil {
+		rbu.SetEndTime(*t)
+	}
+	return rbu
+}
+
 // SetStatus sets the "status" field.
 func (rbu *ReservationBlockUpdate) SetStatus(r reservationblock.Status) *ReservationBlockUpdate {
 	rbu.mutation.SetStatus(r)
+	return rbu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (rbu *ReservationBlockUpdate) SetNillableStatus(r *reservationblock.Status) *ReservationBlockUpdate {
+	if r != nil {
+		rbu.SetStatus(*r)
+	}
 	return rbu
 }
 
@@ -245,15 +269,39 @@ func (rbuo *ReservationBlockUpdateOne) SetStartTime(t time.Time) *ReservationBlo
 	return rbuo
 }
 
+// SetNillableStartTime sets the "start_time" field if the given value is not nil.
+func (rbuo *ReservationBlockUpdateOne) SetNillableStartTime(t *time.Time) *ReservationBlockUpdateOne {
+	if t != nil {
+		rbuo.SetStartTime(*t)
+	}
+	return rbuo
+}
+
 // SetEndTime sets the "end_time" field.
 func (rbuo *ReservationBlockUpdateOne) SetEndTime(t time.Time) *ReservationBlockUpdateOne {
 	rbuo.mutation.SetEndTime(t)
 	return rbuo
 }
 
+// SetNillableEndTime sets the "end_time" field if the given value is not nil.
+func (rbuo *ReservationBlockUpdateOne) SetNillableEndTime(t *time.Time) *ReservationBlockUpdateOne {
+	if t != nil {
+		rbuo.SetEndTime(*t)
+	}
+	return rbuo
+}
+
 // SetStatus sets the "status" field.
 func (rbuo *ReservationBlockUpdateOne) SetStatus(r reservationblock.Status) *ReservationBlockUpdateOne {
 	rbuo.mutation.SetStatus(r)
+	return rbuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (rbuo *ReservationBlockUpdateOne) SetNillableStatus(r *reservationblock.Status) *ReservationBlockUpdateOne {
+	if r != nil {
+		rbuo.SetStatus(*r)
+	}
 	return rbuo
 }
 

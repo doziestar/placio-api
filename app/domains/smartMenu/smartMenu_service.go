@@ -62,17 +62,9 @@ type ISmartMenu interface {
 	DeleteTable(context.Context, string) error
 	RestoreTable(context.Context, string) (*ent.PlaceTable, error)
 	RegenerateQRCode(context.Context, string) (*ent.PlaceTable, error)
-
-	CreateOrder(context.Context, string, string, *ent.Order) (*ent.Order, error)
-	GetOrdersForATable(context.Context, string) ([]*ent.Order, error)
-	GetOrders(context.Context, string) ([]*ent.Order, error)
-	GetOrderByID(context.Context, string) (*ent.Order, error)
-	UpdateOrder(context.Context, string, *ent.Order) (*ent.Order, error)
-	DeleteOrder(context.Context, string) error
-	RestoreOrder(context.Context, string) (*ent.Order, error)
 }
 
-func NewSmartMenuService(client *ent.Client, mediaService media.MediaService, cloud *cloudinary.Cloudinary) *SmartMenuService {
+func NewSmartMenuService(client *ent.Client, mediaService media.MediaService, cloud *cloudinary.Cloudinary) ISmartMenu {
 	return &SmartMenuService{client: client, mediaService: mediaService, cloud: cloud}
 }
 
@@ -158,82 +150,78 @@ func (s *SmartMenuService) GetMenuItemByID(ctx context.Context, menuItemId strin
 }
 
 func (s *SmartMenuService) UpdateMenuItem(ctx context.Context, menuItemId string, menuItemDto *ent.MenuItem) (*ent.MenuItem, error) {
-    update := s.client.MenuItem.UpdateOneID(menuItemId)
+	update := s.client.MenuItem.UpdateOneID(menuItemId)
 
 	if menuItemDto.Name != "" {
-	update.SetName(menuItemDto.Name)
+		update.SetName(menuItemDto.Name)
 	}
 	if menuItemDto.Price != 0 {
-    update.SetPrice(menuItemDto.Price)
+		update.SetPrice(menuItemDto.Price)
 	}
 	if menuItemDto.IsAvailable != true {
-    update.SetIsAvailable(menuItemDto.IsAvailable)
+		update.SetIsAvailable(menuItemDto.IsAvailable)
 	}
 
-    // Optional string fields
-    if menuItemDto.Description != "" {
-        update.SetDescription(menuItemDto.Description)
-    }
-    if menuItemDto.Currency != "" {
-        update.SetCurrency(menuItemDto.Currency)
-    }
-    if menuItemDto.DeletedAt != "" {
-        update.SetDeletedAt(menuItemDto.DeletedAt)
-    }
-    if menuItemDto.ImageURL != "" {
-        update.SetImageURL(menuItemDto.ImageURL)
-    }
-    if menuItemDto.ChefSpecialNote != ""{
-        update.SetChefSpecialNote(menuItemDto.ChefSpecialNote)
-    }
-    if menuItemDto.Category != "" {
-        update.SetCategory(menuItemDto.Category)
-    }
-   
-    if menuItemDto.Season != ""{
-        update.SetSeason(menuItemDto.Season)
-    }
-    if menuItemDto.PromotionDescription != "" {
-        update.SetPromotionDescription(menuItemDto.PromotionDescription)
-    }
+	// Optional string fields
+	if menuItemDto.Description != "" {
+		update.SetDescription(menuItemDto.Description)
+	}
+	if menuItemDto.Currency != "" {
+		update.SetCurrency(menuItemDto.Currency)
+	}
+	if menuItemDto.DeletedAt != "" {
+		update.SetDeletedAt(menuItemDto.DeletedAt)
+	}
+	if menuItemDto.ImageURL != "" {
+		update.SetImageURL(menuItemDto.ImageURL)
+	}
+	if menuItemDto.ChefSpecialNote != "" {
+		update.SetChefSpecialNote(menuItemDto.ChefSpecialNote)
+	}
+	if menuItemDto.Category != "" {
+		update.SetCategory(menuItemDto.Category)
+	}
 
-    // Optional int fields
-    if menuItemDto.PreparationTime != 0 {
-        update.SetPreparationTime(menuItemDto.PreparationTime)
-    }
-    if menuItemDto.Calories != 0 {
-        update.SetCalories(menuItemDto.Calories)
-    }
-    if menuItemDto.ServeSize != 0 {
-        update.SetServeSize(menuItemDto.ServeSize)
-    }
-  
-    if menuItemDto.DiscountPercentage != 0 {
-        update.SetDiscountPercentage(menuItemDto.DiscountPercentage)
-    }
+	if menuItemDto.Season != "" {
+		update.SetSeason(menuItemDto.Season)
+	}
+	if menuItemDto.PromotionDescription != "" {
+		update.SetPromotionDescription(menuItemDto.PromotionDescription)
+	}
 
-    // Optional boolean fields
-    update.SetIsDeleted(menuItemDto.IsDeleted)
-    update.SetIsFeatured(menuItemDto.IsFeatured)
-    update.SetIsNew(menuItemDto.IsNew)
-    update.SetIsSeasonal(menuItemDto.IsSeasonal)
+	// Optional int fields
+	if menuItemDto.PreparationTime != 0 {
+		update.SetPreparationTime(menuItemDto.PreparationTime)
+	}
+	if menuItemDto.Calories != 0 {
+		update.SetCalories(menuItemDto.Calories)
+	}
+	if menuItemDto.ServeSize != 0 {
+		update.SetServeSize(menuItemDto.ServeSize)
+	}
 
+	if menuItemDto.DiscountPercentage != 0 {
+		update.SetDiscountPercentage(menuItemDto.DiscountPercentage)
+	}
 
-    if menuItemDto.Options != nil {
-        update.SetOptions(menuItemDto.Options)
-    }
-    if menuItemDto.Allergens != nil {
-        update.SetAllergens(menuItemDto.Allergens)
-    }
-    if menuItemDto.Tags != nil {
-        update.SetTags(menuItemDto.Tags)
-    }
-  
+	// Optional boolean fields
+	update.SetIsDeleted(menuItemDto.IsDeleted)
+	update.SetIsFeatured(menuItemDto.IsFeatured)
+	update.SetIsNew(menuItemDto.IsNew)
+	update.SetIsSeasonal(menuItemDto.IsSeasonal)
 
-    return update.Save(ctx)
+	if menuItemDto.Options != nil {
+		update.SetOptions(menuItemDto.Options)
+	}
+	if menuItemDto.Allergens != nil {
+		update.SetAllergens(menuItemDto.Allergens)
+	}
+	if menuItemDto.Tags != nil {
+		update.SetTags(menuItemDto.Tags)
+	}
+
+	return update.Save(ctx)
 }
-
-
 
 func (s *SmartMenuService) DeleteMenuItem(ctx context.Context, menuItemId string) error {
 	return s.client.MenuItem.
@@ -465,15 +453,14 @@ func (s *SmartMenuService) CreateTable(ctx context.Context, placeId, userId stri
 }
 
 func (s *SmartMenuService) GetTables(ctx context.Context, placeId string) ([]*ent.PlaceTable, error) {
-    return s.client.Place.
-        Query().
-        Where(place.ID(placeId)).
-        Where(place.HasTables()).
-        QueryTables().
-        Where(placetable.IsDeleted(false)). 
-        All(ctx)
+	return s.client.Place.
+		Query().
+		Where(place.ID(placeId)).
+		Where(place.HasTables()).
+		QueryTables().
+		Where(placetable.IsDeleted(false)).
+		All(ctx)
 }
-
 
 func (s *SmartMenuService) GetTableByID(ctx context.Context, tableId string) (*ent.PlaceTable, error) {
 	return s.client.PlaceTable.
@@ -618,12 +605,12 @@ func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, 
 
 	// Upload the file and get the URL in return
 	result, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket:      aws.String(spaceName),
-		Key:         aws.String(uniqueFileName),
+		Bucket:             aws.String(spaceName),
+		Key:                aws.String(uniqueFileName),
 		ACL:                aws.String("public-read"),
-		Body:        file,
-		ContentType: aws.String(contentType),
-		ContentDisposition: aws.String("inline"), 
+		Body:               file,
+		ContentType:        aws.String(contentType),
+		ContentDisposition: aws.String("inline"),
 	})
 
 	if err != nil {
@@ -678,41 +665,4 @@ func (s *SmartMenuService) uploadQRCodeToFirebase(ctx context.Context, filePath,
 	}
 
 	return signedURL, nil
-}
-
-func (s *SmartMenuService) CreateOrder(ctx context.Context, tableId string, placeId string, order *ent.Order) (*ent.Order, error) {
-	return s.client.Order.
-		Create().
-		SetID(uuid.New().String()).
-		Save(ctx)
-}
-
-func (s *SmartMenuService) GetOrdersForATable(ctx context.Context, s2 string) ([]*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) GetOrders(ctx context.Context, s2 string) ([]*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) GetOrderByID(ctx context.Context, s2 string) (*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) UpdateOrder(ctx context.Context, s2 string, order *ent.Order) (*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) DeleteOrder(ctx context.Context, s2 string) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) RestoreOrder(ctx context.Context, s2 string) (*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
 }

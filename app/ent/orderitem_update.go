@@ -58,6 +58,14 @@ func (oiu *OrderItemUpdate) SetPricePerItem(f float64) *OrderItemUpdate {
 	return oiu
 }
 
+// SetNillablePricePerItem sets the "price_per_item" field if the given value is not nil.
+func (oiu *OrderItemUpdate) SetNillablePricePerItem(f *float64) *OrderItemUpdate {
+	if f != nil {
+		oiu.SetPricePerItem(*f)
+	}
+	return oiu
+}
+
 // AddPricePerItem adds f to the "price_per_item" field.
 func (oiu *OrderItemUpdate) AddPricePerItem(f float64) *OrderItemUpdate {
 	oiu.mutation.AddPricePerItem(f)
@@ -353,6 +361,14 @@ func (oiuo *OrderItemUpdateOne) AddQuantity(i int) *OrderItemUpdateOne {
 func (oiuo *OrderItemUpdateOne) SetPricePerItem(f float64) *OrderItemUpdateOne {
 	oiuo.mutation.ResetPricePerItem()
 	oiuo.mutation.SetPricePerItem(f)
+	return oiuo
+}
+
+// SetNillablePricePerItem sets the "price_per_item" field if the given value is not nil.
+func (oiuo *OrderItemUpdateOne) SetNillablePricePerItem(f *float64) *OrderItemUpdateOne {
+	if f != nil {
+		oiuo.SetPricePerItem(*f)
+	}
 	return oiuo
 }
 

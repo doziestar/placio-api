@@ -39,6 +39,14 @@ func (ru *RatingUpdate) SetScore(i int) *RatingUpdate {
 	return ru
 }
 
+// SetNillableScore sets the "score" field if the given value is not nil.
+func (ru *RatingUpdate) SetNillableScore(i *int) *RatingUpdate {
+	if i != nil {
+		ru.SetScore(*i)
+	}
+	return ru
+}
+
 // AddScore adds i to the "score" field.
 func (ru *RatingUpdate) AddScore(i int) *RatingUpdate {
 	ru.mutation.AddScore(i)
@@ -383,6 +391,14 @@ type RatingUpdateOne struct {
 func (ruo *RatingUpdateOne) SetScore(i int) *RatingUpdateOne {
 	ruo.mutation.ResetScore()
 	ruo.mutation.SetScore(i)
+	return ruo
+}
+
+// SetNillableScore sets the "score" field if the given value is not nil.
+func (ruo *RatingUpdateOne) SetNillableScore(i *int) *RatingUpdateOne {
+	if i != nil {
+		ruo.SetScore(*i)
+	}
 	return ruo
 }
 
