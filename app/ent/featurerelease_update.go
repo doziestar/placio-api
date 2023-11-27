@@ -34,6 +34,14 @@ func (fru *FeatureReleaseUpdate) SetFeatureName(s string) *FeatureReleaseUpdate 
 	return fru
 }
 
+// SetNillableFeatureName sets the "feature_name" field if the given value is not nil.
+func (fru *FeatureReleaseUpdate) SetNillableFeatureName(s *string) *FeatureReleaseUpdate {
+	if s != nil {
+		fru.SetFeatureName(*s)
+	}
+	return fru
+}
+
 // SetDescription sets the "description" field.
 func (fru *FeatureReleaseUpdate) SetDescription(s string) *FeatureReleaseUpdate {
 	fru.mutation.SetDescription(s)
@@ -57,6 +65,14 @@ func (fru *FeatureReleaseUpdate) ClearDescription() *FeatureReleaseUpdate {
 // SetState sets the "state" field.
 func (fru *FeatureReleaseUpdate) SetState(f featurerelease.State) *FeatureReleaseUpdate {
 	fru.mutation.SetState(f)
+	return fru
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (fru *FeatureReleaseUpdate) SetNillableState(f *featurerelease.State) *FeatureReleaseUpdate {
+	if f != nil {
+		fru.SetState(*f)
+	}
 	return fru
 }
 
@@ -231,6 +247,14 @@ func (fruo *FeatureReleaseUpdateOne) SetFeatureName(s string) *FeatureReleaseUpd
 	return fruo
 }
 
+// SetNillableFeatureName sets the "feature_name" field if the given value is not nil.
+func (fruo *FeatureReleaseUpdateOne) SetNillableFeatureName(s *string) *FeatureReleaseUpdateOne {
+	if s != nil {
+		fruo.SetFeatureName(*s)
+	}
+	return fruo
+}
+
 // SetDescription sets the "description" field.
 func (fruo *FeatureReleaseUpdateOne) SetDescription(s string) *FeatureReleaseUpdateOne {
 	fruo.mutation.SetDescription(s)
@@ -254,6 +278,14 @@ func (fruo *FeatureReleaseUpdateOne) ClearDescription() *FeatureReleaseUpdateOne
 // SetState sets the "state" field.
 func (fruo *FeatureReleaseUpdateOne) SetState(f featurerelease.State) *FeatureReleaseUpdateOne {
 	fruo.mutation.SetState(f)
+	return fruo
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (fruo *FeatureReleaseUpdateOne) SetNillableState(f *featurerelease.State) *FeatureReleaseUpdateOne {
+	if f != nil {
+		fruo.SetState(*f)
+	}
 	return fruo
 }
 

@@ -20,6 +20,7 @@ import (
 	"placio-app/domains/like"
 	"placio-app/domains/media"
 	"placio-app/domains/notifications"
+	"placio-app/domains/order"
 	"placio-app/domains/places"
 	"placio-app/domains/posts"
 	"placio-app/domains/recommendations"
@@ -207,6 +208,10 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		websiteController := websites.NewWebsiteController(websiteService)
 		websiteController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
+		// order
+		orderService := order.NewOrderServices(client)
+		orderController := order.NewOrderController(orderService)
+		orderController.RegisterRoutes(routerGroupV1)
 	}
 
 }

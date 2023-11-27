@@ -9,8 +9,11 @@ import (
 	"mime/multipart"
 	"path/filepath"
 	"placio-app/ent"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/aws/aws-sdk-go/aws/credentials"
 
 	"cloud.google.com/go/storage"
 
@@ -202,69 +205,6 @@ func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart
 	return mediaInfos, nil
 }
 
-// func (s *MediaServiceImpl) uploadToFirebase(ctx context.Context, file *multipart.FileHeader) ([]MediaInfo, error) {
-// 	conf := &firebase.Config{
-// 		StorageBucket: "placio-383019.appspot.com",
-// 	}
-// 	opt := option.WithCredentialsFile("app/domains/media/serviceAccount.json")
-// 	app, err := firebase.NewApp(ctx, conf, opt)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error initializing firebase app: %w", err)
-// 	}
-
-// 	client, err := app.Storage(ctx)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error getting Storage client: %w", err)
-// 	}
-
-// 	var mediaInfos []MediaInfo
-// 	openedFile, err := file.Open()
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to open file: %w", err)
-// 	}
-// 	defer openedFile.Close()
-
-// 	bucket, err := client.Bucket("placio-383019.appspot.com")
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error getting default bucket: %w", err)
-// 	}
-
-// 	object := bucket.Object("placio/" + filepath.Base(file.Filename)) // Customize your Firebase Storage path
-// 	wc := object.NewWriter(ctx)
-
-// 	if _, err = io.Copy(wc, openedFile); err != nil {
-// 		return nil, fmt.Errorf("error writing to Firebase Storage: %w", err)
-// 	}
-// 	if err = wc.Close(); err != nil {
-// 		return nil, fmt.Errorf("error closing writer: %w", err)
-// 	}
-
-// 	acl := object.ACL()
-// 	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-// 		return nil, fmt.Errorf("error setting ACL to public read: %w", err)
-// 	}
-
-// 	attrs, err := object.Attrs(ctx)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error getting object attributes: %w", err)
-// 	}
-
-// 	objectAttrsToUpdate := storage.ObjectAttrsToUpdate{
-// 		ContentDisposition: "inline; filename=\"" + file.Filename + "\"",
-// 	}
-
-// 	if _, err := object.Update(ctx, objectAttrsToUpdate); err != nil {
-// 		return nil, fmt.Errorf("error setting Content-Disposition to inline: %w", err)
-// 	}
-
-// 	mediaInfos = append(mediaInfos, MediaInfo{
-// 		URL:       attrs.MediaLink,
-// 		MediaType: file.Header.Get("Content-Type"), // Or determine the type in another way
-// 	})
-
-// 	return mediaInfos, nil
-// }
-
 func (s *MediaServiceImpl) uploadToCloudinary(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error) {
 	var mediaInfos []MediaInfo
 
@@ -309,19 +249,8 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 			var mediaInfo []MediaInfo
 			var err error
 
-			// TODO: Unpload to aws s3, azure, oracle, ibm, etc.
-
-			// Randomly select a storage service
-			// switch rand.Intn(1) {
-			// case 0:
-			//     mediaInfo, err = s.uploadToS3(ctx, file)
-			// case 0:
-			log.Println("uploading to firebase", file)
-			mediaInfo, err = s.uploadToFirebase(ctx, file)
-			// case 2:
-			//     mediaInfo, err = s.uploadToCloudinary(ctx, []*multipart.FileHeader{file})
-			// }
-
+			// TODO: Unpload to aws s3, azure, oracle, ibm, etc
+			mediaInfo, err = s.uploadToDigitalOceanSpace(ctx, file)
 			if err != nil {
 				log.Println("Error uploading file: ", err)
 				errCh <- err
@@ -360,6 +289,83 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 	}
 
 	log.Println("Uploaded media info: ", mediaInfos)
+	return mediaInfos, nil
+}
+
+func (s *MediaServiceImpl) uploadToDigitalOceanSpace(ctx context.Context, file *multipart.FileHeader) ([]MediaInfo, error) {
+	// DigitalOcean Spaces credentials and configuration
+	accessKeyID := "DO00YJ68Y7KMTYP3J7HE"
+	secretAccessKey := "P55ReutOGyn1d4qThoPCMj+O7qCUggr/Y+DQIUwYtjc"
+	spaceName := "placio"
+	endpoint := "https://placio.fra1.digitaloceanspaces.com"
+	cdnEndpoint := "https://placio.fra1.cdn.digitaloceanspaces.com"
+
+	// Create a new session without specifying a region
+	sess, err := session.NewSession(&aws.Config{
+		Endpoint:         aws.String(endpoint),
+		Region:           aws.String("fra1"),
+		Credentials:      credentials.NewStaticCredentials(accessKeyID, secretAccessKey, ""),
+		S3ForcePathStyle: aws.Bool(true),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error creating session: %w", err)
+	}
+
+	// Create an uploader with the session
+	uploader := s3manager.NewUploader(sess)
+
+	// Open the file
+	openedFile, err := file.Open()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer openedFile.Close()
+
+	// Define a unique key for the file in the Space
+	fileName := filepath.Base(file.Filename)
+	uniqueKey := fmt.Sprintf("%s-%s", uuid.New().String(), fileName)
+
+	// Upload the file to the Space
+	uploadOutput, err := uploader.UploadWithContext(ctx, &s3manager.UploadInput{
+		Bucket:             aws.String(spaceName),
+		Key:                aws.String(uniqueKey),
+		Body:               openedFile,
+		ACL:                aws.String("public-read"), // If you want the file to be publicly accessible
+		ContentType:        aws.String(file.Header.Get("Content-Type")),
+		ContentDisposition: aws.String("inline"), // Ensure it opens in the browser
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload file to DigitalOcean Space: %w", err)
+	}
+
+	// Direct URL of the uploaded file
+	directURL := uploadOutput.Location
+
+	// Construct the CDN URL by replacing the direct URL's domain with the CDN endpoint
+	cdnURL := strings.Replace(directURL, endpoint, cdnEndpoint, 1)
+
+
+	// media type is the content type of the file, but i need it to be either image, video, or gif and not image/png
+	mediatype := func ()  string {
+		if strings.Contains(file.Header.Get("Content-Type"), "image") {
+			return "image"
+		} else if strings.Contains(file.Header.Get("Content-Type"), "video") {
+			return "video"
+		} else if strings.Contains(file.Header.Get("Content-Type"), "gif") {
+			return "gif"
+		} else {
+			return file.Header.Get("Content-Type")
+		}
+	}()
+
+	// Prepare the media info
+	mediaInfos := []MediaInfo{
+		{
+			URL:       cdnURL,
+			MediaType: mediatype,
+		},
+	}
+
 	return mediaInfos, nil
 }
 

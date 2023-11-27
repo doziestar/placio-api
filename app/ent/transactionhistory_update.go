@@ -36,10 +36,26 @@ func (thu *TransactionHistoryUpdate) SetTransactionType(tt transactionhistory.Tr
 	return thu
 }
 
+// SetNillableTransactionType sets the "transaction_type" field if the given value is not nil.
+func (thu *TransactionHistoryUpdate) SetNillableTransactionType(tt *transactionhistory.TransactionType) *TransactionHistoryUpdate {
+	if tt != nil {
+		thu.SetTransactionType(*tt)
+	}
+	return thu
+}
+
 // SetQuantity sets the "quantity" field.
 func (thu *TransactionHistoryUpdate) SetQuantity(i int) *TransactionHistoryUpdate {
 	thu.mutation.ResetQuantity()
 	thu.mutation.SetQuantity(i)
+	return thu
+}
+
+// SetNillableQuantity sets the "quantity" field if the given value is not nil.
+func (thu *TransactionHistoryUpdate) SetNillableQuantity(i *int) *TransactionHistoryUpdate {
+	if i != nil {
+		thu.SetQuantity(*i)
+	}
 	return thu
 }
 
@@ -263,10 +279,26 @@ func (thuo *TransactionHistoryUpdateOne) SetTransactionType(tt transactionhistor
 	return thuo
 }
 
+// SetNillableTransactionType sets the "transaction_type" field if the given value is not nil.
+func (thuo *TransactionHistoryUpdateOne) SetNillableTransactionType(tt *transactionhistory.TransactionType) *TransactionHistoryUpdateOne {
+	if tt != nil {
+		thuo.SetTransactionType(*tt)
+	}
+	return thuo
+}
+
 // SetQuantity sets the "quantity" field.
 func (thuo *TransactionHistoryUpdateOne) SetQuantity(i int) *TransactionHistoryUpdateOne {
 	thuo.mutation.ResetQuantity()
 	thuo.mutation.SetQuantity(i)
+	return thuo
+}
+
+// SetNillableQuantity sets the "quantity" field if the given value is not nil.
+func (thuo *TransactionHistoryUpdateOne) SetNillableQuantity(i *int) *TransactionHistoryUpdateOne {
+	if i != nil {
+		thuo.SetQuantity(*i)
+	}
 	return thuo
 }
 

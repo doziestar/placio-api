@@ -36,9 +36,25 @@ func (fu *FAQUpdate) SetQuestion(s string) *FAQUpdate {
 	return fu
 }
 
+// SetNillableQuestion sets the "question" field if the given value is not nil.
+func (fu *FAQUpdate) SetNillableQuestion(s *string) *FAQUpdate {
+	if s != nil {
+		fu.SetQuestion(*s)
+	}
+	return fu
+}
+
 // SetAnswer sets the "answer" field.
 func (fu *FAQUpdate) SetAnswer(s string) *FAQUpdate {
 	fu.mutation.SetAnswer(s)
+	return fu
+}
+
+// SetNillableAnswer sets the "answer" field if the given value is not nil.
+func (fu *FAQUpdate) SetNillableAnswer(s *string) *FAQUpdate {
+	if s != nil {
+		fu.SetAnswer(*s)
+	}
 	return fu
 }
 
@@ -331,9 +347,25 @@ func (fuo *FAQUpdateOne) SetQuestion(s string) *FAQUpdateOne {
 	return fuo
 }
 
+// SetNillableQuestion sets the "question" field if the given value is not nil.
+func (fuo *FAQUpdateOne) SetNillableQuestion(s *string) *FAQUpdateOne {
+	if s != nil {
+		fuo.SetQuestion(*s)
+	}
+	return fuo
+}
+
 // SetAnswer sets the "answer" field.
 func (fuo *FAQUpdateOne) SetAnswer(s string) *FAQUpdateOne {
 	fuo.mutation.SetAnswer(s)
+	return fuo
+}
+
+// SetNillableAnswer sets the "answer" field if the given value is not nil.
+func (fuo *FAQUpdateOne) SetNillableAnswer(s *string) *FAQUpdateOne {
+	if s != nil {
+		fuo.SetAnswer(*s)
+	}
 	return fuo
 }
 

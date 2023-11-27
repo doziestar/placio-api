@@ -39,6 +39,14 @@ func (ptu *PlaceTableUpdate) SetNumber(i int) *PlaceTableUpdate {
 	return ptu
 }
 
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableNumber(i *int) *PlaceTableUpdate {
+	if i != nil {
+		ptu.SetNumber(*i)
+	}
+	return ptu
+}
+
 // AddNumber adds i to the "number" field.
 func (ptu *PlaceTableUpdate) AddNumber(i int) *PlaceTableUpdate {
 	ptu.mutation.AddNumber(i)
@@ -1123,6 +1131,14 @@ type PlaceTableUpdateOne struct {
 func (ptuo *PlaceTableUpdateOne) SetNumber(i int) *PlaceTableUpdateOne {
 	ptuo.mutation.ResetNumber()
 	ptuo.mutation.SetNumber(i)
+	return ptuo
+}
+
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableNumber(i *int) *PlaceTableUpdateOne {
+	if i != nil {
+		ptuo.SetNumber(*i)
+	}
 	return ptuo
 }
 

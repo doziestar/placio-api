@@ -35,6 +35,14 @@ func (piau *PlaceInventoryAttributeUpdate) SetValue(s string) *PlaceInventoryAtt
 	return piau
 }
 
+// SetNillableValue sets the "value" field if the given value is not nil.
+func (piau *PlaceInventoryAttributeUpdate) SetNillableValue(s *string) *PlaceInventoryAttributeUpdate {
+	if s != nil {
+		piau.SetValue(*s)
+	}
+	return piau
+}
+
 // SetCategorySpecificValue sets the "category_specific_value" field.
 func (piau *PlaceInventoryAttributeUpdate) SetCategorySpecificValue(m map[string]interface{}) *PlaceInventoryAttributeUpdate {
 	piau.mutation.SetCategorySpecificValue(m)
@@ -228,6 +236,14 @@ type PlaceInventoryAttributeUpdateOne struct {
 // SetValue sets the "value" field.
 func (piauo *PlaceInventoryAttributeUpdateOne) SetValue(s string) *PlaceInventoryAttributeUpdateOne {
 	piauo.mutation.SetValue(s)
+	return piauo
+}
+
+// SetNillableValue sets the "value" field if the given value is not nil.
+func (piauo *PlaceInventoryAttributeUpdateOne) SetNillableValue(s *string) *PlaceInventoryAttributeUpdateOne {
+	if s != nil {
+		piauo.SetValue(*s)
+	}
 	return piauo
 }
 

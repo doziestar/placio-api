@@ -34,15 +34,39 @@ func (tu *TemplateUpdate) SetName(s string) *TemplateUpdate {
 	return tu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (tu *TemplateUpdate) SetNillableName(s *string) *TemplateUpdate {
+	if s != nil {
+		tu.SetName(*s)
+	}
+	return tu
+}
+
 // SetDefaultHTML sets the "defaultHTML" field.
 func (tu *TemplateUpdate) SetDefaultHTML(s string) *TemplateUpdate {
 	tu.mutation.SetDefaultHTML(s)
 	return tu
 }
 
+// SetNillableDefaultHTML sets the "defaultHTML" field if the given value is not nil.
+func (tu *TemplateUpdate) SetNillableDefaultHTML(s *string) *TemplateUpdate {
+	if s != nil {
+		tu.SetDefaultHTML(*s)
+	}
+	return tu
+}
+
 // SetDefaultCSS sets the "defaultCSS" field.
 func (tu *TemplateUpdate) SetDefaultCSS(s string) *TemplateUpdate {
 	tu.mutation.SetDefaultCSS(s)
+	return tu
+}
+
+// SetNillableDefaultCSS sets the "defaultCSS" field if the given value is not nil.
+func (tu *TemplateUpdate) SetNillableDefaultCSS(s *string) *TemplateUpdate {
+	if s != nil {
+		tu.SetDefaultCSS(*s)
+	}
 	return tu
 }
 
@@ -203,15 +227,39 @@ func (tuo *TemplateUpdateOne) SetName(s string) *TemplateUpdateOne {
 	return tuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (tuo *TemplateUpdateOne) SetNillableName(s *string) *TemplateUpdateOne {
+	if s != nil {
+		tuo.SetName(*s)
+	}
+	return tuo
+}
+
 // SetDefaultHTML sets the "defaultHTML" field.
 func (tuo *TemplateUpdateOne) SetDefaultHTML(s string) *TemplateUpdateOne {
 	tuo.mutation.SetDefaultHTML(s)
 	return tuo
 }
 
+// SetNillableDefaultHTML sets the "defaultHTML" field if the given value is not nil.
+func (tuo *TemplateUpdateOne) SetNillableDefaultHTML(s *string) *TemplateUpdateOne {
+	if s != nil {
+		tuo.SetDefaultHTML(*s)
+	}
+	return tuo
+}
+
 // SetDefaultCSS sets the "defaultCSS" field.
 func (tuo *TemplateUpdateOne) SetDefaultCSS(s string) *TemplateUpdateOne {
 	tuo.mutation.SetDefaultCSS(s)
+	return tuo
+}
+
+// SetNillableDefaultCSS sets the "defaultCSS" field if the given value is not nil.
+func (tuo *TemplateUpdateOne) SetNillableDefaultCSS(s *string) *TemplateUpdateOne {
+	if s != nil {
+		tuo.SetDefaultCSS(*s)
+	}
 	return tuo
 }
 

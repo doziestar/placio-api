@@ -33,15 +33,39 @@ func (hu *HelpUpdate) SetCategory(s string) *HelpUpdate {
 	return hu
 }
 
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (hu *HelpUpdate) SetNillableCategory(s *string) *HelpUpdate {
+	if s != nil {
+		hu.SetCategory(*s)
+	}
+	return hu
+}
+
 // SetSubject sets the "subject" field.
 func (hu *HelpUpdate) SetSubject(s string) *HelpUpdate {
 	hu.mutation.SetSubject(s)
 	return hu
 }
 
+// SetNillableSubject sets the "subject" field if the given value is not nil.
+func (hu *HelpUpdate) SetNillableSubject(s *string) *HelpUpdate {
+	if s != nil {
+		hu.SetSubject(*s)
+	}
+	return hu
+}
+
 // SetBody sets the "body" field.
 func (hu *HelpUpdate) SetBody(s string) *HelpUpdate {
 	hu.mutation.SetBody(s)
+	return hu
+}
+
+// SetNillableBody sets the "body" field if the given value is not nil.
+func (hu *HelpUpdate) SetNillableBody(s *string) *HelpUpdate {
+	if s != nil {
+		hu.SetBody(*s)
+	}
 	return hu
 }
 
@@ -175,15 +199,39 @@ func (huo *HelpUpdateOne) SetCategory(s string) *HelpUpdateOne {
 	return huo
 }
 
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (huo *HelpUpdateOne) SetNillableCategory(s *string) *HelpUpdateOne {
+	if s != nil {
+		huo.SetCategory(*s)
+	}
+	return huo
+}
+
 // SetSubject sets the "subject" field.
 func (huo *HelpUpdateOne) SetSubject(s string) *HelpUpdateOne {
 	huo.mutation.SetSubject(s)
 	return huo
 }
 
+// SetNillableSubject sets the "subject" field if the given value is not nil.
+func (huo *HelpUpdateOne) SetNillableSubject(s *string) *HelpUpdateOne {
+	if s != nil {
+		huo.SetSubject(*s)
+	}
+	return huo
+}
+
 // SetBody sets the "body" field.
 func (huo *HelpUpdateOne) SetBody(s string) *HelpUpdateOne {
 	huo.mutation.SetBody(s)
+	return huo
+}
+
+// SetNillableBody sets the "body" field if the given value is not nil.
+func (huo *HelpUpdateOne) SetNillableBody(s *string) *HelpUpdateOne {
+	if s != nil {
+		huo.SetBody(*s)
+	}
 	return huo
 }
 

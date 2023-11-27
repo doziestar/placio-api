@@ -2,9 +2,7 @@ package smartMenu
 
 import (
 	"context"
-	firebase "firebase.google.com/go"
 	"fmt"
-	"google.golang.org/api/option"
 	"image/color"
 	"io"
 	"io/ioutil"
@@ -22,6 +20,13 @@ import (
 	"placio-pkg/errors"
 	"strings"
 	"time"
+
+	firebase "firebase.google.com/go"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"google.golang.org/api/option"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	qrcode "github.com/skip2/go-qrcode"
@@ -57,17 +62,9 @@ type ISmartMenu interface {
 	DeleteTable(context.Context, string) error
 	RestoreTable(context.Context, string) (*ent.PlaceTable, error)
 	RegenerateQRCode(context.Context, string) (*ent.PlaceTable, error)
-
-	CreateOrder(context.Context, string, string, *ent.Order) (*ent.Order, error)
-	GetOrdersForATable(context.Context, string) ([]*ent.Order, error)
-	GetOrders(context.Context, string) ([]*ent.Order, error)
-	GetOrderByID(context.Context, string) (*ent.Order, error)
-	UpdateOrder(context.Context, string, *ent.Order) (*ent.Order, error)
-	DeleteOrder(context.Context, string) error
-	RestoreOrder(context.Context, string) (*ent.Order, error)
 }
 
-func NewSmartMenuService(client *ent.Client, mediaService media.MediaService, cloud *cloudinary.Cloudinary) *SmartMenuService {
+func NewSmartMenuService(client *ent.Client, mediaService media.MediaService, cloud *cloudinary.Cloudinary) ISmartMenu {
 	return &SmartMenuService{client: client, mediaService: mediaService, cloud: cloud}
 }
 
@@ -153,13 +150,77 @@ func (s *SmartMenuService) GetMenuItemByID(ctx context.Context, menuItemId strin
 }
 
 func (s *SmartMenuService) UpdateMenuItem(ctx context.Context, menuItemId string, menuItemDto *ent.MenuItem) (*ent.MenuItem, error) {
-	return s.client.MenuItem.
-		UpdateOneID(menuItemId).
-		SetName(menuItemDto.Name).
-		SetDescription(menuItemDto.Description).
-		SetPrice(menuItemDto.Price).
-		SetIsAvailable(menuItemDto.IsAvailable).
-		Save(ctx)
+	update := s.client.MenuItem.UpdateOneID(menuItemId)
+
+	if menuItemDto.Name != "" {
+		update.SetName(menuItemDto.Name)
+	}
+	if menuItemDto.Price != 0 {
+		update.SetPrice(menuItemDto.Price)
+	}
+	if menuItemDto.IsAvailable != true {
+		update.SetIsAvailable(menuItemDto.IsAvailable)
+	}
+
+	// Optional string fields
+	if menuItemDto.Description != "" {
+		update.SetDescription(menuItemDto.Description)
+	}
+	if menuItemDto.Currency != "" {
+		update.SetCurrency(menuItemDto.Currency)
+	}
+	if menuItemDto.DeletedAt != "" {
+		update.SetDeletedAt(menuItemDto.DeletedAt)
+	}
+	if menuItemDto.ImageURL != "" {
+		update.SetImageURL(menuItemDto.ImageURL)
+	}
+	if menuItemDto.ChefSpecialNote != "" {
+		update.SetChefSpecialNote(menuItemDto.ChefSpecialNote)
+	}
+	if menuItemDto.Category != "" {
+		update.SetCategory(menuItemDto.Category)
+	}
+
+	if menuItemDto.Season != "" {
+		update.SetSeason(menuItemDto.Season)
+	}
+	if menuItemDto.PromotionDescription != "" {
+		update.SetPromotionDescription(menuItemDto.PromotionDescription)
+	}
+
+	// Optional int fields
+	if menuItemDto.PreparationTime != 0 {
+		update.SetPreparationTime(menuItemDto.PreparationTime)
+	}
+	if menuItemDto.Calories != 0 {
+		update.SetCalories(menuItemDto.Calories)
+	}
+	if menuItemDto.ServeSize != 0 {
+		update.SetServeSize(menuItemDto.ServeSize)
+	}
+
+	if menuItemDto.DiscountPercentage != 0 {
+		update.SetDiscountPercentage(menuItemDto.DiscountPercentage)
+	}
+
+	// Optional boolean fields
+	update.SetIsDeleted(menuItemDto.IsDeleted)
+	update.SetIsFeatured(menuItemDto.IsFeatured)
+	update.SetIsNew(menuItemDto.IsNew)
+	update.SetIsSeasonal(menuItemDto.IsSeasonal)
+
+	if menuItemDto.Options != nil {
+		update.SetOptions(menuItemDto.Options)
+	}
+	if menuItemDto.Allergens != nil {
+		update.SetAllergens(menuItemDto.Allergens)
+	}
+	if menuItemDto.Tags != nil {
+		update.SetTags(menuItemDto.Tags)
+	}
+
+	return update.Save(ctx)
 }
 
 func (s *SmartMenuService) DeleteMenuItem(ctx context.Context, menuItemId string) error {
@@ -395,7 +456,9 @@ func (s *SmartMenuService) GetTables(ctx context.Context, placeId string) ([]*en
 	return s.client.Place.
 		Query().
 		Where(place.ID(placeId)).
+		Where(place.HasTables()).
 		QueryTables().
+		Where(placetable.IsDeleted(false)).
 		All(ctx)
 }
 
@@ -486,7 +549,8 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 	}
 	tmpFile.Close()
 
-	signedURL, err := s.uploadQRCodeToFirebase(ctx, tmpFile.Name(), "image/png")
+	//signedURL, err := s.uploadQRCodeToFirebase(ctx, tmpFile.Name(), "image/png")
+	signedURL, err := s.uploadQRCodeToDigitalOceanSpace(ctx, table, tmpFile.Name(), "image/png")
 	if err != nil {
 		return nil, err
 	}
@@ -503,6 +567,63 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
 	}
 
 	return updatedTable, nil
+}
+
+func (s *SmartMenuService) uploadQRCodeToDigitalOceanSpace(ctx context.Context, table *ent.PlaceTable, filePath, contentType string) (string, error) {
+	// DigitalOcean Spaces credentials and configuration
+	accessKeyID := "DO00YJ68Y7KMTYP3J7HE"
+	secretAccessKey := "P55ReutOGyn1d4qThoPCMj+O7qCUggr/Y+DQIUwYtjc"
+	spaceName := "placio"
+	endpoint := "https://placio.fra1.digitaloceanspaces.com"
+	cdnEndpoint := "https://placio.fra1.cdn.digitaloceanspaces.com"
+
+	// Create a new session without specifying a region
+	sess, err := session.NewSession(&aws.Config{
+		Endpoint:         aws.String(endpoint),
+		Region:           aws.String("fra1"),
+		Credentials:      credentials.NewStaticCredentials(accessKeyID, secretAccessKey, ""),
+		S3ForcePathStyle: aws.Bool(true),
+	})
+	if err != nil {
+		return "", fmt.Errorf("error creating session: %w", err)
+	}
+
+	// Open the file to upload
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	// Construct the unique file name
+	domainName := table.Edges.Place.Edges.Business.Edges.Websites.DomainName
+	tableNumber := table.Number
+	uniqueFileName := fmt.Sprintf("barcode/%s-%s-%s", domainName, string(tableNumber), filepath.Base(filePath))
+
+	// Create an uploader with the session and default options
+	uploader := s3manager.NewUploader(sess)
+
+	// Upload the file and get the URL in return
+	result, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket:             aws.String(spaceName),
+		Key:                aws.String(uniqueFileName),
+		ACL:                aws.String("public-read"),
+		Body:               file,
+		ContentType:        aws.String(contentType),
+		ContentDisposition: aws.String("inline"),
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("failed to upload to DigitalOcean Space: %w", err)
+	}
+
+	// Direct URL of the uploaded file
+	directURL := result.Location
+
+	// Construct the CDN URL by replacing the direct URL's domain with the CDN endpoint
+	cdnURL := strings.Replace(directURL, endpoint, cdnEndpoint, 1)
+
+	return cdnURL, nil
 }
 
 func (s *SmartMenuService) uploadQRCodeToFirebase(ctx context.Context, filePath, contentType string) (string, error) {
@@ -544,41 +665,4 @@ func (s *SmartMenuService) uploadQRCodeToFirebase(ctx context.Context, filePath,
 	}
 
 	return signedURL, nil
-}
-
-func (s *SmartMenuService) CreateOrder(ctx context.Context, tableId string, placeId string, order *ent.Order) (*ent.Order, error) {
-	return s.client.Order.
-		Create().
-		SetID(uuid.New().String()).
-		Save(ctx)
-}
-
-func (s *SmartMenuService) GetOrdersForATable(ctx context.Context, s2 string) ([]*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) GetOrders(ctx context.Context, s2 string) ([]*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) GetOrderByID(ctx context.Context, s2 string) (*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) UpdateOrder(ctx context.Context, s2 string, order *ent.Order) (*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) DeleteOrder(ctx context.Context, s2 string) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s *SmartMenuService) RestoreOrder(ctx context.Context, s2 string) (*ent.Order, error) {
-	//TODO implement me
-	panic("implement me")
 }

@@ -35,6 +35,14 @@ func (ubu *UserBusinessUpdate) SetRole(s string) *UserBusinessUpdate {
 	return ubu
 }
 
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (ubu *UserBusinessUpdate) SetNillableRole(s *string) *UserBusinessUpdate {
+	if s != nil {
+		ubu.SetRole(*s)
+	}
+	return ubu
+}
+
 // SetPermissions sets the "permissions" field.
 func (ubu *UserBusinessUpdate) SetPermissions(s string) *UserBusinessUpdate {
 	ubu.mutation.SetPermissions(s)
@@ -249,6 +257,14 @@ type UserBusinessUpdateOne struct {
 // SetRole sets the "role" field.
 func (ubuo *UserBusinessUpdateOne) SetRole(s string) *UserBusinessUpdateOne {
 	ubuo.mutation.SetRole(s)
+	return ubuo
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (ubuo *UserBusinessUpdateOne) SetNillableRole(s *string) *UserBusinessUpdateOne {
+	if s != nil {
+		ubuo.SetRole(*s)
+	}
 	return ubuo
 }
 

@@ -40,9 +40,25 @@ func (mu *MediaUpdate) SetURL(s string) *MediaUpdate {
 	return mu
 }
 
+// SetNillableURL sets the "URL" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableURL(s *string) *MediaUpdate {
+	if s != nil {
+		mu.SetURL(*s)
+	}
+	return mu
+}
+
 // SetMediaType sets the "MediaType" field.
 func (mu *MediaUpdate) SetMediaType(s string) *MediaUpdate {
 	mu.mutation.SetMediaType(s)
+	return mu
+}
+
+// SetNillableMediaType sets the "MediaType" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableMediaType(s *string) *MediaUpdate {
+	if s != nil {
+		mu.SetMediaType(*s)
+	}
 	return mu
 }
 
@@ -623,9 +639,25 @@ func (muo *MediaUpdateOne) SetURL(s string) *MediaUpdateOne {
 	return muo
 }
 
+// SetNillableURL sets the "URL" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableURL(s *string) *MediaUpdateOne {
+	if s != nil {
+		muo.SetURL(*s)
+	}
+	return muo
+}
+
 // SetMediaType sets the "MediaType" field.
 func (muo *MediaUpdateOne) SetMediaType(s string) *MediaUpdateOne {
 	muo.mutation.SetMediaType(s)
+	return muo
+}
+
+// SetNillableMediaType sets the "MediaType" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableMediaType(s *string) *MediaUpdateOne {
+	if s != nil {
+		muo.SetMediaType(*s)
+	}
 	return muo
 }
 

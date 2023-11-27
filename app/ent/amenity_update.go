@@ -34,9 +34,25 @@ func (au *AmenityUpdate) SetName(s string) *AmenityUpdate {
 	return au
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (au *AmenityUpdate) SetNillableName(s *string) *AmenityUpdate {
+	if s != nil {
+		au.SetName(*s)
+	}
+	return au
+}
+
 // SetIcon sets the "icon" field.
 func (au *AmenityUpdate) SetIcon(s string) *AmenityUpdate {
 	au.mutation.SetIcon(s)
+	return au
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (au *AmenityUpdate) SetNillableIcon(s *string) *AmenityUpdate {
+	if s != nil {
+		au.SetIcon(*s)
+	}
 	return au
 }
 
@@ -194,9 +210,25 @@ func (auo *AmenityUpdateOne) SetName(s string) *AmenityUpdateOne {
 	return auo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (auo *AmenityUpdateOne) SetNillableName(s *string) *AmenityUpdateOne {
+	if s != nil {
+		auo.SetName(*s)
+	}
+	return auo
+}
+
 // SetIcon sets the "icon" field.
 func (auo *AmenityUpdateOne) SetIcon(s string) *AmenityUpdateOne {
 	auo.mutation.SetIcon(s)
+	return auo
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (auo *AmenityUpdateOne) SetNillableIcon(s *string) *AmenityUpdateOne {
+	if s != nil {
+		auo.SetIcon(*s)
+	}
 	return auo
 }
 

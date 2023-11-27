@@ -36,9 +36,25 @@ func (bu *BookingUpdate) SetStartDate(t time.Time) *BookingUpdate {
 	return bu
 }
 
+// SetNillableStartDate sets the "startDate" field if the given value is not nil.
+func (bu *BookingUpdate) SetNillableStartDate(t *time.Time) *BookingUpdate {
+	if t != nil {
+		bu.SetStartDate(*t)
+	}
+	return bu
+}
+
 // SetEndDate sets the "endDate" field.
 func (bu *BookingUpdate) SetEndDate(t time.Time) *BookingUpdate {
 	bu.mutation.SetEndDate(t)
+	return bu
+}
+
+// SetNillableEndDate sets the "endDate" field if the given value is not nil.
+func (bu *BookingUpdate) SetNillableEndDate(t *time.Time) *BookingUpdate {
+	if t != nil {
+		bu.SetEndDate(*t)
+	}
 	return bu
 }
 
@@ -48,9 +64,25 @@ func (bu *BookingUpdate) SetStatus(s string) *BookingUpdate {
 	return bu
 }
 
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (bu *BookingUpdate) SetNillableStatus(s *string) *BookingUpdate {
+	if s != nil {
+		bu.SetStatus(*s)
+	}
+	return bu
+}
+
 // SetBookingDate sets the "bookingDate" field.
 func (bu *BookingUpdate) SetBookingDate(t time.Time) *BookingUpdate {
 	bu.mutation.SetBookingDate(t)
+	return bu
+}
+
+// SetNillableBookingDate sets the "bookingDate" field if the given value is not nil.
+func (bu *BookingUpdate) SetNillableBookingDate(t *time.Time) *BookingUpdate {
+	if t != nil {
+		bu.SetBookingDate(*t)
+	}
 	return bu
 }
 
@@ -241,9 +273,25 @@ func (buo *BookingUpdateOne) SetStartDate(t time.Time) *BookingUpdateOne {
 	return buo
 }
 
+// SetNillableStartDate sets the "startDate" field if the given value is not nil.
+func (buo *BookingUpdateOne) SetNillableStartDate(t *time.Time) *BookingUpdateOne {
+	if t != nil {
+		buo.SetStartDate(*t)
+	}
+	return buo
+}
+
 // SetEndDate sets the "endDate" field.
 func (buo *BookingUpdateOne) SetEndDate(t time.Time) *BookingUpdateOne {
 	buo.mutation.SetEndDate(t)
+	return buo
+}
+
+// SetNillableEndDate sets the "endDate" field if the given value is not nil.
+func (buo *BookingUpdateOne) SetNillableEndDate(t *time.Time) *BookingUpdateOne {
+	if t != nil {
+		buo.SetEndDate(*t)
+	}
 	return buo
 }
 
@@ -253,9 +301,25 @@ func (buo *BookingUpdateOne) SetStatus(s string) *BookingUpdateOne {
 	return buo
 }
 
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (buo *BookingUpdateOne) SetNillableStatus(s *string) *BookingUpdateOne {
+	if s != nil {
+		buo.SetStatus(*s)
+	}
+	return buo
+}
+
 // SetBookingDate sets the "bookingDate" field.
 func (buo *BookingUpdateOne) SetBookingDate(t time.Time) *BookingUpdateOne {
 	buo.mutation.SetBookingDate(t)
+	return buo
+}
+
+// SetNillableBookingDate sets the "bookingDate" field if the given value is not nil.
+func (buo *BookingUpdateOne) SetNillableBookingDate(t *time.Time) *BookingUpdateOne {
+	if t != nil {
+		buo.SetBookingDate(*t)
+	}
 	return buo
 }
 

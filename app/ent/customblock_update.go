@@ -34,6 +34,14 @@ func (cbu *CustomBlockUpdate) SetContent(s string) *CustomBlockUpdate {
 	return cbu
 }
 
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (cbu *CustomBlockUpdate) SetNillableContent(s *string) *CustomBlockUpdate {
+	if s != nil {
+		cbu.SetContent(*s)
+	}
+	return cbu
+}
+
 // SetWebsiteID sets the "website" edge to the Website entity by ID.
 func (cbu *CustomBlockUpdate) SetWebsiteID(id string) *CustomBlockUpdate {
 	cbu.mutation.SetWebsiteID(id)
@@ -158,6 +166,14 @@ type CustomBlockUpdateOne struct {
 // SetContent sets the "content" field.
 func (cbuo *CustomBlockUpdateOne) SetContent(s string) *CustomBlockUpdateOne {
 	cbuo.mutation.SetContent(s)
+	return cbuo
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (cbuo *CustomBlockUpdateOne) SetNillableContent(s *string) *CustomBlockUpdateOne {
+	if s != nil {
+		cbuo.SetContent(*s)
+	}
 	return cbuo
 }
 

@@ -39,15 +39,39 @@ func (nu *NotificationUpdate) SetTitle(s string) *NotificationUpdate {
 	return nu
 }
 
+// SetNillableTitle sets the "title" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableTitle(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetTitle(*s)
+	}
+	return nu
+}
+
 // SetMessage sets the "message" field.
 func (nu *NotificationUpdate) SetMessage(s string) *NotificationUpdate {
 	nu.mutation.SetMessage(s)
 	return nu
 }
 
+// SetNillableMessage sets the "message" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableMessage(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetMessage(*s)
+	}
+	return nu
+}
+
 // SetLink sets the "link" field.
 func (nu *NotificationUpdate) SetLink(s string) *NotificationUpdate {
 	nu.mutation.SetLink(s)
+	return nu
+}
+
+// SetNillableLink sets the "link" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableLink(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetLink(*s)
+	}
 	return nu
 }
 
@@ -113,9 +137,25 @@ func (nu *NotificationUpdate) SetCreatedAt(t time.Time) *NotificationUpdate {
 	return nu
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableCreatedAt(t *time.Time) *NotificationUpdate {
+	if t != nil {
+		nu.SetCreatedAt(*t)
+	}
+	return nu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (nu *NotificationUpdate) SetUpdatedAt(t time.Time) *NotificationUpdate {
 	nu.mutation.SetUpdatedAt(t)
+	return nu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableUpdatedAt(t *time.Time) *NotificationUpdate {
+	if t != nil {
+		nu.SetUpdatedAt(*t)
+	}
 	return nu
 }
 
@@ -125,9 +165,25 @@ func (nu *NotificationUpdate) SetNotifiableType(s string) *NotificationUpdate {
 	return nu
 }
 
+// SetNillableNotifiableType sets the "notifiable_type" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableNotifiableType(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetNotifiableType(*s)
+	}
+	return nu
+}
+
 // SetNotifiableID sets the "notifiable_id" field.
 func (nu *NotificationUpdate) SetNotifiableID(s string) *NotificationUpdate {
 	nu.mutation.SetNotifiableID(s)
+	return nu
+}
+
+// SetNillableNotifiableID sets the "notifiable_id" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableNotifiableID(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetNotifiableID(*s)
+	}
 	return nu
 }
 
@@ -137,9 +193,25 @@ func (nu *NotificationUpdate) SetTriggeredBy(s string) *NotificationUpdate {
 	return nu
 }
 
+// SetNillableTriggeredBy sets the "triggered_by" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableTriggeredBy(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetTriggeredBy(*s)
+	}
+	return nu
+}
+
 // SetTriggeredTo sets the "triggered_to" field.
 func (nu *NotificationUpdate) SetTriggeredTo(s string) *NotificationUpdate {
 	nu.mutation.SetTriggeredTo(s)
+	return nu
+}
+
+// SetNillableTriggeredTo sets the "triggered_to" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableTriggeredTo(s *string) *NotificationUpdate {
+	if s != nil {
+		nu.SetTriggeredTo(*s)
+	}
 	return nu
 }
 
@@ -700,15 +772,39 @@ func (nuo *NotificationUpdateOne) SetTitle(s string) *NotificationUpdateOne {
 	return nuo
 }
 
+// SetNillableTitle sets the "title" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableTitle(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetTitle(*s)
+	}
+	return nuo
+}
+
 // SetMessage sets the "message" field.
 func (nuo *NotificationUpdateOne) SetMessage(s string) *NotificationUpdateOne {
 	nuo.mutation.SetMessage(s)
 	return nuo
 }
 
+// SetNillableMessage sets the "message" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableMessage(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetMessage(*s)
+	}
+	return nuo
+}
+
 // SetLink sets the "link" field.
 func (nuo *NotificationUpdateOne) SetLink(s string) *NotificationUpdateOne {
 	nuo.mutation.SetLink(s)
+	return nuo
+}
+
+// SetNillableLink sets the "link" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableLink(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetLink(*s)
+	}
 	return nuo
 }
 
@@ -774,9 +870,25 @@ func (nuo *NotificationUpdateOne) SetCreatedAt(t time.Time) *NotificationUpdateO
 	return nuo
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableCreatedAt(t *time.Time) *NotificationUpdateOne {
+	if t != nil {
+		nuo.SetCreatedAt(*t)
+	}
+	return nuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (nuo *NotificationUpdateOne) SetUpdatedAt(t time.Time) *NotificationUpdateOne {
 	nuo.mutation.SetUpdatedAt(t)
+	return nuo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableUpdatedAt(t *time.Time) *NotificationUpdateOne {
+	if t != nil {
+		nuo.SetUpdatedAt(*t)
+	}
 	return nuo
 }
 
@@ -786,9 +898,25 @@ func (nuo *NotificationUpdateOne) SetNotifiableType(s string) *NotificationUpdat
 	return nuo
 }
 
+// SetNillableNotifiableType sets the "notifiable_type" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableNotifiableType(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetNotifiableType(*s)
+	}
+	return nuo
+}
+
 // SetNotifiableID sets the "notifiable_id" field.
 func (nuo *NotificationUpdateOne) SetNotifiableID(s string) *NotificationUpdateOne {
 	nuo.mutation.SetNotifiableID(s)
+	return nuo
+}
+
+// SetNillableNotifiableID sets the "notifiable_id" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableNotifiableID(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetNotifiableID(*s)
+	}
 	return nuo
 }
 
@@ -798,9 +926,25 @@ func (nuo *NotificationUpdateOne) SetTriggeredBy(s string) *NotificationUpdateOn
 	return nuo
 }
 
+// SetNillableTriggeredBy sets the "triggered_by" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableTriggeredBy(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetTriggeredBy(*s)
+	}
+	return nuo
+}
+
 // SetTriggeredTo sets the "triggered_to" field.
 func (nuo *NotificationUpdateOne) SetTriggeredTo(s string) *NotificationUpdateOne {
 	nuo.mutation.SetTriggeredTo(s)
+	return nuo
+}
+
+// SetNillableTriggeredTo sets the "triggered_to" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableTriggeredTo(s *string) *NotificationUpdateOne {
+	if s != nil {
+		nuo.SetTriggeredTo(*s)
+	}
 	return nuo
 }
 

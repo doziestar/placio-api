@@ -72,6 +72,14 @@ func (ou *OrderUpdate) SetTotalAmount(f float64) *OrderUpdate {
 	return ou
 }
 
+// SetNillableTotalAmount sets the "total_amount" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableTotalAmount(f *float64) *OrderUpdate {
+	if f != nil {
+		ou.SetTotalAmount(*f)
+	}
+	return ou
+}
+
 // AddTotalAmount adds f to the "total_amount" field.
 func (ou *OrderUpdate) AddTotalAmount(f float64) *OrderUpdate {
 	ou.mutation.AddTotalAmount(f)
@@ -491,6 +499,14 @@ func (ouo *OrderUpdateOne) SetNillableStatus(o *order.Status) *OrderUpdateOne {
 func (ouo *OrderUpdateOne) SetTotalAmount(f float64) *OrderUpdateOne {
 	ouo.mutation.ResetTotalAmount()
 	ouo.mutation.SetTotalAmount(f)
+	return ouo
+}
+
+// SetNillableTotalAmount sets the "total_amount" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableTotalAmount(f *float64) *OrderUpdateOne {
+	if f != nil {
+		ouo.SetTotalAmount(*f)
+	}
 	return ouo
 }
 

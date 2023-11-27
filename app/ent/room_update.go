@@ -35,9 +35,25 @@ func (ru *RoomUpdate) SetNumber(s string) *RoomUpdate {
 	return ru
 }
 
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableNumber(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetNumber(*s)
+	}
+	return ru
+}
+
 // SetType sets the "type" field.
 func (ru *RoomUpdate) SetType(s string) *RoomUpdate {
 	ru.mutation.SetType(s)
+	return ru
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableType(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetType(*s)
+	}
 	return ru
 }
 
@@ -45,6 +61,14 @@ func (ru *RoomUpdate) SetType(s string) *RoomUpdate {
 func (ru *RoomUpdate) SetPrice(f float64) *RoomUpdate {
 	ru.mutation.ResetPrice()
 	ru.mutation.SetPrice(f)
+	return ru
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillablePrice(f *float64) *RoomUpdate {
+	if f != nil {
+		ru.SetPrice(*f)
+	}
 	return ru
 }
 
@@ -77,6 +101,14 @@ func (ru *RoomUpdate) ClearDescription() *RoomUpdate {
 // SetAvailability sets the "availability" field.
 func (ru *RoomUpdate) SetAvailability(b bool) *RoomUpdate {
 	ru.mutation.SetAvailability(b)
+	return ru
+}
+
+// SetNillableAvailability sets the "availability" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableAvailability(b *bool) *RoomUpdate {
+	if b != nil {
+		ru.SetAvailability(*b)
+	}
 	return ru
 }
 
@@ -329,9 +361,25 @@ func (ruo *RoomUpdateOne) SetNumber(s string) *RoomUpdateOne {
 	return ruo
 }
 
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableNumber(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetNumber(*s)
+	}
+	return ruo
+}
+
 // SetType sets the "type" field.
 func (ruo *RoomUpdateOne) SetType(s string) *RoomUpdateOne {
 	ruo.mutation.SetType(s)
+	return ruo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableType(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetType(*s)
+	}
 	return ruo
 }
 
@@ -339,6 +387,14 @@ func (ruo *RoomUpdateOne) SetType(s string) *RoomUpdateOne {
 func (ruo *RoomUpdateOne) SetPrice(f float64) *RoomUpdateOne {
 	ruo.mutation.ResetPrice()
 	ruo.mutation.SetPrice(f)
+	return ruo
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillablePrice(f *float64) *RoomUpdateOne {
+	if f != nil {
+		ruo.SetPrice(*f)
+	}
 	return ruo
 }
 
@@ -371,6 +427,14 @@ func (ruo *RoomUpdateOne) ClearDescription() *RoomUpdateOne {
 // SetAvailability sets the "availability" field.
 func (ruo *RoomUpdateOne) SetAvailability(b bool) *RoomUpdateOne {
 	ruo.mutation.SetAvailability(b)
+	return ruo
+}
+
+// SetNillableAvailability sets the "availability" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableAvailability(b *bool) *RoomUpdateOne {
+	if b != nil {
+		ruo.SetAvailability(*b)
+	}
 	return ruo
 }
 

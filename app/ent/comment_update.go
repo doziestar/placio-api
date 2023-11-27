@@ -37,6 +37,14 @@ func (cu *CommentUpdate) SetContent(s string) *CommentUpdate {
 	return cu
 }
 
+// SetNillableContent sets the "Content" field if the given value is not nil.
+func (cu *CommentUpdate) SetNillableContent(s *string) *CommentUpdate {
+	if s != nil {
+		cu.SetContent(*s)
+	}
+	return cu
+}
+
 // SetCreatedAt sets the "CreatedAt" field.
 func (cu *CommentUpdate) SetCreatedAt(t time.Time) *CommentUpdate {
 	cu.mutation.SetCreatedAt(t)
@@ -482,6 +490,14 @@ type CommentUpdateOne struct {
 // SetContent sets the "Content" field.
 func (cuo *CommentUpdateOne) SetContent(s string) *CommentUpdateOne {
 	cuo.mutation.SetContent(s)
+	return cuo
+}
+
+// SetNillableContent sets the "Content" field if the given value is not nil.
+func (cuo *CommentUpdateOne) SetNillableContent(s *string) *CommentUpdateOne {
+	if s != nil {
+		cuo.SetContent(*s)
+	}
 	return cuo
 }
 

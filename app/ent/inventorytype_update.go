@@ -35,6 +35,14 @@ func (itu *InventoryTypeUpdate) SetName(s string) *InventoryTypeUpdate {
 	return itu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (itu *InventoryTypeUpdate) SetNillableName(s *string) *InventoryTypeUpdate {
+	if s != nil {
+		itu.SetName(*s)
+	}
+	return itu
+}
+
 // SetDescription sets the "description" field.
 func (itu *InventoryTypeUpdate) SetDescription(s string) *InventoryTypeUpdate {
 	itu.mutation.SetDescription(s)
@@ -407,6 +415,14 @@ type InventoryTypeUpdateOne struct {
 // SetName sets the "name" field.
 func (ituo *InventoryTypeUpdateOne) SetName(s string) *InventoryTypeUpdateOne {
 	ituo.mutation.SetName(s)
+	return ituo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ituo *InventoryTypeUpdateOne) SetNillableName(s *string) *InventoryTypeUpdateOne {
+	if s != nil {
+		ituo.SetName(*s)
+	}
 	return ituo
 }
 

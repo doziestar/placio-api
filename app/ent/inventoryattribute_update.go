@@ -35,6 +35,14 @@ func (iau *InventoryAttributeUpdate) SetName(s string) *InventoryAttributeUpdate
 	return iau
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iau *InventoryAttributeUpdate) SetNillableName(s *string) *InventoryAttributeUpdate {
+	if s != nil {
+		iau.SetName(*s)
+	}
+	return iau
+}
+
 // SetImageURL sets the "image_url" field.
 func (iau *InventoryAttributeUpdate) SetImageURL(s string) *InventoryAttributeUpdate {
 	iau.mutation.SetImageURL(s)
@@ -345,6 +353,14 @@ type InventoryAttributeUpdateOne struct {
 // SetName sets the "name" field.
 func (iauo *InventoryAttributeUpdateOne) SetName(s string) *InventoryAttributeUpdateOne {
 	iauo.mutation.SetName(s)
+	return iauo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iauo *InventoryAttributeUpdateOne) SetNillableName(s *string) *InventoryAttributeUpdateOne {
+	if s != nil {
+		iauo.SetName(*s)
+	}
 	return iauo
 }
 

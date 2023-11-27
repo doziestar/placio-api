@@ -35,6 +35,14 @@ func (asu *AccountSettingsUpdate) SetTwoFactorAuthentication(b bool) *AccountSet
 	return asu
 }
 
+// SetNillableTwoFactorAuthentication sets the "TwoFactorAuthentication" field if the given value is not nil.
+func (asu *AccountSettingsUpdate) SetNillableTwoFactorAuthentication(b *bool) *AccountSettingsUpdate {
+	if b != nil {
+		asu.SetTwoFactorAuthentication(*b)
+	}
+	return asu
+}
+
 // SetBlockedUsers sets the "BlockedUsers" field.
 func (asu *AccountSettingsUpdate) SetBlockedUsers(s []string) *AccountSettingsUpdate {
 	asu.mutation.SetBlockedUsers(s)
@@ -199,6 +207,14 @@ type AccountSettingsUpdateOne struct {
 // SetTwoFactorAuthentication sets the "TwoFactorAuthentication" field.
 func (asuo *AccountSettingsUpdateOne) SetTwoFactorAuthentication(b bool) *AccountSettingsUpdateOne {
 	asuo.mutation.SetTwoFactorAuthentication(b)
+	return asuo
+}
+
+// SetNillableTwoFactorAuthentication sets the "TwoFactorAuthentication" field if the given value is not nil.
+func (asuo *AccountSettingsUpdateOne) SetNillableTwoFactorAuthentication(b *bool) *AccountSettingsUpdateOne {
+	if b != nil {
+		asuo.SetTwoFactorAuthentication(*b)
+	}
 	return asuo
 }
 

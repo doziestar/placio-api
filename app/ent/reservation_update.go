@@ -36,9 +36,25 @@ func (ru *ReservationUpdate) SetDate(t time.Time) *ReservationUpdate {
 	return ru
 }
 
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (ru *ReservationUpdate) SetNillableDate(t *time.Time) *ReservationUpdate {
+	if t != nil {
+		ru.SetDate(*t)
+	}
+	return ru
+}
+
 // SetTime sets the "time" field.
 func (ru *ReservationUpdate) SetTime(t time.Time) *ReservationUpdate {
 	ru.mutation.SetTime(t)
+	return ru
+}
+
+// SetNillableTime sets the "time" field if the given value is not nil.
+func (ru *ReservationUpdate) SetNillableTime(t *time.Time) *ReservationUpdate {
+	if t != nil {
+		ru.SetTime(*t)
+	}
 	return ru
 }
 
@@ -46,6 +62,14 @@ func (ru *ReservationUpdate) SetTime(t time.Time) *ReservationUpdate {
 func (ru *ReservationUpdate) SetNumberOfPeople(i int) *ReservationUpdate {
 	ru.mutation.ResetNumberOfPeople()
 	ru.mutation.SetNumberOfPeople(i)
+	return ru
+}
+
+// SetNillableNumberOfPeople sets the "numberOfPeople" field if the given value is not nil.
+func (ru *ReservationUpdate) SetNillableNumberOfPeople(i *int) *ReservationUpdate {
+	if i != nil {
+		ru.SetNumberOfPeople(*i)
+	}
 	return ru
 }
 
@@ -58,6 +82,14 @@ func (ru *ReservationUpdate) AddNumberOfPeople(i int) *ReservationUpdate {
 // SetStatus sets the "status" field.
 func (ru *ReservationUpdate) SetStatus(s string) *ReservationUpdate {
 	ru.mutation.SetStatus(s)
+	return ru
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ru *ReservationUpdate) SetNillableStatus(s *string) *ReservationUpdate {
+	if s != nil {
+		ru.SetStatus(*s)
+	}
 	return ru
 }
 
@@ -251,9 +283,25 @@ func (ruo *ReservationUpdateOne) SetDate(t time.Time) *ReservationUpdateOne {
 	return ruo
 }
 
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (ruo *ReservationUpdateOne) SetNillableDate(t *time.Time) *ReservationUpdateOne {
+	if t != nil {
+		ruo.SetDate(*t)
+	}
+	return ruo
+}
+
 // SetTime sets the "time" field.
 func (ruo *ReservationUpdateOne) SetTime(t time.Time) *ReservationUpdateOne {
 	ruo.mutation.SetTime(t)
+	return ruo
+}
+
+// SetNillableTime sets the "time" field if the given value is not nil.
+func (ruo *ReservationUpdateOne) SetNillableTime(t *time.Time) *ReservationUpdateOne {
+	if t != nil {
+		ruo.SetTime(*t)
+	}
 	return ruo
 }
 
@@ -261,6 +309,14 @@ func (ruo *ReservationUpdateOne) SetTime(t time.Time) *ReservationUpdateOne {
 func (ruo *ReservationUpdateOne) SetNumberOfPeople(i int) *ReservationUpdateOne {
 	ruo.mutation.ResetNumberOfPeople()
 	ruo.mutation.SetNumberOfPeople(i)
+	return ruo
+}
+
+// SetNillableNumberOfPeople sets the "numberOfPeople" field if the given value is not nil.
+func (ruo *ReservationUpdateOne) SetNillableNumberOfPeople(i *int) *ReservationUpdateOne {
+	if i != nil {
+		ruo.SetNumberOfPeople(*i)
+	}
 	return ruo
 }
 
@@ -273,6 +329,14 @@ func (ruo *ReservationUpdateOne) AddNumberOfPeople(i int) *ReservationUpdateOne 
 // SetStatus sets the "status" field.
 func (ruo *ReservationUpdateOne) SetStatus(s string) *ReservationUpdateOne {
 	ruo.mutation.SetStatus(s)
+	return ruo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ruo *ReservationUpdateOne) SetNillableStatus(s *string) *ReservationUpdateOne {
+	if s != nil {
+		ruo.SetStatus(*s)
+	}
 	return ruo
 }
 

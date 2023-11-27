@@ -58,6 +58,14 @@ func (lu *LikeUpdate) SetLike(b bool) *LikeUpdate {
 	return lu
 }
 
+// SetNillableLike sets the "like" field if the given value is not nil.
+func (lu *LikeUpdate) SetNillableLike(b *bool) *LikeUpdate {
+	if b != nil {
+		lu.SetLike(*b)
+	}
+	return lu
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (lu *LikeUpdate) SetUserID(id string) *LikeUpdate {
 	lu.mutation.SetUserID(id)
@@ -376,6 +384,14 @@ func (luo *LikeUpdateOne) SetUpdatedAt(t time.Time) *LikeUpdateOne {
 // SetLike sets the "like" field.
 func (luo *LikeUpdateOne) SetLike(b bool) *LikeUpdateOne {
 	luo.mutation.SetLike(b)
+	return luo
+}
+
+// SetNillableLike sets the "like" field if the given value is not nil.
+func (luo *LikeUpdateOne) SetNillableLike(b *bool) *LikeUpdateOne {
+	if b != nil {
+		luo.SetLike(*b)
+	}
 	return luo
 }
 

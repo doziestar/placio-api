@@ -51,6 +51,14 @@ func (bu *BusinessUpdate) SetName(s string) *BusinessUpdate {
 	return bu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableName(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetName(*s)
+	}
+	return bu
+}
+
 // SetDescription sets the "description" field.
 func (bu *BusinessUpdate) SetDescription(s string) *BusinessUpdate {
 	bu.mutation.SetDescription(s)
@@ -1988,6 +1996,14 @@ type BusinessUpdateOne struct {
 // SetName sets the "name" field.
 func (buo *BusinessUpdateOne) SetName(s string) *BusinessUpdateOne {
 	buo.mutation.SetName(s)
+	return buo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableName(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetName(*s)
+	}
 	return buo
 }
 

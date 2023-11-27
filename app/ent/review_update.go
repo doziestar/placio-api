@@ -42,6 +42,14 @@ func (ru *ReviewUpdate) SetScore(f float64) *ReviewUpdate {
 	return ru
 }
 
+// SetNillableScore sets the "score" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableScore(f *float64) *ReviewUpdate {
+	if f != nil {
+		ru.SetScore(*f)
+	}
+	return ru
+}
+
 // AddScore adds f to the "score" field.
 func (ru *ReviewUpdate) AddScore(f float64) *ReviewUpdate {
 	ru.mutation.AddScore(f)
@@ -51,6 +59,14 @@ func (ru *ReviewUpdate) AddScore(f float64) *ReviewUpdate {
 // SetContent sets the "content" field.
 func (ru *ReviewUpdate) SetContent(s string) *ReviewUpdate {
 	ru.mutation.SetContent(s)
+	return ru
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableContent(s *string) *ReviewUpdate {
+	if s != nil {
+		ru.SetContent(*s)
+	}
 	return ru
 }
 
@@ -686,6 +702,14 @@ func (ruo *ReviewUpdateOne) SetScore(f float64) *ReviewUpdateOne {
 	return ruo
 }
 
+// SetNillableScore sets the "score" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableScore(f *float64) *ReviewUpdateOne {
+	if f != nil {
+		ruo.SetScore(*f)
+	}
+	return ruo
+}
+
 // AddScore adds f to the "score" field.
 func (ruo *ReviewUpdateOne) AddScore(f float64) *ReviewUpdateOne {
 	ruo.mutation.AddScore(f)
@@ -695,6 +719,14 @@ func (ruo *ReviewUpdateOne) AddScore(f float64) *ReviewUpdateOne {
 // SetContent sets the "content" field.
 func (ruo *ReviewUpdateOne) SetContent(s string) *ReviewUpdateOne {
 	ruo.mutation.SetContent(s)
+	return ruo
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableContent(s *string) *ReviewUpdateOne {
+	if s != nil {
+		ruo.SetContent(*s)
+	}
 	return ruo
 }
 

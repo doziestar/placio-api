@@ -37,6 +37,14 @@ func (cu *CategoryUpdate) SetName(s string) *CategoryUpdate {
 	return cu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableName(s *string) *CategoryUpdate {
+	if s != nil {
+		cu.SetName(*s)
+	}
+	return cu
+}
+
 // SetImage sets the "image" field.
 func (cu *CategoryUpdate) SetImage(s string) *CategoryUpdate {
 	cu.mutation.SetImage(s)
@@ -636,6 +644,14 @@ type CategoryUpdateOne struct {
 // SetName sets the "name" field.
 func (cuo *CategoryUpdateOne) SetName(s string) *CategoryUpdateOne {
 	cuo.mutation.SetName(s)
+	return cuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableName(s *string) *CategoryUpdateOne {
+	if s != nil {
+		cuo.SetName(*s)
+	}
 	return cuo
 }
 

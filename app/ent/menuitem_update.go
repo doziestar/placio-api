@@ -39,6 +39,14 @@ func (miu *MenuItemUpdate) SetName(s string) *MenuItemUpdate {
 	return miu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableName(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetName(*s)
+	}
+	return miu
+}
+
 // SetDescription sets the "description" field.
 func (miu *MenuItemUpdate) SetDescription(s string) *MenuItemUpdate {
 	miu.mutation.SetDescription(s)
@@ -63,6 +71,14 @@ func (miu *MenuItemUpdate) ClearDescription() *MenuItemUpdate {
 func (miu *MenuItemUpdate) SetPrice(f float64) *MenuItemUpdate {
 	miu.mutation.ResetPrice()
 	miu.mutation.SetPrice(f)
+	return miu
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillablePrice(f *float64) *MenuItemUpdate {
+	if f != nil {
+		miu.SetPrice(*f)
+	}
 	return miu
 }
 
@@ -1406,6 +1422,14 @@ func (miuo *MenuItemUpdateOne) SetName(s string) *MenuItemUpdateOne {
 	return miuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableName(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetName(*s)
+	}
+	return miuo
+}
+
 // SetDescription sets the "description" field.
 func (miuo *MenuItemUpdateOne) SetDescription(s string) *MenuItemUpdateOne {
 	miuo.mutation.SetDescription(s)
@@ -1430,6 +1454,14 @@ func (miuo *MenuItemUpdateOne) ClearDescription() *MenuItemUpdateOne {
 func (miuo *MenuItemUpdateOne) SetPrice(f float64) *MenuItemUpdateOne {
 	miuo.mutation.ResetPrice()
 	miuo.mutation.SetPrice(f)
+	return miuo
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillablePrice(f *float64) *MenuItemUpdateOne {
+	if f != nil {
+		miuo.SetPrice(*f)
+	}
 	return miuo
 }
 
