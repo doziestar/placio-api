@@ -17,9 +17,9 @@ func (Reservation) Fields() []ent.Field {
 			MaxLen(36).
 			Unique().
 			Immutable(),
-		field.Time("date"),
-		field.Time("time"),
-		field.Int("numberOfPeople"),
+		field.Time("startDate"),
+		field.Time("endDate"),
+		field.String("status"),
 		field.String("status"),
 	}
 }
@@ -28,6 +28,9 @@ func (Reservation) Fields() []ent.Field {
 func (Reservation) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("place", Place.Type).
+			Ref("reservations").
+			Unique(),
+		edge.From("room", Room.Type).
 			Ref("reservations").
 			Unique(),
 		edge.From("user", User.Type).

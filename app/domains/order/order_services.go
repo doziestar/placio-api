@@ -34,14 +34,14 @@ func NewOrderServices(client *ent.Client) OrderServices {
 	}
 }
 
-func (o *OrderServicesImpl) CreateOrder(ctx context.Context, orderDto *ent.Order, tableID, userid string, orderItems OrderWithItemsDTO ) (*ent.Order, error) {
+func (o *OrderServicesImpl) CreateOrder(ctx context.Context, orderDto *ent.Order, tableID, userid string, orderItems OrderWithItemsDTO) (*ent.Order, error) {
 	// Initialize totalAmount
 	var totalAmount float64
 
 	// Create a new order with the calculated total amount
 	orderQuery := o.client.Order.Create().
 		SetID(uuid.New().String()).
-		SetStatus(orderDto.Status).
+		SetStatus("pending").
 		SetTotalAmount(totalAmount). // Set the calculated total amount
 		SetAdditionalInfo(orderDto.AdditionalInfo)
 
@@ -60,23 +60,23 @@ func (o *OrderServicesImpl) CreateOrder(ctx context.Context, orderDto *ent.Order
 
 	// Add order items
 	for menuItemID, quantity := range orderItems.Items {
-    menuItem, err := o.client.MenuItem.Get(ctx, menuItemID)
-    if err != nil {
-        return nil, fmt.Errorf("failed to fetch menu item with ID %s: %v", menuItemID, err)
-    }
-    totalAmount += menuItem.Price * float64(quantity)
+		menuItem, err := o.client.MenuItem.Get(ctx, menuItemID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch menu item with ID %s: %v", menuItemID, err)
+		}
+		totalAmount += menuItem.Price * float64(quantity)
 
-    // Create order item
-    _, err = o.client.OrderItem.Create().
-        SetID(uuid.New().String()).
-        SetQuantity(quantity).
-        AddOrder(newOrder).
-        AddMenuItemIDs(menuItemID).
-        Save(ctx)
-    if err != nil {
-        return nil, fmt.Errorf("failed to create order item for menu item %s: %v", menuItemID, err)
-    }
-}
+		// Create order item
+		_, err = o.client.OrderItem.Create().
+			SetID(uuid.New().String()).
+			SetQuantity(quantity).
+			AddOrder(newOrder).
+			AddMenuItemIDs(menuItemID).
+			Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create order item for menu item %s: %v", menuItemID, err)
+		}
+	}
 
 	return newOrder, nil
 }

@@ -7,4 +7,3 @@ type OrderWithItemsDTO struct {
     Items map[string]int `json:"items"`
 }
 
-
