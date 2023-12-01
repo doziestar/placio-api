@@ -58,8 +58,14 @@ func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID, dom
 			WithBusiness(func(bq *ent.BusinessQuery) {
 				bq.WithPlaces(func(pq *ent.PlaceQuery) {
 					pq.WithMenus(func(mq *ent.MenuQuery) {
-						mq.WithMenuItems()
+						mq.WithMenuItems(func(miq *ent.MenuItemQuery) {
+							miq.WithMedia()
+						})
+
+						mq.WithMedia()
 					})
+
+					pq.WithMedias()
 				})
 
 				bq.WithEvents(func(eq *ent.EventQuery) {
