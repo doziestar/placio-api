@@ -16,7 +16,7 @@ type OrderServicesImpl struct {
 }
 
 type OrderServices interface {
-	CreateOrder(ctx context.Context, orderDto *ent.Order, tableID, userid string, orderItems OrderWithItemsDTO) (*ent.Order, error)
+	CreateOrder(ctx context.Context, tableID, userid string, orderItems OrderWithItemsDTO) (*ent.Order, error)
 	UpdateOrder(ctx context.Context, orderID string, orderDto OrderWithItemsDTO) (*ent.Order, error)
 	DeleteOrder(ctx context.Context, orderID string) error
 	GetOrder(ctx context.Context, orderID string) (*ent.Order, error)
@@ -34,7 +34,7 @@ func NewOrderServices(client *ent.Client) OrderServices {
 	}
 }
 
-func (o *OrderServicesImpl) CreateOrder(ctx context.Context, orderDto *ent.Order, tableID, userid string, orderItems OrderWithItemsDTO) (*ent.Order, error) {
+func (o *OrderServicesImpl) CreateOrder(ctx context.Context, tableID, userid string, orderItems OrderWithItemsDTO) (*ent.Order, error) {
 	// Initialize totalAmount
 	var totalAmount float64
 
@@ -42,8 +42,8 @@ func (o *OrderServicesImpl) CreateOrder(ctx context.Context, orderDto *ent.Order
 	orderQuery := o.client.Order.Create().
 		SetID(uuid.New().String()).
 		SetStatus("pending").
-		SetTotalAmount(totalAmount). // Set the calculated total amount
-		SetAdditionalInfo(orderDto.AdditionalInfo)
+		SetTotalAmount(totalAmount) // Set the calculated total amount
+		// SetAdditionalInfo(OrderWithItemsDTO.order.AdditionalInfo)
 
 	if tableID != "" {
 		orderQuery.AddTableIDs(tableID)
@@ -70,6 +70,8 @@ func (o *OrderServicesImpl) CreateOrder(ctx context.Context, orderDto *ent.Order
 		_, err = o.client.OrderItem.Create().
 			SetID(uuid.New().String()).
 			SetQuantity(quantity).
+			SetPricePerItem(menuItem.Price).
+			SetTotalPrice(menuItem.Price * float64(quantity)).
 			AddOrder(newOrder).
 			AddMenuItemIDs(menuItemID).
 			Save(ctx)

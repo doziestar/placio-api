@@ -1,6 +1,7 @@
 package order
 
 import (
+	"log"
 	"net/http"
 	"placio-app/ent"
 	"placio-pkg/middleware"
@@ -33,23 +34,18 @@ func (oc *OrderController) RegisterRoutes(route *gin.RouterGroup) {
 }
 
 func (oc *OrderController) createOrder(ctx *gin.Context) error {
-	var orderDto ent.Order
-	if err := ctx.ShouldBindJSON(&orderDto); err != nil {
-		return err
-	}
-
-
 	tableID := ctx.DefaultQuery("tableID", "")
 	userID := ctx.MustGet("user").(string)
 
 	var orderItems OrderWithItemsDTO
 	if err := ctx.ShouldBindJSON(&orderItems); err != nil {
+		log.Println(err)
 		return err
 	}
 
-	newOrder, err := oc.orderService.CreateOrder(ctx, &orderDto, tableID, userID, orderItems)
+
+	newOrder, err := oc.orderService.CreateOrder(ctx, tableID, userID, orderItems)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return err
 	}
 
