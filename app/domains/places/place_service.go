@@ -100,6 +100,26 @@ func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Cont
 	places, err := s.client.Place.
 		Query().
 		Where(place.HasBusinessWith(business.ID(businessId))).
+		WithMedias().
+		WithTables(func(query *ent.PlaceTableQuery) {
+			query.WithOrders(func(query *ent.OrderQuery) {
+				query.WithUser()
+			})
+			query.WithWaiter(func(query *ent.UserQuery) {
+				query.WithPlaces()
+			})
+			query.WithReservedBy(func(query *ent.UserQuery) {
+				query.WithPlaces()
+			})
+		}).
+		WithBusiness().
+		WithUsers().
+		WithMenus(func(query *ent.MenuQuery) {
+			query.WithMenuItems(func(query *ent.MenuItemQuery) {
+				query.WithMedia(func(query *ent.MediaQuery) {
+				})
+			})
+		}).
 		All(c)
 	if err != nil {
 		sentry.CaptureException(err)
@@ -724,7 +744,7 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 		WithInventories().
 		WithAmenities().
 		WithUsers()
-		// Limit(limit + 1)
+	// Limit(limit + 1)
 
 	// Apply filters
 	if filter.Name != "" {
