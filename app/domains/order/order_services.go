@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"placio-app/ent"
 	"placio-app/ent/order"
+	"placio-app/ent/place"
 	"placio-app/ent/placetable"
 	"placio-app/ent/user"
 
@@ -20,7 +21,7 @@ type OrderServices interface {
 	UpdateOrder(ctx context.Context, orderID string, orderDto OrderWithItemsDTO) (*ent.Order, error)
 	DeleteOrder(ctx context.Context, orderID string) error
 	GetOrder(ctx context.Context, orderID string) (*ent.Order, error)
-	GetOrders(ctx context.Context, limit, offset int) ([]*ent.Order, error)
+	GetOrders(ctx context.Context, placeId string, limit, offset int) ([]*ent.Order, error)
 	GetOrdersByUserID(ctx context.Context, userID string, limit, offset int) ([]*ent.Order, error)
 	GetOrdersByTableID(ctx context.Context, tableID string, limit, offset int) ([]*ent.Order, error)
 	//GetOrdersByStatus(ctx context.Context, status string, limit, offset int) ([]*ent.Order, error)
@@ -43,7 +44,7 @@ func (o *OrderServicesImpl) CreateOrder(ctx context.Context, tableID, userid str
 		SetID(uuid.New().String()).
 		SetStatus("pending").
 		SetTotalAmount(totalAmount) // Set the calculated total amount
-		// SetAdditionalInfo(OrderWithItemsDTO.order.AdditionalInfo)
+	// SetAdditionalInfo(OrderWithItemsDTO.order.AdditionalInfo)
 
 	if tableID != "" {
 		orderQuery.AddTableIDs(tableID)
@@ -159,15 +160,21 @@ func (o *OrderServicesImpl) GetOrder(ctx context.Context, orderID string) (*ent.
 	return order, nil
 }
 
-func (o *OrderServicesImpl) GetOrders(ctx context.Context, limit, offset int) ([]*ent.Order, error) {
-	orders, err := o.client.Order.
+// GetOrders fetches all orders for a place
+// We fetched a places and join the tables and orders
+func (o *OrderServicesImpl) GetOrders(ctx context.Context, placeId string, limit, offset int) ([]*ent.Order, error) {
+	orders, err := o.client.Place.
 		Query().
+		Where(place.ID(placeId)).
+		QueryTables().
+		QueryOrders().
 		Limit(limit).
 		Offset(offset).
 		WithOrderItems().
 		WithTable().
 		WithUser().
 		All(ctx)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch orders: %v", err)
 	}
