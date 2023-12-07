@@ -47,6 +47,12 @@ func (ru *RoomUpdate) SetNillableRoomNumber(s *string) *RoomUpdate {
 	return ru
 }
 
+// ClearRoomNumber clears the value of the "room_number" field.
+func (ru *RoomUpdate) ClearRoomNumber() *RoomUpdate {
+	ru.mutation.ClearRoomNumber()
+	return ru
+}
+
 // SetRoomType sets the "room_type" field.
 func (ru *RoomUpdate) SetRoomType(s string) *RoomUpdate {
 	ru.mutation.SetRoomType(s)
@@ -58,6 +64,12 @@ func (ru *RoomUpdate) SetNillableRoomType(s *string) *RoomUpdate {
 	if s != nil {
 		ru.SetRoomType(*s)
 	}
+	return ru
+}
+
+// ClearRoomType clears the value of the "room_type" field.
+func (ru *RoomUpdate) ClearRoomType() *RoomUpdate {
+	ru.mutation.ClearRoomType()
 	return ru
 }
 
@@ -75,6 +87,12 @@ func (ru *RoomUpdate) SetNillableRoomStatus(s *string) *RoomUpdate {
 	return ru
 }
 
+// ClearRoomStatus clears the value of the "room_status" field.
+func (ru *RoomUpdate) ClearRoomStatus() *RoomUpdate {
+	ru.mutation.ClearRoomStatus()
+	return ru
+}
+
 // SetRoomRating sets the "room_rating" field.
 func (ru *RoomUpdate) SetRoomRating(s string) *RoomUpdate {
 	ru.mutation.SetRoomRating(s)
@@ -86,6 +104,12 @@ func (ru *RoomUpdate) SetNillableRoomRating(s *string) *RoomUpdate {
 	if s != nil {
 		ru.SetRoomRating(*s)
 	}
+	return ru
+}
+
+// ClearRoomRating clears the value of the "room_rating" field.
+func (ru *RoomUpdate) ClearRoomRating() *RoomUpdate {
+	ru.mutation.ClearRoomRating()
 	return ru
 }
 
@@ -107,6 +131,32 @@ func (ru *RoomUpdate) SetNillableRoomPrice(f *float64) *RoomUpdate {
 // AddRoomPrice adds f to the "room_price" field.
 func (ru *RoomUpdate) AddRoomPrice(f float64) *RoomUpdate {
 	ru.mutation.AddRoomPrice(f)
+	return ru
+}
+
+// ClearRoomPrice clears the value of the "room_price" field.
+func (ru *RoomUpdate) ClearRoomPrice() *RoomUpdate {
+	ru.mutation.ClearRoomPrice()
+	return ru
+}
+
+// SetQrCode sets the "qr_code" field.
+func (ru *RoomUpdate) SetQrCode(s string) *RoomUpdate {
+	ru.mutation.SetQrCode(s)
+	return ru
+}
+
+// SetNillableQrCode sets the "qr_code" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableQrCode(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetQrCode(*s)
+	}
+	return ru
+}
+
+// ClearQrCode clears the value of the "qr_code" field.
+func (ru *RoomUpdate) ClearQrCode() *RoomUpdate {
+	ru.mutation.ClearQrCode()
 	return ru
 }
 
@@ -463,20 +513,41 @@ func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.RoomNumber(); ok {
 		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
 	}
+	if ru.mutation.RoomNumberCleared() {
+		_spec.ClearField(room.FieldRoomNumber, field.TypeString)
+	}
 	if value, ok := ru.mutation.RoomType(); ok {
 		_spec.SetField(room.FieldRoomType, field.TypeString, value)
+	}
+	if ru.mutation.RoomTypeCleared() {
+		_spec.ClearField(room.FieldRoomType, field.TypeString)
 	}
 	if value, ok := ru.mutation.RoomStatus(); ok {
 		_spec.SetField(room.FieldRoomStatus, field.TypeString, value)
 	}
+	if ru.mutation.RoomStatusCleared() {
+		_spec.ClearField(room.FieldRoomStatus, field.TypeString)
+	}
 	if value, ok := ru.mutation.RoomRating(); ok {
 		_spec.SetField(room.FieldRoomRating, field.TypeString, value)
+	}
+	if ru.mutation.RoomRatingCleared() {
+		_spec.ClearField(room.FieldRoomRating, field.TypeString)
 	}
 	if value, ok := ru.mutation.RoomPrice(); ok {
 		_spec.SetField(room.FieldRoomPrice, field.TypeFloat64, value)
 	}
 	if value, ok := ru.mutation.AddedRoomPrice(); ok {
 		_spec.AddField(room.FieldRoomPrice, field.TypeFloat64, value)
+	}
+	if ru.mutation.RoomPriceCleared() {
+		_spec.ClearField(room.FieldRoomPrice, field.TypeFloat64)
+	}
+	if value, ok := ru.mutation.QrCode(); ok {
+		_spec.SetField(room.FieldQrCode, field.TypeString, value)
+	}
+	if ru.mutation.QrCodeCleared() {
+		_spec.ClearField(room.FieldQrCode, field.TypeString)
 	}
 	if value, ok := ru.mutation.Status(); ok {
 		_spec.SetField(room.FieldStatus, field.TypeEnum, value)
@@ -806,6 +877,12 @@ func (ruo *RoomUpdateOne) SetNillableRoomNumber(s *string) *RoomUpdateOne {
 	return ruo
 }
 
+// ClearRoomNumber clears the value of the "room_number" field.
+func (ruo *RoomUpdateOne) ClearRoomNumber() *RoomUpdateOne {
+	ruo.mutation.ClearRoomNumber()
+	return ruo
+}
+
 // SetRoomType sets the "room_type" field.
 func (ruo *RoomUpdateOne) SetRoomType(s string) *RoomUpdateOne {
 	ruo.mutation.SetRoomType(s)
@@ -817,6 +894,12 @@ func (ruo *RoomUpdateOne) SetNillableRoomType(s *string) *RoomUpdateOne {
 	if s != nil {
 		ruo.SetRoomType(*s)
 	}
+	return ruo
+}
+
+// ClearRoomType clears the value of the "room_type" field.
+func (ruo *RoomUpdateOne) ClearRoomType() *RoomUpdateOne {
+	ruo.mutation.ClearRoomType()
 	return ruo
 }
 
@@ -834,6 +917,12 @@ func (ruo *RoomUpdateOne) SetNillableRoomStatus(s *string) *RoomUpdateOne {
 	return ruo
 }
 
+// ClearRoomStatus clears the value of the "room_status" field.
+func (ruo *RoomUpdateOne) ClearRoomStatus() *RoomUpdateOne {
+	ruo.mutation.ClearRoomStatus()
+	return ruo
+}
+
 // SetRoomRating sets the "room_rating" field.
 func (ruo *RoomUpdateOne) SetRoomRating(s string) *RoomUpdateOne {
 	ruo.mutation.SetRoomRating(s)
@@ -845,6 +934,12 @@ func (ruo *RoomUpdateOne) SetNillableRoomRating(s *string) *RoomUpdateOne {
 	if s != nil {
 		ruo.SetRoomRating(*s)
 	}
+	return ruo
+}
+
+// ClearRoomRating clears the value of the "room_rating" field.
+func (ruo *RoomUpdateOne) ClearRoomRating() *RoomUpdateOne {
+	ruo.mutation.ClearRoomRating()
 	return ruo
 }
 
@@ -866,6 +961,32 @@ func (ruo *RoomUpdateOne) SetNillableRoomPrice(f *float64) *RoomUpdateOne {
 // AddRoomPrice adds f to the "room_price" field.
 func (ruo *RoomUpdateOne) AddRoomPrice(f float64) *RoomUpdateOne {
 	ruo.mutation.AddRoomPrice(f)
+	return ruo
+}
+
+// ClearRoomPrice clears the value of the "room_price" field.
+func (ruo *RoomUpdateOne) ClearRoomPrice() *RoomUpdateOne {
+	ruo.mutation.ClearRoomPrice()
+	return ruo
+}
+
+// SetQrCode sets the "qr_code" field.
+func (ruo *RoomUpdateOne) SetQrCode(s string) *RoomUpdateOne {
+	ruo.mutation.SetQrCode(s)
+	return ruo
+}
+
+// SetNillableQrCode sets the "qr_code" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableQrCode(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetQrCode(*s)
+	}
+	return ruo
+}
+
+// ClearQrCode clears the value of the "qr_code" field.
+func (ruo *RoomUpdateOne) ClearQrCode() *RoomUpdateOne {
+	ruo.mutation.ClearQrCode()
 	return ruo
 }
 
@@ -1252,20 +1373,41 @@ func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) 
 	if value, ok := ruo.mutation.RoomNumber(); ok {
 		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
 	}
+	if ruo.mutation.RoomNumberCleared() {
+		_spec.ClearField(room.FieldRoomNumber, field.TypeString)
+	}
 	if value, ok := ruo.mutation.RoomType(); ok {
 		_spec.SetField(room.FieldRoomType, field.TypeString, value)
+	}
+	if ruo.mutation.RoomTypeCleared() {
+		_spec.ClearField(room.FieldRoomType, field.TypeString)
 	}
 	if value, ok := ruo.mutation.RoomStatus(); ok {
 		_spec.SetField(room.FieldRoomStatus, field.TypeString, value)
 	}
+	if ruo.mutation.RoomStatusCleared() {
+		_spec.ClearField(room.FieldRoomStatus, field.TypeString)
+	}
 	if value, ok := ruo.mutation.RoomRating(); ok {
 		_spec.SetField(room.FieldRoomRating, field.TypeString, value)
+	}
+	if ruo.mutation.RoomRatingCleared() {
+		_spec.ClearField(room.FieldRoomRating, field.TypeString)
 	}
 	if value, ok := ruo.mutation.RoomPrice(); ok {
 		_spec.SetField(room.FieldRoomPrice, field.TypeFloat64, value)
 	}
 	if value, ok := ruo.mutation.AddedRoomPrice(); ok {
 		_spec.AddField(room.FieldRoomPrice, field.TypeFloat64, value)
+	}
+	if ruo.mutation.RoomPriceCleared() {
+		_spec.ClearField(room.FieldRoomPrice, field.TypeFloat64)
+	}
+	if value, ok := ruo.mutation.QrCode(); ok {
+		_spec.SetField(room.FieldQrCode, field.TypeString, value)
+	}
+	if ruo.mutation.QrCodeCleared() {
+		_spec.ClearField(room.FieldQrCode, field.TypeString)
 	}
 	if value, ok := ruo.mutation.Status(); ok {
 		_spec.SetField(room.FieldStatus, field.TypeEnum, value)

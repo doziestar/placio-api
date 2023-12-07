@@ -31,9 +31,25 @@ func (rc *RoomCreate) SetRoomNumber(s string) *RoomCreate {
 	return rc
 }
 
+// SetNillableRoomNumber sets the "room_number" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomNumber(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetRoomNumber(*s)
+	}
+	return rc
+}
+
 // SetRoomType sets the "room_type" field.
 func (rc *RoomCreate) SetRoomType(s string) *RoomCreate {
 	rc.mutation.SetRoomType(s)
+	return rc
+}
+
+// SetNillableRoomType sets the "room_type" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomType(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetRoomType(*s)
+	}
 	return rc
 }
 
@@ -43,15 +59,53 @@ func (rc *RoomCreate) SetRoomStatus(s string) *RoomCreate {
 	return rc
 }
 
+// SetNillableRoomStatus sets the "room_status" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomStatus(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetRoomStatus(*s)
+	}
+	return rc
+}
+
 // SetRoomRating sets the "room_rating" field.
 func (rc *RoomCreate) SetRoomRating(s string) *RoomCreate {
 	rc.mutation.SetRoomRating(s)
 	return rc
 }
 
+// SetNillableRoomRating sets the "room_rating" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomRating(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetRoomRating(*s)
+	}
+	return rc
+}
+
 // SetRoomPrice sets the "room_price" field.
 func (rc *RoomCreate) SetRoomPrice(f float64) *RoomCreate {
 	rc.mutation.SetRoomPrice(f)
+	return rc
+}
+
+// SetNillableRoomPrice sets the "room_price" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomPrice(f *float64) *RoomCreate {
+	if f != nil {
+		rc.SetRoomPrice(*f)
+	}
+	return rc
+}
+
+// SetQrCode sets the "qr_code" field.
+func (rc *RoomCreate) SetQrCode(s string) *RoomCreate {
+	rc.mutation.SetQrCode(s)
+	return rc
+}
+
+// SetNillableQrCode sets the "qr_code" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableQrCode(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetQrCode(*s)
+	}
 	return rc
 }
 
@@ -84,6 +138,14 @@ func (rc *RoomCreate) SetNillableDescription(s *string) *RoomCreate {
 // SetAvailability sets the "availability" field.
 func (rc *RoomCreate) SetAvailability(b bool) *RoomCreate {
 	rc.mutation.SetAvailability(b)
+	return rc
+}
+
+// SetNillableAvailability sets the "availability" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableAvailability(b *bool) *RoomCreate {
+	if b != nil {
+		rc.SetAvailability(*b)
+	}
 	return rc
 }
 
@@ -204,6 +266,7 @@ func (rc *RoomCreate) Mutation() *RoomMutation {
 
 // Save creates the Room in the database.
 func (rc *RoomCreate) Save(ctx context.Context) (*Room, error) {
+	rc.defaults()
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -229,23 +292,16 @@ func (rc *RoomCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (rc *RoomCreate) defaults() {
+	if _, ok := rc.mutation.Availability(); !ok {
+		v := room.DefaultAvailability
+		rc.mutation.SetAvailability(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (rc *RoomCreate) check() error {
-	if _, ok := rc.mutation.RoomNumber(); !ok {
-		return &ValidationError{Name: "room_number", err: errors.New(`ent: missing required field "Room.room_number"`)}
-	}
-	if _, ok := rc.mutation.RoomType(); !ok {
-		return &ValidationError{Name: "room_type", err: errors.New(`ent: missing required field "Room.room_type"`)}
-	}
-	if _, ok := rc.mutation.RoomStatus(); !ok {
-		return &ValidationError{Name: "room_status", err: errors.New(`ent: missing required field "Room.room_status"`)}
-	}
-	if _, ok := rc.mutation.RoomRating(); !ok {
-		return &ValidationError{Name: "room_rating", err: errors.New(`ent: missing required field "Room.room_rating"`)}
-	}
-	if _, ok := rc.mutation.RoomPrice(); !ok {
-		return &ValidationError{Name: "room_price", err: errors.New(`ent: missing required field "Room.room_price"`)}
-	}
 	if _, ok := rc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Room.status"`)}
 	}
@@ -316,6 +372,10 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.RoomPrice(); ok {
 		_spec.SetField(room.FieldRoomPrice, field.TypeFloat64, value)
 		_node.RoomPrice = value
+	}
+	if value, ok := rc.mutation.QrCode(); ok {
+		_spec.SetField(room.FieldQrCode, field.TypeString, value)
+		_node.QrCode = value
 	}
 	if value, ok := rc.mutation.Status(); ok {
 		_spec.SetField(room.FieldStatus, field.TypeEnum, value)
@@ -454,6 +514,7 @@ func (rcb *RoomCreateBulk) Save(ctx context.Context) ([]*Room, error) {
 	for i := range rcb.builders {
 		func(i int, root context.Context) {
 			builder := rcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*RoomMutation)
 				if !ok {

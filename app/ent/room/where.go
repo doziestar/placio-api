@@ -89,6 +89,11 @@ func RoomPrice(v float64) predicate.Room {
 	return predicate.Room(sql.FieldEQ(FieldRoomPrice, v))
 }
 
+// QrCode applies equality check predicate on the "qr_code" field. It's identical to QrCodeEQ.
+func QrCode(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldQrCode, v))
+}
+
 // Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
 func Description(v string) predicate.Room {
 	return predicate.Room(sql.FieldEQ(FieldDescription, v))
@@ -159,6 +164,16 @@ func RoomNumberHasSuffix(v string) predicate.Room {
 	return predicate.Room(sql.FieldHasSuffix(FieldRoomNumber, v))
 }
 
+// RoomNumberIsNil applies the IsNil predicate on the "room_number" field.
+func RoomNumberIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomNumber))
+}
+
+// RoomNumberNotNil applies the NotNil predicate on the "room_number" field.
+func RoomNumberNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomNumber))
+}
+
 // RoomNumberEqualFold applies the EqualFold predicate on the "room_number" field.
 func RoomNumberEqualFold(v string) predicate.Room {
 	return predicate.Room(sql.FieldEqualFold(FieldRoomNumber, v))
@@ -222,6 +237,16 @@ func RoomTypeHasPrefix(v string) predicate.Room {
 // RoomTypeHasSuffix applies the HasSuffix predicate on the "room_type" field.
 func RoomTypeHasSuffix(v string) predicate.Room {
 	return predicate.Room(sql.FieldHasSuffix(FieldRoomType, v))
+}
+
+// RoomTypeIsNil applies the IsNil predicate on the "room_type" field.
+func RoomTypeIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomType))
+}
+
+// RoomTypeNotNil applies the NotNil predicate on the "room_type" field.
+func RoomTypeNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomType))
 }
 
 // RoomTypeEqualFold applies the EqualFold predicate on the "room_type" field.
@@ -289,6 +314,16 @@ func RoomStatusHasSuffix(v string) predicate.Room {
 	return predicate.Room(sql.FieldHasSuffix(FieldRoomStatus, v))
 }
 
+// RoomStatusIsNil applies the IsNil predicate on the "room_status" field.
+func RoomStatusIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomStatus))
+}
+
+// RoomStatusNotNil applies the NotNil predicate on the "room_status" field.
+func RoomStatusNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomStatus))
+}
+
 // RoomStatusEqualFold applies the EqualFold predicate on the "room_status" field.
 func RoomStatusEqualFold(v string) predicate.Room {
 	return predicate.Room(sql.FieldEqualFold(FieldRoomStatus, v))
@@ -354,6 +389,16 @@ func RoomRatingHasSuffix(v string) predicate.Room {
 	return predicate.Room(sql.FieldHasSuffix(FieldRoomRating, v))
 }
 
+// RoomRatingIsNil applies the IsNil predicate on the "room_rating" field.
+func RoomRatingIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomRating))
+}
+
+// RoomRatingNotNil applies the NotNil predicate on the "room_rating" field.
+func RoomRatingNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomRating))
+}
+
 // RoomRatingEqualFold applies the EqualFold predicate on the "room_rating" field.
 func RoomRatingEqualFold(v string) predicate.Room {
 	return predicate.Room(sql.FieldEqualFold(FieldRoomRating, v))
@@ -402,6 +447,91 @@ func RoomPriceLT(v float64) predicate.Room {
 // RoomPriceLTE applies the LTE predicate on the "room_price" field.
 func RoomPriceLTE(v float64) predicate.Room {
 	return predicate.Room(sql.FieldLTE(FieldRoomPrice, v))
+}
+
+// RoomPriceIsNil applies the IsNil predicate on the "room_price" field.
+func RoomPriceIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomPrice))
+}
+
+// RoomPriceNotNil applies the NotNil predicate on the "room_price" field.
+func RoomPriceNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomPrice))
+}
+
+// QrCodeEQ applies the EQ predicate on the "qr_code" field.
+func QrCodeEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldQrCode, v))
+}
+
+// QrCodeNEQ applies the NEQ predicate on the "qr_code" field.
+func QrCodeNEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldQrCode, v))
+}
+
+// QrCodeIn applies the In predicate on the "qr_code" field.
+func QrCodeIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldQrCode, vs...))
+}
+
+// QrCodeNotIn applies the NotIn predicate on the "qr_code" field.
+func QrCodeNotIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldQrCode, vs...))
+}
+
+// QrCodeGT applies the GT predicate on the "qr_code" field.
+func QrCodeGT(v string) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldQrCode, v))
+}
+
+// QrCodeGTE applies the GTE predicate on the "qr_code" field.
+func QrCodeGTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldQrCode, v))
+}
+
+// QrCodeLT applies the LT predicate on the "qr_code" field.
+func QrCodeLT(v string) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldQrCode, v))
+}
+
+// QrCodeLTE applies the LTE predicate on the "qr_code" field.
+func QrCodeLTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldQrCode, v))
+}
+
+// QrCodeContains applies the Contains predicate on the "qr_code" field.
+func QrCodeContains(v string) predicate.Room {
+	return predicate.Room(sql.FieldContains(FieldQrCode, v))
+}
+
+// QrCodeHasPrefix applies the HasPrefix predicate on the "qr_code" field.
+func QrCodeHasPrefix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasPrefix(FieldQrCode, v))
+}
+
+// QrCodeHasSuffix applies the HasSuffix predicate on the "qr_code" field.
+func QrCodeHasSuffix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasSuffix(FieldQrCode, v))
+}
+
+// QrCodeIsNil applies the IsNil predicate on the "qr_code" field.
+func QrCodeIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldQrCode))
+}
+
+// QrCodeNotNil applies the NotNil predicate on the "qr_code" field.
+func QrCodeNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldQrCode))
+}
+
+// QrCodeEqualFold applies the EqualFold predicate on the "qr_code" field.
+func QrCodeEqualFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldEqualFold(FieldQrCode, v))
+}
+
+// QrCodeContainsFold applies the ContainsFold predicate on the "qr_code" field.
+func QrCodeContainsFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldContainsFold(FieldQrCode, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

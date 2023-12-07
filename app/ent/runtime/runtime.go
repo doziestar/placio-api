@@ -718,6 +718,10 @@ func init() {
 	review.DefaultFlag = reviewDescFlag.Default.(string)
 	roomFields := schema.Room{}.Fields()
 	_ = roomFields
+	// roomDescAvailability is the schema descriptor for availability field.
+	roomDescAvailability := roomFields[10].Descriptor()
+	// room.DefaultAvailability holds the default value on creation for the availability field.
+	room.DefaultAvailability = roomDescAvailability.Default.(bool)
 	// roomDescID is the schema descriptor for id field.
 	roomDescID := roomFields[0].Descriptor()
 	// room.IDValidator is a validator for the "id" field. It is called by the builders before save.

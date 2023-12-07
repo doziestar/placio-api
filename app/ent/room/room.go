@@ -24,6 +24,8 @@ const (
 	FieldRoomRating = "room_rating"
 	// FieldRoomPrice holds the string denoting the room_price field in the database.
 	FieldRoomPrice = "room_price"
+	// FieldQrCode holds the string denoting the qr_code field in the database.
+	FieldQrCode = "qr_code"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldExtras holds the string denoting the extras field in the database.
@@ -92,6 +94,7 @@ var Columns = []string{
 	FieldRoomStatus,
 	FieldRoomRating,
 	FieldRoomPrice,
+	FieldQrCode,
 	FieldStatus,
 	FieldExtras,
 	FieldDescription,
@@ -125,6 +128,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultAvailability holds the default value on creation for the "availability" field.
+	DefaultAvailability bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -185,6 +190,11 @@ func ByRoomRating(opts ...sql.OrderTermOption) OrderOption {
 // ByRoomPrice orders the results by the room_price field.
 func ByRoomPrice(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRoomPrice, opts...).ToFunc()
+}
+
+// ByQrCode orders the results by the qr_code field.
+func ByQrCode(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldQrCode, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

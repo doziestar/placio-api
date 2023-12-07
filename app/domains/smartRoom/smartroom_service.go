@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/room"
 	"placio-app/ent/roomcategory"
+	"placio-app/utility"
 	"placio-pkg/errors"
 )
 
@@ -369,7 +370,25 @@ func (s SmartRoomService) RestoreRoom(ctx context.Context, roomId string) (*ent.
 	panic("implement me")
 }
 
-func (s SmartRoomService) GenerateRoomQRCode(ctx context.Context, roomId string) (string, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *SmartRoomService) GenerateRoomQRCode(ctx context.Context, roomId string) (string, error) {
+	if roomId == "" {
+		return "", errors.New("roomId must be provided")
+	}
+
+	roomURL := fmt.Sprintf("https://placio.io/places/rooms/%s", roomId)
+	qrCodeURL, err := utility.GenerateAndUploadQRCode(ctx, roomURL, roomId)
+	if err != nil {
+		return "", fmt.Errorf("error generating and uploading QR code for room ID '%s': %w", roomId, err)
+	}
+
+	// Update room with QR code URL
+	_, err = s.client.Room.
+		UpdateOneID(roomId).
+		SetQrCode(qrCodeURL).
+		Save(ctx)
+	if err != nil {
+		return "", fmt.Errorf("error updating room with QR code URL: %w", err)
+	}
+
+	return qrCodeURL, nil
 }
