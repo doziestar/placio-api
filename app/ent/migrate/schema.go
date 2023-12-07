@@ -1330,13 +1330,14 @@ var (
 	// RoomsColumns holds the columns for the "rooms" table.
 	RoomsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString, Nullable: true},
 		{Name: "room_number", Type: field.TypeString, Nullable: true},
 		{Name: "room_type", Type: field.TypeString, Nullable: true},
 		{Name: "room_status", Type: field.TypeString, Nullable: true},
 		{Name: "room_rating", Type: field.TypeString, Nullable: true},
 		{Name: "room_price", Type: field.TypeFloat64, Nullable: true},
 		{Name: "qr_code", Type: field.TypeString, Nullable: true},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"available", "unavailable", "maintenance", "reserved"}},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"available", "unavailable", "maintenance", "reserved"}, Default: "available"},
 		{Name: "extras", Type: field.TypeJSON, Nullable: true},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "availability", Type: field.TypeBool, Default: true},

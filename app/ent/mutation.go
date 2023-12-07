@@ -46525,6 +46525,7 @@ type RoomMutation struct {
 	op                   Op
 	typ                  string
 	id                   *string
+	name                 *string
 	room_number          *string
 	room_type            *string
 	room_status          *string
@@ -46663,6 +46664,55 @@ func (m *RoomMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetName sets the "name" field.
+func (m *RoomMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *RoomMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Room entity.
+// If the Room object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *RoomMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[room.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *RoomMutation) NameCleared() bool {
+	_, ok := m.clearedFields[room.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *RoomMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, room.FieldName)
 }
 
 // SetRoomNumber sets the "room_number" field.
@@ -47557,7 +47607,10 @@ func (m *RoomMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoomMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
+	if m.name != nil {
+		fields = append(fields, room.FieldName)
+	}
 	if m.room_number != nil {
 		fields = append(fields, room.FieldRoomNumber)
 	}
@@ -47599,6 +47652,8 @@ func (m *RoomMutation) Fields() []string {
 // schema.
 func (m *RoomMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case room.FieldName:
+		return m.Name()
 	case room.FieldRoomNumber:
 		return m.RoomNumber()
 	case room.FieldRoomType:
@@ -47630,6 +47685,8 @@ func (m *RoomMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *RoomMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case room.FieldName:
+		return m.OldName(ctx)
 	case room.FieldRoomNumber:
 		return m.OldRoomNumber(ctx)
 	case room.FieldRoomType:
@@ -47661,6 +47718,13 @@ func (m *RoomMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *RoomMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case room.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
 	case room.FieldRoomNumber:
 		v, ok := value.(string)
 		if !ok {
@@ -47783,6 +47847,9 @@ func (m *RoomMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RoomMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(room.FieldName) {
+		fields = append(fields, room.FieldName)
+	}
 	if m.FieldCleared(room.FieldRoomNumber) {
 		fields = append(fields, room.FieldRoomNumber)
 	}
@@ -47824,6 +47891,9 @@ func (m *RoomMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RoomMutation) ClearField(name string) error {
 	switch name {
+	case room.FieldName:
+		m.ClearName()
+		return nil
 	case room.FieldRoomNumber:
 		m.ClearRoomNumber()
 		return nil
@@ -47859,6 +47929,9 @@ func (m *RoomMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *RoomMutation) ResetField(name string) error {
 	switch name {
+	case room.FieldName:
+		m.ResetName()
+		return nil
 	case room.FieldRoomNumber:
 		m.ResetRoomNumber()
 		return nil

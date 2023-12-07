@@ -33,6 +33,26 @@ func (ru *RoomUpdate) Where(ps ...predicate.Room) *RoomUpdate {
 	return ru
 }
 
+// SetName sets the "name" field.
+func (ru *RoomUpdate) SetName(s string) *RoomUpdate {
+	ru.mutation.SetName(s)
+	return ru
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableName(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetName(*s)
+	}
+	return ru
+}
+
+// ClearName clears the value of the "name" field.
+func (ru *RoomUpdate) ClearName() *RoomUpdate {
+	ru.mutation.ClearName()
+	return ru
+}
+
 // SetRoomNumber sets the "room_number" field.
 func (ru *RoomUpdate) SetRoomNumber(s string) *RoomUpdate {
 	ru.mutation.SetRoomNumber(s)
@@ -510,6 +530,12 @@ func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := ru.mutation.Name(); ok {
+		_spec.SetField(room.FieldName, field.TypeString, value)
+	}
+	if ru.mutation.NameCleared() {
+		_spec.ClearField(room.FieldName, field.TypeString)
+	}
 	if value, ok := ru.mutation.RoomNumber(); ok {
 		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
 	}
@@ -861,6 +887,26 @@ type RoomUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *RoomMutation
+}
+
+// SetName sets the "name" field.
+func (ruo *RoomUpdateOne) SetName(s string) *RoomUpdateOne {
+	ruo.mutation.SetName(s)
+	return ruo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableName(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetName(*s)
+	}
+	return ruo
+}
+
+// ClearName clears the value of the "name" field.
+func (ruo *RoomUpdateOne) ClearName() *RoomUpdateOne {
+	ruo.mutation.ClearName()
+	return ruo
 }
 
 // SetRoomNumber sets the "room_number" field.
@@ -1369,6 +1415,12 @@ func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ruo.mutation.Name(); ok {
+		_spec.SetField(room.FieldName, field.TypeString, value)
+	}
+	if ruo.mutation.NameCleared() {
+		_spec.ClearField(room.FieldName, field.TypeString)
 	}
 	if value, ok := ruo.mutation.RoomNumber(); ok {
 		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)

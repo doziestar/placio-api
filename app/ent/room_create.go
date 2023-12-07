@@ -25,6 +25,20 @@ type RoomCreate struct {
 	hooks    []Hook
 }
 
+// SetName sets the "name" field.
+func (rc *RoomCreate) SetName(s string) *RoomCreate {
+	rc.mutation.SetName(s)
+	return rc
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableName(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetName(*s)
+	}
+	return rc
+}
+
 // SetRoomNumber sets the "room_number" field.
 func (rc *RoomCreate) SetRoomNumber(s string) *RoomCreate {
 	rc.mutation.SetRoomNumber(s)
@@ -112,6 +126,14 @@ func (rc *RoomCreate) SetNillableQrCode(s *string) *RoomCreate {
 // SetStatus sets the "status" field.
 func (rc *RoomCreate) SetStatus(r room.Status) *RoomCreate {
 	rc.mutation.SetStatus(r)
+	return rc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableStatus(r *room.Status) *RoomCreate {
+	if r != nil {
+		rc.SetStatus(*r)
+	}
 	return rc
 }
 
@@ -294,6 +316,10 @@ func (rc *RoomCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (rc *RoomCreate) defaults() {
+	if _, ok := rc.mutation.Status(); !ok {
+		v := room.DefaultStatus
+		rc.mutation.SetStatus(v)
+	}
 	if _, ok := rc.mutation.Availability(); !ok {
 		v := room.DefaultAvailability
 		rc.mutation.SetAvailability(v)
@@ -352,6 +378,10 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 	if id, ok := rc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := rc.mutation.Name(); ok {
+		_spec.SetField(room.FieldName, field.TypeString, value)
+		_node.Name = value
 	}
 	if value, ok := rc.mutation.RoomNumber(); ok {
 		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)

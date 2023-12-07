@@ -14,6 +14,8 @@ const (
 	Label = "room"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// FieldRoomNumber holds the string denoting the room_number field in the database.
 	FieldRoomNumber = "room_number"
 	// FieldRoomType holds the string denoting the room_type field in the database.
@@ -89,6 +91,7 @@ const (
 // Columns holds all SQL columns for room fields.
 var Columns = []string{
 	FieldID,
+	FieldName,
 	FieldRoomNumber,
 	FieldRoomType,
 	FieldRoomStatus,
@@ -137,6 +140,9 @@ var (
 // Status defines the type for the "status" enum field.
 type Status string
 
+// StatusAvailable is the default value of the Status enum.
+const DefaultStatus = StatusAvailable
+
 // Status values.
 const (
 	StatusAvailable   Status = "available"
@@ -165,6 +171,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
 // ByRoomNumber orders the results by the room_number field.

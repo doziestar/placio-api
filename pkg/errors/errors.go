@@ -29,6 +29,10 @@ var (
 	ErrUserAlreadyInTeam = errors.New("user already in team")
 	ErrInvalidLimitValue = errors.New("invalid limit value")
 	ErrInvalidOffset     = errors.New("invalid offset value")
+	FileMissing          = errors.New("file missing")
+	ErrMediaUploadFailed = errors.New("media upload failed")
+	ErrInvalidFileType   = errors.New("invalid file type")
+	ErrMediaMissing      = errors.New("media missing")
 )
 
 // LogAndReturnError Log to sentry and return error

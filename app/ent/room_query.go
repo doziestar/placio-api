@@ -478,12 +478,12 @@ func (rq *RoomQuery) WithReservations(opts ...func(*ReservationQuery)) *RoomQuer
 // Example:
 //
 //	var v []struct {
-//		RoomNumber string `json:"room_number,omitempty"`
+//		Name string `json:"name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Room.Query().
-//		GroupBy(room.FieldRoomNumber).
+//		GroupBy(room.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rq *RoomQuery) GroupBy(field string, fields ...string) *RoomGroupBy {
@@ -501,11 +501,11 @@ func (rq *RoomQuery) GroupBy(field string, fields ...string) *RoomGroupBy {
 // Example:
 //
 //	var v []struct {
-//		RoomNumber string `json:"room_number,omitempty"`
+//		Name string `json:"name,omitempty"`
 //	}
 //
 //	client.Room.Query().
-//		Select(room.FieldRoomNumber).
+//		Select(room.FieldName).
 //		Scan(ctx, &v)
 func (rq *RoomQuery) Select(fields ...string) *RoomSelect {
 	rq.ctx.Fields = append(rq.ctx.Fields, fields...)

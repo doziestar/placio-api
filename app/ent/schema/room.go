@@ -45,13 +45,14 @@ func (Room) Fields() []ent.Field {
 			MaxLen(36).
 			Unique().
 			Immutable(),
+		field.String("name").Optional(),
 		field.String("room_number").Optional(),
 		field.String("room_type").Optional(),
 		field.String("room_status").Optional(),
 		field.String("room_rating").Optional(),
 		field.Float("room_price").Optional(),
 		field.String("qr_code").Optional(),
-		field.Enum("status").Values("available", "unavailable", "maintenance", "reserved"),
+		field.Enum("status").Values("available", "unavailable", "maintenance", "reserved").Default("available"),
 		field.JSON("extras", map[string]interface{}{}).Optional(),
 		field.String("description").Optional(),
 		field.Bool("availability").Default(true),
