@@ -27,6 +27,7 @@ import (
 	"placio-app/domains/reviews"
 	"placio-app/domains/search"
 	"placio-app/domains/smartMenu"
+	"placio-app/domains/smartRoom"
 	"placio-app/domains/users"
 	"placio-app/domains/websites"
 	"placio-app/ent"
@@ -196,7 +197,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		smartMenuService := smartMenu.NewSmartMenuService(client, mediaService, cld)
 		smartMenuController := smartMenu.NewSmartMenuController(smartMenuService)
 		smartMenuController.RegisterRoutes(routerGroupV1WithoutAuth, routerGroupV1)
-		// TODO: Below are the routes that need to be implemented
+
+		// smart room
+		smartRoomService := smartRoom.NewSmartRoomService(client, mediaService)
+		smartRoomController := smartRoom.NewSmartRoomController(smartRoomService)
+		smartRoomController.RegisterRoutes(routerGroupV1WithoutAuth, routerGroupV1)
 
 		// recommendations
 		recommendationService := recommendations.NewRecommendations(client, userService, placeService)

@@ -28,20 +28,22 @@ func (c *SmartRoomController) RegisterRoutes(router, routerWithAuth *gin.RouterG
 	)
 
 	roomCategoryRouterWithAuth := routerWithAuth.Group("/roomCategories")
+	routerCategoryRouterWithoutAuth := router.Group("/roomCategories")
 	{
 		roomCategoryRouterWithAuth.POST(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.createRoomCategory))
-		roomCategoryRouterWithAuth.GET(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.getRoomCategories))
-		roomCategoryRouterWithAuth.GET(fmt.Sprintf("/:%s", categoryIDParam), middleware.ErrorMiddleware(c.getRoomCategoryByID))
+		routerCategoryRouterWithoutAuth.GET(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.getRoomCategories))
+		routerCategoryRouterWithoutAuth.GET(fmt.Sprintf("/:%s", categoryIDParam), middleware.ErrorMiddleware(c.getRoomCategoryByID))
 		roomCategoryRouterWithAuth.PUT(fmt.Sprintf("/:%s", categoryIDParam), middleware.ErrorMiddleware(c.updateRoomCategory))
 		roomCategoryRouterWithAuth.DELETE(fmt.Sprintf("/:%s", categoryIDParam), middleware.ErrorMiddleware(c.deleteRoomCategory))
 		roomCategoryRouterWithAuth.PATCH(fmt.Sprintf("/:%s/restore", categoryIDParam), middleware.ErrorMiddleware(c.restoreRoomCategory))
 	}
 
 	roomRouterWithAuth := routerWithAuth.Group("/rooms")
+	routerRouterWithoutAuth := router.Group("/rooms")
 	{
 		roomRouterWithAuth.POST(fmt.Sprintf("/category/:%s", categoryIDParam), middleware.ErrorMiddleware(c.createRoom))
-		roomRouterWithAuth.GET(fmt.Sprintf("/category/:%s", categoryIDParam), middleware.ErrorMiddleware(c.getRooms))
-		roomRouterWithAuth.GET(fmt.Sprintf("/:%s", roomIDParam), middleware.ErrorMiddleware(c.getRoomByID))
+		routerRouterWithoutAuth.GET(fmt.Sprintf("/category/:%s", categoryIDParam), middleware.ErrorMiddleware(c.getRooms))
+		routerRouterWithoutAuth.GET(fmt.Sprintf("/:%s", roomIDParam), middleware.ErrorMiddleware(c.getRoomByID))
 		roomRouterWithAuth.PUT(fmt.Sprintf("/:%s", roomIDParam), middleware.ErrorMiddleware(c.updateRoom))
 		roomRouterWithAuth.DELETE(fmt.Sprintf("/:%s", roomIDParam), middleware.ErrorMiddleware(c.deleteRoom))
 		roomRouterWithAuth.PATCH(fmt.Sprintf("/:%s/restore", roomIDParam), middleware.ErrorMiddleware(c.restoreRoom))

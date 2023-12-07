@@ -38,8 +38,8 @@ type SmartRoomService struct {
 	mediaService media.MediaService
 }
 
-func NewSmartRoomService(client *ent.Client) ISmartRoom {
-	return &SmartRoomService{client: client}
+func NewSmartRoomService(client *ent.Client, mediaService media.MediaService) ISmartRoom {
+	return &SmartRoomService{client: client, mediaService: mediaService}
 }
 
 func (s *SmartRoomService) CreateRoomCategory(ctx context.Context, placeId string, roomCategoryDto *ent.RoomCategory, mediaFiles []*multipart.FileHeader) (*ent.RoomCategory, error) {
