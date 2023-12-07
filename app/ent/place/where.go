@@ -1950,7 +1950,7 @@ func HasRooms() predicate.Place {
 	return predicate.Place(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RoomsTable, RoomsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, RoomsTable, RoomsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -2236,6 +2236,29 @@ func HasStaffs() predicate.Place {
 func HasStaffsWith(preds ...predicate.Staff) predicate.Place {
 	return predicate.Place(func(s *sql.Selector) {
 		step := newStaffsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRoomCategories applies the HasEdge predicate on the "room_categories" edge.
+func HasRoomCategories() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, RoomCategoriesTable, RoomCategoriesPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRoomCategoriesWith applies the HasEdge predicate on the "room_categories" edge with a given conditions (other predicates).
+func HasRoomCategoriesWith(preds ...predicate.RoomCategory) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newRoomCategoriesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

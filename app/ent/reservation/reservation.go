@@ -12,16 +12,16 @@ const (
 	Label = "reservation"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldDate holds the string denoting the date field in the database.
-	FieldDate = "date"
-	// FieldTime holds the string denoting the time field in the database.
-	FieldTime = "time"
-	// FieldNumberOfPeople holds the string denoting the numberofpeople field in the database.
-	FieldNumberOfPeople = "number_of_people"
+	// FieldStartDate holds the string denoting the startdate field in the database.
+	FieldStartDate = "start_date"
+	// FieldEndDate holds the string denoting the enddate field in the database.
+	FieldEndDate = "end_date"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
+	// EdgeRoom holds the string denoting the room edge name in mutations.
+	EdgeRoom = "room"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the reservation in the database.
@@ -33,6 +33,13 @@ const (
 	PlaceInverseTable = "places"
 	// PlaceColumn is the table column denoting the place relation/edge.
 	PlaceColumn = "place_reservations"
+	// RoomTable is the table that holds the room relation/edge.
+	RoomTable = "reservations"
+	// RoomInverseTable is the table name for the Room entity.
+	// It exists in this package in order to avoid circular dependency with the "room" package.
+	RoomInverseTable = "rooms"
+	// RoomColumn is the table column denoting the room relation/edge.
+	RoomColumn = "room_reservations"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "reservations"
 	// UserInverseTable is the table name for the User entity.
@@ -45,9 +52,8 @@ const (
 // Columns holds all SQL columns for reservation fields.
 var Columns = []string{
 	FieldID,
-	FieldDate,
-	FieldTime,
-	FieldNumberOfPeople,
+	FieldStartDate,
+	FieldEndDate,
 	FieldStatus,
 }
 
@@ -55,6 +61,7 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"place_reservations",
+	"room_reservations",
 	"user_reservations",
 }
 
@@ -86,19 +93,14 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByDate orders the results by the date field.
-func ByDate(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDate, opts...).ToFunc()
+// ByStartDate orders the results by the startDate field.
+func ByStartDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStartDate, opts...).ToFunc()
 }
 
-// ByTime orders the results by the time field.
-func ByTime(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTime, opts...).ToFunc()
-}
-
-// ByNumberOfPeople orders the results by the numberOfPeople field.
-func ByNumberOfPeople(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldNumberOfPeople, opts...).ToFunc()
+// ByEndDate orders the results by the endDate field.
+func ByEndDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEndDate, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.
@@ -113,6 +115,13 @@ func ByPlaceField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByRoomField orders the results by room field.
+func ByRoomField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoomStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByUserField orders the results by user field.
 func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -124,6 +133,13 @@ func newPlaceStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlaceInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, PlaceTable, PlaceColumn),
+	)
+}
+func newRoomStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RoomInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RoomTable, RoomColumn),
 	)
 }
 func newUserStep() *sqlgraph.Step {

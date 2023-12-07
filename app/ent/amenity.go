@@ -30,9 +30,13 @@ type Amenity struct {
 type AmenityEdges struct {
 	// Places holds the value of the places edge.
 	Places []*Place `json:"places,omitempty"`
+	// Rooms holds the value of the rooms edge.
+	Rooms []*Room `json:"rooms,omitempty"`
+	// RoomCategories holds the value of the room_categories edge.
+	RoomCategories []*RoomCategory `json:"room_categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [3]bool
 }
 
 // PlacesOrErr returns the Places value or an error if the edge
@@ -42,6 +46,24 @@ func (e AmenityEdges) PlacesOrErr() ([]*Place, error) {
 		return e.Places, nil
 	}
 	return nil, &NotLoadedError{edge: "places"}
+}
+
+// RoomsOrErr returns the Rooms value or an error if the edge
+// was not loaded in eager-loading.
+func (e AmenityEdges) RoomsOrErr() ([]*Room, error) {
+	if e.loadedTypes[1] {
+		return e.Rooms, nil
+	}
+	return nil, &NotLoadedError{edge: "rooms"}
+}
+
+// RoomCategoriesOrErr returns the RoomCategories value or an error if the edge
+// was not loaded in eager-loading.
+func (e AmenityEdges) RoomCategoriesOrErr() ([]*RoomCategory, error) {
+	if e.loadedTypes[2] {
+		return e.RoomCategories, nil
+	}
+	return nil, &NotLoadedError{edge: "room_categories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -100,6 +122,16 @@ func (a *Amenity) Value(name string) (ent.Value, error) {
 // QueryPlaces queries the "places" edge of the Amenity entity.
 func (a *Amenity) QueryPlaces() *PlaceQuery {
 	return NewAmenityClient(a.config).QueryPlaces(a)
+}
+
+// QueryRooms queries the "rooms" edge of the Amenity entity.
+func (a *Amenity) QueryRooms() *RoomQuery {
+	return NewAmenityClient(a.config).QueryRooms(a)
+}
+
+// QueryRoomCategories queries the "room_categories" edge of the Amenity entity.
+func (a *Amenity) QueryRoomCategories() *RoomCategoryQuery {
+	return NewAmenityClient(a.config).QueryRoomCategories(a)
 }
 
 // Update returns a builder for updating this Amenity.

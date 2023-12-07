@@ -23,6 +23,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
@@ -765,6 +766,21 @@ func (pc *PlaceCreate) AddStaffs(s ...*Staff) *PlaceCreate {
 	return pc.AddStaffIDs(ids...)
 }
 
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by IDs.
+func (pc *PlaceCreate) AddRoomCategoryIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddRoomCategoryIDs(ids...)
+	return pc
+}
+
+// AddRoomCategories adds the "room_categories" edges to the RoomCategory entity.
+func (pc *PlaceCreate) AddRoomCategories(r ...*RoomCategory) *PlaceCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return pc.AddRoomCategoryIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pc *PlaceCreate) Mutation() *PlaceMutation {
 	return pc.mutation
@@ -1169,10 +1185,10 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	}
 	if nodes := pc.mutation.RoomsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   place.RoomsTable,
-			Columns: []string{place.RoomsColumn},
+			Columns: place.RoomsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
@@ -1368,6 +1384,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.RoomCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RoomCategoriesTable,
+			Columns: place.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

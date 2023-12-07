@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"placio-app/ent/place"
 	"placio-app/ent/reservation"
+	"placio-app/ent/room"
 	"placio-app/ent/user"
 	"time"
 
@@ -22,21 +23,15 @@ type ReservationCreate struct {
 	hooks    []Hook
 }
 
-// SetDate sets the "date" field.
-func (rc *ReservationCreate) SetDate(t time.Time) *ReservationCreate {
-	rc.mutation.SetDate(t)
+// SetStartDate sets the "startDate" field.
+func (rc *ReservationCreate) SetStartDate(t time.Time) *ReservationCreate {
+	rc.mutation.SetStartDate(t)
 	return rc
 }
 
-// SetTime sets the "time" field.
-func (rc *ReservationCreate) SetTime(t time.Time) *ReservationCreate {
-	rc.mutation.SetTime(t)
-	return rc
-}
-
-// SetNumberOfPeople sets the "numberOfPeople" field.
-func (rc *ReservationCreate) SetNumberOfPeople(i int) *ReservationCreate {
-	rc.mutation.SetNumberOfPeople(i)
+// SetEndDate sets the "endDate" field.
+func (rc *ReservationCreate) SetEndDate(t time.Time) *ReservationCreate {
+	rc.mutation.SetEndDate(t)
 	return rc
 }
 
@@ -69,6 +64,25 @@ func (rc *ReservationCreate) SetNillablePlaceID(id *string) *ReservationCreate {
 // SetPlace sets the "place" edge to the Place entity.
 func (rc *ReservationCreate) SetPlace(p *Place) *ReservationCreate {
 	return rc.SetPlaceID(p.ID)
+}
+
+// SetRoomID sets the "room" edge to the Room entity by ID.
+func (rc *ReservationCreate) SetRoomID(id string) *ReservationCreate {
+	rc.mutation.SetRoomID(id)
+	return rc
+}
+
+// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
+func (rc *ReservationCreate) SetNillableRoomID(id *string) *ReservationCreate {
+	if id != nil {
+		rc = rc.SetRoomID(*id)
+	}
+	return rc
+}
+
+// SetRoom sets the "room" edge to the Room entity.
+func (rc *ReservationCreate) SetRoom(r *Room) *ReservationCreate {
+	return rc.SetRoomID(r.ID)
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
@@ -124,14 +138,11 @@ func (rc *ReservationCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (rc *ReservationCreate) check() error {
-	if _, ok := rc.mutation.Date(); !ok {
-		return &ValidationError{Name: "date", err: errors.New(`ent: missing required field "Reservation.date"`)}
+	if _, ok := rc.mutation.StartDate(); !ok {
+		return &ValidationError{Name: "startDate", err: errors.New(`ent: missing required field "Reservation.startDate"`)}
 	}
-	if _, ok := rc.mutation.Time(); !ok {
-		return &ValidationError{Name: "time", err: errors.New(`ent: missing required field "Reservation.time"`)}
-	}
-	if _, ok := rc.mutation.NumberOfPeople(); !ok {
-		return &ValidationError{Name: "numberOfPeople", err: errors.New(`ent: missing required field "Reservation.numberOfPeople"`)}
+	if _, ok := rc.mutation.EndDate(); !ok {
+		return &ValidationError{Name: "endDate", err: errors.New(`ent: missing required field "Reservation.endDate"`)}
 	}
 	if _, ok := rc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Reservation.status"`)}
@@ -176,17 +187,13 @@ func (rc *ReservationCreate) createSpec() (*Reservation, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := rc.mutation.Date(); ok {
-		_spec.SetField(reservation.FieldDate, field.TypeTime, value)
-		_node.Date = value
+	if value, ok := rc.mutation.StartDate(); ok {
+		_spec.SetField(reservation.FieldStartDate, field.TypeTime, value)
+		_node.StartDate = value
 	}
-	if value, ok := rc.mutation.Time(); ok {
-		_spec.SetField(reservation.FieldTime, field.TypeTime, value)
-		_node.Time = value
-	}
-	if value, ok := rc.mutation.NumberOfPeople(); ok {
-		_spec.SetField(reservation.FieldNumberOfPeople, field.TypeInt, value)
-		_node.NumberOfPeople = value
+	if value, ok := rc.mutation.EndDate(); ok {
+		_spec.SetField(reservation.FieldEndDate, field.TypeTime, value)
+		_node.EndDate = value
 	}
 	if value, ok := rc.mutation.Status(); ok {
 		_spec.SetField(reservation.FieldStatus, field.TypeString, value)
@@ -207,6 +214,23 @@ func (rc *ReservationCreate) createSpec() (*Reservation, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.place_reservations = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   reservation.RoomTable,
+			Columns: []string{reservation.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.room_reservations = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := rc.mutation.UserIDs(); len(nodes) > 0 {

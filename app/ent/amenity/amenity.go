@@ -18,6 +18,10 @@ const (
 	FieldIcon = "icon"
 	// EdgePlaces holds the string denoting the places edge name in mutations.
 	EdgePlaces = "places"
+	// EdgeRooms holds the string denoting the rooms edge name in mutations.
+	EdgeRooms = "rooms"
+	// EdgeRoomCategories holds the string denoting the room_categories edge name in mutations.
+	EdgeRoomCategories = "room_categories"
 	// Table holds the table name of the amenity in the database.
 	Table = "amenities"
 	// PlacesTable is the table that holds the places relation/edge. The primary key declared below.
@@ -25,6 +29,16 @@ const (
 	// PlacesInverseTable is the table name for the Place entity.
 	// It exists in this package in order to avoid circular dependency with the "place" package.
 	PlacesInverseTable = "places"
+	// RoomsTable is the table that holds the rooms relation/edge. The primary key declared below.
+	RoomsTable = "room_amenities"
+	// RoomsInverseTable is the table name for the Room entity.
+	// It exists in this package in order to avoid circular dependency with the "room" package.
+	RoomsInverseTable = "rooms"
+	// RoomCategoriesTable is the table that holds the room_categories relation/edge. The primary key declared below.
+	RoomCategoriesTable = "room_category_amenities"
+	// RoomCategoriesInverseTable is the table name for the RoomCategory entity.
+	// It exists in this package in order to avoid circular dependency with the "roomcategory" package.
+	RoomCategoriesInverseTable = "room_categories"
 )
 
 // Columns holds all SQL columns for amenity fields.
@@ -38,6 +52,12 @@ var (
 	// PlacesPrimaryKey and PlacesColumn2 are the table columns denoting the
 	// primary key for the places relation (M2M).
 	PlacesPrimaryKey = []string{"amenity_id", "place_id"}
+	// RoomsPrimaryKey and RoomsColumn2 are the table columns denoting the
+	// primary key for the rooms relation (M2M).
+	RoomsPrimaryKey = []string{"room_id", "amenity_id"}
+	// RoomCategoriesPrimaryKey and RoomCategoriesColumn2 are the table columns denoting the
+	// primary key for the room_categories relation (M2M).
+	RoomCategoriesPrimaryKey = []string{"room_category_id", "amenity_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -86,10 +106,52 @@ func ByPlaces(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPlacesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRoomsCount orders the results by rooms count.
+func ByRoomsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRoomsStep(), opts...)
+	}
+}
+
+// ByRooms orders the results by rooms terms.
+func ByRooms(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoomsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRoomCategoriesCount orders the results by room_categories count.
+func ByRoomCategoriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRoomCategoriesStep(), opts...)
+	}
+}
+
+// ByRoomCategories orders the results by room_categories terms.
+func ByRoomCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoomCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPlacesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlacesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, PlacesTable, PlacesPrimaryKey...),
+	)
+}
+func newRoomsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RoomsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, RoomsTable, RoomsPrimaryKey...),
+	)
+}
+func newRoomCategoriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RoomCategoriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, RoomCategoriesTable, RoomCategoriesPrimaryKey...),
 	)
 }

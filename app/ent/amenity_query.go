@@ -10,6 +10,8 @@ import (
 	"placio-app/ent/amenity"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -19,11 +21,13 @@ import (
 // AmenityQuery is the builder for querying Amenity entities.
 type AmenityQuery struct {
 	config
-	ctx        *QueryContext
-	order      []amenity.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Amenity
-	withPlaces *PlaceQuery
+	ctx                *QueryContext
+	order              []amenity.OrderOption
+	inters             []Interceptor
+	predicates         []predicate.Amenity
+	withPlaces         *PlaceQuery
+	withRooms          *RoomQuery
+	withRoomCategories *RoomCategoryQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -75,6 +79,50 @@ func (aq *AmenityQuery) QueryPlaces() *PlaceQuery {
 			sqlgraph.From(amenity.Table, amenity.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, amenity.PlacesTable, amenity.PlacesPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRooms chains the current query on the "rooms" edge.
+func (aq *AmenityQuery) QueryRooms() *RoomQuery {
+	query := (&RoomClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(amenity.Table, amenity.FieldID, selector),
+			sqlgraph.To(room.Table, room.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, amenity.RoomsTable, amenity.RoomsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRoomCategories chains the current query on the "room_categories" edge.
+func (aq *AmenityQuery) QueryRoomCategories() *RoomCategoryQuery {
+	query := (&RoomCategoryClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(amenity.Table, amenity.FieldID, selector),
+			sqlgraph.To(roomcategory.Table, roomcategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, amenity.RoomCategoriesTable, amenity.RoomCategoriesPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,12 +317,14 @@ func (aq *AmenityQuery) Clone() *AmenityQuery {
 		return nil
 	}
 	return &AmenityQuery{
-		config:     aq.config,
-		ctx:        aq.ctx.Clone(),
-		order:      append([]amenity.OrderOption{}, aq.order...),
-		inters:     append([]Interceptor{}, aq.inters...),
-		predicates: append([]predicate.Amenity{}, aq.predicates...),
-		withPlaces: aq.withPlaces.Clone(),
+		config:             aq.config,
+		ctx:                aq.ctx.Clone(),
+		order:              append([]amenity.OrderOption{}, aq.order...),
+		inters:             append([]Interceptor{}, aq.inters...),
+		predicates:         append([]predicate.Amenity{}, aq.predicates...),
+		withPlaces:         aq.withPlaces.Clone(),
+		withRooms:          aq.withRooms.Clone(),
+		withRoomCategories: aq.withRoomCategories.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -289,6 +339,28 @@ func (aq *AmenityQuery) WithPlaces(opts ...func(*PlaceQuery)) *AmenityQuery {
 		opt(query)
 	}
 	aq.withPlaces = query
+	return aq
+}
+
+// WithRooms tells the query-builder to eager-load the nodes that are connected to
+// the "rooms" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AmenityQuery) WithRooms(opts ...func(*RoomQuery)) *AmenityQuery {
+	query := (&RoomClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withRooms = query
+	return aq
+}
+
+// WithRoomCategories tells the query-builder to eager-load the nodes that are connected to
+// the "room_categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AmenityQuery) WithRoomCategories(opts ...func(*RoomCategoryQuery)) *AmenityQuery {
+	query := (&RoomCategoryClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withRoomCategories = query
 	return aq
 }
 
@@ -370,8 +442,10 @@ func (aq *AmenityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Amen
 	var (
 		nodes       = []*Amenity{}
 		_spec       = aq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [3]bool{
 			aq.withPlaces != nil,
+			aq.withRooms != nil,
+			aq.withRoomCategories != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -396,6 +470,20 @@ func (aq *AmenityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Amen
 		if err := aq.loadPlaces(ctx, query, nodes,
 			func(n *Amenity) { n.Edges.Places = []*Place{} },
 			func(n *Amenity, e *Place) { n.Edges.Places = append(n.Edges.Places, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withRooms; query != nil {
+		if err := aq.loadRooms(ctx, query, nodes,
+			func(n *Amenity) { n.Edges.Rooms = []*Room{} },
+			func(n *Amenity, e *Room) { n.Edges.Rooms = append(n.Edges.Rooms, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withRoomCategories; query != nil {
+		if err := aq.loadRoomCategories(ctx, query, nodes,
+			func(n *Amenity) { n.Edges.RoomCategories = []*RoomCategory{} },
+			func(n *Amenity, e *RoomCategory) { n.Edges.RoomCategories = append(n.Edges.RoomCategories, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -456,6 +544,128 @@ func (aq *AmenityQuery) loadPlaces(ctx context.Context, query *PlaceQuery, nodes
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "places" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (aq *AmenityQuery) loadRooms(ctx context.Context, query *RoomQuery, nodes []*Amenity, init func(*Amenity), assign func(*Amenity, *Room)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Amenity)
+	nids := make(map[string]map[*Amenity]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(amenity.RoomsTable)
+		s.Join(joinT).On(s.C(room.FieldID), joinT.C(amenity.RoomsPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(amenity.RoomsPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(amenity.RoomsPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Amenity]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Room](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "rooms" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (aq *AmenityQuery) loadRoomCategories(ctx context.Context, query *RoomCategoryQuery, nodes []*Amenity, init func(*Amenity), assign func(*Amenity, *RoomCategory)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Amenity)
+	nids := make(map[string]map[*Amenity]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(amenity.RoomCategoriesTable)
+		s.Join(joinT).On(s.C(roomcategory.FieldID), joinT.C(amenity.RoomCategoriesPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(amenity.RoomCategoriesPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(amenity.RoomCategoriesPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Amenity]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*RoomCategory](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "room_categories" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

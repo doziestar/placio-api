@@ -488,6 +488,18 @@ func (f RoomFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoomMutation", m)
 }
 
+// The RoomCategoryFunc type is an adapter to allow the use of ordinary
+// function as RoomCategory mutator.
+type RoomCategoryFunc func(context.Context, *ent.RoomCategoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f RoomCategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RoomCategoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoomCategoryMutation", m)
+}
+
 // The StaffFunc type is an adapter to allow the use of ordinary
 // function as Staff mutator.
 type StaffFunc func(context.Context, *ent.StaffMutation) (ent.Value, error)

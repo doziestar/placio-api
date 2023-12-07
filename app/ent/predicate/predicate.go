@@ -126,6 +126,9 @@ type Review func(*sql.Selector)
 // Room is the predicate function for room builders.
 type Room func(*sql.Selector)
 
+// RoomCategory is the predicate function for roomcategory builders.
+type RoomCategory func(*sql.Selector)
+
 // Staff is the predicate function for staff builders.
 type Staff func(*sql.Selector)
 

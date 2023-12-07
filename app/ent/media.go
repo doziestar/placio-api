@@ -55,9 +55,13 @@ type MediaEdges struct {
 	PlaceInventory []*PlaceInventory `json:"place_inventory,omitempty"`
 	// Menu holds the value of the menu edge.
 	Menu []*Menu `json:"menu,omitempty"`
+	// RoomCategory holds the value of the room_category edge.
+	RoomCategory []*RoomCategory `json:"room_category,omitempty"`
+	// Room holds the value of the room edge.
+	Room []*Room `json:"room,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [8]bool
 }
 
 // PostOrErr returns the Post value or an error if the edge
@@ -120,6 +124,24 @@ func (e MediaEdges) MenuOrErr() ([]*Menu, error) {
 		return e.Menu, nil
 	}
 	return nil, &NotLoadedError{edge: "menu"}
+}
+
+// RoomCategoryOrErr returns the RoomCategory value or an error if the edge
+// was not loaded in eager-loading.
+func (e MediaEdges) RoomCategoryOrErr() ([]*RoomCategory, error) {
+	if e.loadedTypes[6] {
+		return e.RoomCategory, nil
+	}
+	return nil, &NotLoadedError{edge: "room_category"}
+}
+
+// RoomOrErr returns the Room value or an error if the edge
+// was not loaded in eager-loading.
+func (e MediaEdges) RoomOrErr() ([]*Room, error) {
+	if e.loadedTypes[7] {
+		return e.Room, nil
+	}
+	return nil, &NotLoadedError{edge: "room"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -267,6 +289,16 @@ func (m *Media) QueryPlaceInventory() *PlaceInventoryQuery {
 // QueryMenu queries the "menu" edge of the Media entity.
 func (m *Media) QueryMenu() *MenuQuery {
 	return NewMediaClient(m.config).QueryMenu(m)
+}
+
+// QueryRoomCategory queries the "room_category" edge of the Media entity.
+func (m *Media) QueryRoomCategory() *RoomCategoryQuery {
+	return NewMediaClient(m.config).QueryRoomCategory(m)
+}
+
+// QueryRoom queries the "room" edge of the Media entity.
+func (m *Media) QueryRoom() *RoomQuery {
+	return NewMediaClient(m.config).QueryRoom(m)
 }
 
 // Update returns a builder for updating this Media.

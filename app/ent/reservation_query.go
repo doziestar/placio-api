@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 	"placio-app/ent/reservation"
+	"placio-app/ent/room"
 	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
@@ -24,6 +25,7 @@ type ReservationQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Reservation
 	withPlace  *PlaceQuery
+	withRoom   *RoomQuery
 	withUser   *UserQuery
 	withFKs    bool
 	// intermediate query (i.e. traversal path).
@@ -77,6 +79,28 @@ func (rq *ReservationQuery) QueryPlace() *PlaceQuery {
 			sqlgraph.From(reservation.Table, reservation.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, reservation.PlaceTable, reservation.PlaceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRoom chains the current query on the "room" edge.
+func (rq *ReservationQuery) QueryRoom() *RoomQuery {
+	query := (&RoomClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reservation.Table, reservation.FieldID, selector),
+			sqlgraph.To(room.Table, room.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, reservation.RoomTable, reservation.RoomColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -299,6 +323,7 @@ func (rq *ReservationQuery) Clone() *ReservationQuery {
 		inters:     append([]Interceptor{}, rq.inters...),
 		predicates: append([]predicate.Reservation{}, rq.predicates...),
 		withPlace:  rq.withPlace.Clone(),
+		withRoom:   rq.withRoom.Clone(),
 		withUser:   rq.withUser.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
@@ -314,6 +339,17 @@ func (rq *ReservationQuery) WithPlace(opts ...func(*PlaceQuery)) *ReservationQue
 		opt(query)
 	}
 	rq.withPlace = query
+	return rq
+}
+
+// WithRoom tells the query-builder to eager-load the nodes that are connected to
+// the "room" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *ReservationQuery) WithRoom(opts ...func(*RoomQuery)) *ReservationQuery {
+	query := (&RoomClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withRoom = query
 	return rq
 }
 
@@ -334,12 +370,12 @@ func (rq *ReservationQuery) WithUser(opts ...func(*UserQuery)) *ReservationQuery
 // Example:
 //
 //	var v []struct {
-//		Date time.Time `json:"date,omitempty"`
+//		StartDate time.Time `json:"startDate,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Reservation.Query().
-//		GroupBy(reservation.FieldDate).
+//		GroupBy(reservation.FieldStartDate).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rq *ReservationQuery) GroupBy(field string, fields ...string) *ReservationGroupBy {
@@ -357,11 +393,11 @@ func (rq *ReservationQuery) GroupBy(field string, fields ...string) *Reservation
 // Example:
 //
 //	var v []struct {
-//		Date time.Time `json:"date,omitempty"`
+//		StartDate time.Time `json:"startDate,omitempty"`
 //	}
 //
 //	client.Reservation.Query().
-//		Select(reservation.FieldDate).
+//		Select(reservation.FieldStartDate).
 //		Scan(ctx, &v)
 func (rq *ReservationQuery) Select(fields ...string) *ReservationSelect {
 	rq.ctx.Fields = append(rq.ctx.Fields, fields...)
@@ -407,12 +443,13 @@ func (rq *ReservationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		nodes       = []*Reservation{}
 		withFKs     = rq.withFKs
 		_spec       = rq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			rq.withPlace != nil,
+			rq.withRoom != nil,
 			rq.withUser != nil,
 		}
 	)
-	if rq.withPlace != nil || rq.withUser != nil {
+	if rq.withPlace != nil || rq.withRoom != nil || rq.withUser != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -439,6 +476,12 @@ func (rq *ReservationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if query := rq.withPlace; query != nil {
 		if err := rq.loadPlace(ctx, query, nodes, nil,
 			func(n *Reservation, e *Place) { n.Edges.Place = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withRoom; query != nil {
+		if err := rq.loadRoom(ctx, query, nodes, nil,
+			func(n *Reservation, e *Room) { n.Edges.Room = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -476,6 +519,38 @@ func (rq *ReservationQuery) loadPlace(ctx context.Context, query *PlaceQuery, no
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "place_reservations" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (rq *ReservationQuery) loadRoom(ctx context.Context, query *RoomQuery, nodes []*Reservation, init func(*Reservation), assign func(*Reservation, *Room)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Reservation)
+	for i := range nodes {
+		if nodes[i].room_reservations == nil {
+			continue
+		}
+		fk := *nodes[i].room_reservations
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(room.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "room_reservations" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

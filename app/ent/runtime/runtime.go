@@ -35,6 +35,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/schema"
 	"placio-app/ent/staff"
 	"placio-app/ent/ticket"
@@ -721,6 +722,12 @@ func init() {
 	roomDescID := roomFields[0].Descriptor()
 	// room.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	room.IDValidator = roomDescID.Validators[0].(func(string) error)
+	roomcategoryFields := schema.RoomCategory{}.Fields()
+	_ = roomcategoryFields
+	// roomcategoryDescID is the schema descriptor for id field.
+	roomcategoryDescID := roomcategoryFields[0].Descriptor()
+	// roomcategory.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	roomcategory.IDValidator = roomcategoryDescID.Validators[0].(func(string) error)
 	staffFields := schema.Staff{}.Fields()
 	_ = staffFields
 	// staffDescID is the schema descriptor for id field.

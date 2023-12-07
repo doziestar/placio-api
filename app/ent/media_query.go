@@ -15,6 +15,8 @@ import (
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
+	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -34,6 +36,8 @@ type MediaQuery struct {
 	withPlace          *PlaceQuery
 	withPlaceInventory *PlaceInventoryQuery
 	withMenu           *MenuQuery
+	withRoomCategory   *RoomCategoryQuery
+	withRoom           *RoomQuery
 	withFKs            bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -196,6 +200,50 @@ func (mq *MediaQuery) QueryMenu() *MenuQuery {
 			sqlgraph.From(media.Table, media.FieldID, selector),
 			sqlgraph.To(menu.Table, menu.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, media.MenuTable, media.MenuPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRoomCategory chains the current query on the "room_category" edge.
+func (mq *MediaQuery) QueryRoomCategory() *RoomCategoryQuery {
+	query := (&RoomCategoryClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, selector),
+			sqlgraph.To(roomcategory.Table, roomcategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.RoomCategoryTable, media.RoomCategoryPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRoom chains the current query on the "room" edge.
+func (mq *MediaQuery) QueryRoom() *RoomQuery {
+	query := (&RoomClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, selector),
+			sqlgraph.To(room.Table, room.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.RoomTable, media.RoomPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -401,6 +449,8 @@ func (mq *MediaQuery) Clone() *MediaQuery {
 		withPlace:          mq.withPlace.Clone(),
 		withPlaceInventory: mq.withPlaceInventory.Clone(),
 		withMenu:           mq.withMenu.Clone(),
+		withRoomCategory:   mq.withRoomCategory.Clone(),
+		withRoom:           mq.withRoom.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -470,6 +520,28 @@ func (mq *MediaQuery) WithMenu(opts ...func(*MenuQuery)) *MediaQuery {
 		opt(query)
 	}
 	mq.withMenu = query
+	return mq
+}
+
+// WithRoomCategory tells the query-builder to eager-load the nodes that are connected to
+// the "room_category" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MediaQuery) WithRoomCategory(opts ...func(*RoomCategoryQuery)) *MediaQuery {
+	query := (&RoomCategoryClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withRoomCategory = query
+	return mq
+}
+
+// WithRoom tells the query-builder to eager-load the nodes that are connected to
+// the "room" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MediaQuery) WithRoom(opts ...func(*RoomQuery)) *MediaQuery {
+	query := (&RoomClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withRoom = query
 	return mq
 }
 
@@ -552,13 +624,15 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		nodes       = []*Media{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [8]bool{
 			mq.withPost != nil,
 			mq.withReview != nil,
 			mq.withCategories != nil,
 			mq.withPlace != nil,
 			mq.withPlaceInventory != nil,
 			mq.withMenu != nil,
+			mq.withRoomCategory != nil,
+			mq.withRoom != nil,
 		}
 	)
 	if mq.withPost != nil || mq.withReview != nil {
@@ -622,6 +696,20 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		if err := mq.loadMenu(ctx, query, nodes,
 			func(n *Media) { n.Edges.Menu = []*Menu{} },
 			func(n *Media, e *Menu) { n.Edges.Menu = append(n.Edges.Menu, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withRoomCategory; query != nil {
+		if err := mq.loadRoomCategory(ctx, query, nodes,
+			func(n *Media) { n.Edges.RoomCategory = []*RoomCategory{} },
+			func(n *Media, e *RoomCategory) { n.Edges.RoomCategory = append(n.Edges.RoomCategory, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withRoom; query != nil {
+		if err := mq.loadRoom(ctx, query, nodes,
+			func(n *Media) { n.Edges.Room = []*Room{} },
+			func(n *Media, e *Room) { n.Edges.Room = append(n.Edges.Room, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -929,6 +1017,128 @@ func (mq *MediaQuery) loadMenu(ctx context.Context, query *MenuQuery, nodes []*M
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "menu" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (mq *MediaQuery) loadRoomCategory(ctx context.Context, query *RoomCategoryQuery, nodes []*Media, init func(*Media), assign func(*Media, *RoomCategory)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Media)
+	nids := make(map[string]map[*Media]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(media.RoomCategoryTable)
+		s.Join(joinT).On(s.C(roomcategory.FieldID), joinT.C(media.RoomCategoryPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(media.RoomCategoryPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(media.RoomCategoryPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Media]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*RoomCategory](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "room_category" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (mq *MediaQuery) loadRoom(ctx context.Context, query *RoomQuery, nodes []*Media, init func(*Media), assign func(*Media, *Room)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Media)
+	nids := make(map[string]map[*Media]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(media.RoomTable)
+		s.Join(joinT).On(s.C(room.FieldID), joinT.C(media.RoomPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(media.RoomPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(media.RoomPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Media]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Room](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "room" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

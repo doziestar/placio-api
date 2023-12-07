@@ -125,6 +125,8 @@ const (
 	EdgeTables = "tables"
 	// EdgeStaffs holds the string denoting the staffs edge name in mutations.
 	EdgeStaffs = "staffs"
+	// EdgeRoomCategories holds the string denoting the room_categories edge name in mutations.
+	EdgeRoomCategories = "room_categories"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -168,13 +170,11 @@ const (
 	// MediasInverseTable is the table name for the Media entity.
 	// It exists in this package in order to avoid circular dependency with the "media" package.
 	MediasInverseTable = "media"
-	// RoomsTable is the table that holds the rooms relation/edge.
-	RoomsTable = "rooms"
+	// RoomsTable is the table that holds the rooms relation/edge. The primary key declared below.
+	RoomsTable = "place_rooms"
 	// RoomsInverseTable is the table name for the Room entity.
 	// It exists in this package in order to avoid circular dependency with the "room" package.
 	RoomsInverseTable = "rooms"
-	// RoomsColumn is the table column denoting the rooms relation/edge.
-	RoomsColumn = "place_rooms"
 	// ReservationsTable is the table that holds the reservations relation/edge.
 	ReservationsTable = "reservations"
 	// ReservationsInverseTable is the table name for the Reservation entity.
@@ -253,6 +253,11 @@ const (
 	// StaffsInverseTable is the table name for the Staff entity.
 	// It exists in this package in order to avoid circular dependency with the "staff" package.
 	StaffsInverseTable = "staffs"
+	// RoomCategoriesTable is the table that holds the room_categories relation/edge. The primary key declared below.
+	RoomCategoriesTable = "place_room_categories"
+	// RoomCategoriesInverseTable is the table name for the RoomCategory entity.
+	// It exists in this package in order to avoid circular dependency with the "roomcategory" package.
+	RoomCategoriesInverseTable = "room_categories"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -316,6 +321,9 @@ var (
 	// MediasPrimaryKey and MediasColumn2 are the table columns denoting the
 	// primary key for the medias relation (M2M).
 	MediasPrimaryKey = []string{"place_id", "media_id"}
+	// RoomsPrimaryKey and RoomsColumn2 are the table columns denoting the
+	// primary key for the rooms relation (M2M).
+	RoomsPrimaryKey = []string{"place_id", "room_id"}
 	// FaqsPrimaryKey and FaqsColumn2 are the table columns denoting the
 	// primary key for the faqs relation (M2M).
 	FaqsPrimaryKey = []string{"faq_id", "place_id"}
@@ -325,6 +333,9 @@ var (
 	// StaffsPrimaryKey and StaffsColumn2 are the table columns denoting the
 	// primary key for the staffs relation (M2M).
 	StaffsPrimaryKey = []string{"place_id", "staff_id"}
+	// RoomCategoriesPrimaryKey and RoomCategoriesColumn2 are the table columns denoting the
+	// primary key for the room_categories relation (M2M).
+	RoomCategoriesPrimaryKey = []string{"place_id", "room_category_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -781,6 +792,20 @@ func ByStaffs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStaffsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRoomCategoriesCount orders the results by room_categories count.
+func ByRoomCategoriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRoomCategoriesStep(), opts...)
+	}
+}
+
+// ByRoomCategories orders the results by room_categories terms.
+func ByRoomCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoomCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -834,7 +859,7 @@ func newRoomsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RoomsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, RoomsTable, RoomsColumn),
+		sqlgraph.Edge(sqlgraph.M2M, false, RoomsTable, RoomsPrimaryKey...),
 	)
 }
 func newReservationsStep() *sqlgraph.Step {
@@ -919,5 +944,12 @@ func newStaffsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StaffsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, StaffsTable, StaffsPrimaryKey...),
+	)
+}
+func newRoomCategoriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RoomCategoriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, RoomCategoriesTable, RoomCategoriesPrimaryKey...),
 	)
 }

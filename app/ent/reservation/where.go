@@ -65,19 +65,14 @@ func IDContainsFold(id string) predicate.Reservation {
 	return predicate.Reservation(sql.FieldContainsFold(FieldID, id))
 }
 
-// Date applies equality check predicate on the "date" field. It's identical to DateEQ.
-func Date(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldEQ(FieldDate, v))
+// StartDate applies equality check predicate on the "startDate" field. It's identical to StartDateEQ.
+func StartDate(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldEQ(FieldStartDate, v))
 }
 
-// Time applies equality check predicate on the "time" field. It's identical to TimeEQ.
-func Time(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldEQ(FieldTime, v))
-}
-
-// NumberOfPeople applies equality check predicate on the "numberOfPeople" field. It's identical to NumberOfPeopleEQ.
-func NumberOfPeople(v int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldEQ(FieldNumberOfPeople, v))
+// EndDate applies equality check predicate on the "endDate" field. It's identical to EndDateEQ.
+func EndDate(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldEQ(FieldEndDate, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
@@ -85,124 +80,84 @@ func Status(v string) predicate.Reservation {
 	return predicate.Reservation(sql.FieldEQ(FieldStatus, v))
 }
 
-// DateEQ applies the EQ predicate on the "date" field.
-func DateEQ(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldEQ(FieldDate, v))
+// StartDateEQ applies the EQ predicate on the "startDate" field.
+func StartDateEQ(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldEQ(FieldStartDate, v))
 }
 
-// DateNEQ applies the NEQ predicate on the "date" field.
-func DateNEQ(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldNEQ(FieldDate, v))
+// StartDateNEQ applies the NEQ predicate on the "startDate" field.
+func StartDateNEQ(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldNEQ(FieldStartDate, v))
 }
 
-// DateIn applies the In predicate on the "date" field.
-func DateIn(vs ...time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldIn(FieldDate, vs...))
+// StartDateIn applies the In predicate on the "startDate" field.
+func StartDateIn(vs ...time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldIn(FieldStartDate, vs...))
 }
 
-// DateNotIn applies the NotIn predicate on the "date" field.
-func DateNotIn(vs ...time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldNotIn(FieldDate, vs...))
+// StartDateNotIn applies the NotIn predicate on the "startDate" field.
+func StartDateNotIn(vs ...time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldNotIn(FieldStartDate, vs...))
 }
 
-// DateGT applies the GT predicate on the "date" field.
-func DateGT(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldGT(FieldDate, v))
+// StartDateGT applies the GT predicate on the "startDate" field.
+func StartDateGT(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldGT(FieldStartDate, v))
 }
 
-// DateGTE applies the GTE predicate on the "date" field.
-func DateGTE(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldGTE(FieldDate, v))
+// StartDateGTE applies the GTE predicate on the "startDate" field.
+func StartDateGTE(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldGTE(FieldStartDate, v))
 }
 
-// DateLT applies the LT predicate on the "date" field.
-func DateLT(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldLT(FieldDate, v))
+// StartDateLT applies the LT predicate on the "startDate" field.
+func StartDateLT(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldLT(FieldStartDate, v))
 }
 
-// DateLTE applies the LTE predicate on the "date" field.
-func DateLTE(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldLTE(FieldDate, v))
+// StartDateLTE applies the LTE predicate on the "startDate" field.
+func StartDateLTE(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldLTE(FieldStartDate, v))
 }
 
-// TimeEQ applies the EQ predicate on the "time" field.
-func TimeEQ(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldEQ(FieldTime, v))
+// EndDateEQ applies the EQ predicate on the "endDate" field.
+func EndDateEQ(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldEQ(FieldEndDate, v))
 }
 
-// TimeNEQ applies the NEQ predicate on the "time" field.
-func TimeNEQ(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldNEQ(FieldTime, v))
+// EndDateNEQ applies the NEQ predicate on the "endDate" field.
+func EndDateNEQ(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldNEQ(FieldEndDate, v))
 }
 
-// TimeIn applies the In predicate on the "time" field.
-func TimeIn(vs ...time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldIn(FieldTime, vs...))
+// EndDateIn applies the In predicate on the "endDate" field.
+func EndDateIn(vs ...time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldIn(FieldEndDate, vs...))
 }
 
-// TimeNotIn applies the NotIn predicate on the "time" field.
-func TimeNotIn(vs ...time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldNotIn(FieldTime, vs...))
+// EndDateNotIn applies the NotIn predicate on the "endDate" field.
+func EndDateNotIn(vs ...time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldNotIn(FieldEndDate, vs...))
 }
 
-// TimeGT applies the GT predicate on the "time" field.
-func TimeGT(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldGT(FieldTime, v))
+// EndDateGT applies the GT predicate on the "endDate" field.
+func EndDateGT(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldGT(FieldEndDate, v))
 }
 
-// TimeGTE applies the GTE predicate on the "time" field.
-func TimeGTE(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldGTE(FieldTime, v))
+// EndDateGTE applies the GTE predicate on the "endDate" field.
+func EndDateGTE(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldGTE(FieldEndDate, v))
 }
 
-// TimeLT applies the LT predicate on the "time" field.
-func TimeLT(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldLT(FieldTime, v))
+// EndDateLT applies the LT predicate on the "endDate" field.
+func EndDateLT(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldLT(FieldEndDate, v))
 }
 
-// TimeLTE applies the LTE predicate on the "time" field.
-func TimeLTE(v time.Time) predicate.Reservation {
-	return predicate.Reservation(sql.FieldLTE(FieldTime, v))
-}
-
-// NumberOfPeopleEQ applies the EQ predicate on the "numberOfPeople" field.
-func NumberOfPeopleEQ(v int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldEQ(FieldNumberOfPeople, v))
-}
-
-// NumberOfPeopleNEQ applies the NEQ predicate on the "numberOfPeople" field.
-func NumberOfPeopleNEQ(v int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldNEQ(FieldNumberOfPeople, v))
-}
-
-// NumberOfPeopleIn applies the In predicate on the "numberOfPeople" field.
-func NumberOfPeopleIn(vs ...int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldIn(FieldNumberOfPeople, vs...))
-}
-
-// NumberOfPeopleNotIn applies the NotIn predicate on the "numberOfPeople" field.
-func NumberOfPeopleNotIn(vs ...int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldNotIn(FieldNumberOfPeople, vs...))
-}
-
-// NumberOfPeopleGT applies the GT predicate on the "numberOfPeople" field.
-func NumberOfPeopleGT(v int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldGT(FieldNumberOfPeople, v))
-}
-
-// NumberOfPeopleGTE applies the GTE predicate on the "numberOfPeople" field.
-func NumberOfPeopleGTE(v int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldGTE(FieldNumberOfPeople, v))
-}
-
-// NumberOfPeopleLT applies the LT predicate on the "numberOfPeople" field.
-func NumberOfPeopleLT(v int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldLT(FieldNumberOfPeople, v))
-}
-
-// NumberOfPeopleLTE applies the LTE predicate on the "numberOfPeople" field.
-func NumberOfPeopleLTE(v int) predicate.Reservation {
-	return predicate.Reservation(sql.FieldLTE(FieldNumberOfPeople, v))
+// EndDateLTE applies the LTE predicate on the "endDate" field.
+func EndDateLTE(v time.Time) predicate.Reservation {
+	return predicate.Reservation(sql.FieldLTE(FieldEndDate, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
@@ -285,6 +240,29 @@ func HasPlace() predicate.Reservation {
 func HasPlaceWith(preds ...predicate.Place) predicate.Reservation {
 	return predicate.Reservation(func(s *sql.Selector) {
 		step := newPlaceStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRoom applies the HasEdge predicate on the "room" edge.
+func HasRoom() predicate.Reservation {
+	return predicate.Reservation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RoomTable, RoomColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRoomWith applies the HasEdge predicate on the "room" edge with a given conditions (other predicates).
+func HasRoomWith(preds ...predicate.Room) predicate.Reservation {
+	return predicate.Reservation(func(s *sql.Selector) {
+		step := newRoomStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

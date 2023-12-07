@@ -14,6 +14,8 @@ import (
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
+	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -208,6 +210,36 @@ func (mu *MediaUpdate) AddMenu(m ...*Menu) *MediaUpdate {
 	return mu.AddMenuIDs(ids...)
 }
 
+// AddRoomCategoryIDs adds the "room_category" edge to the RoomCategory entity by IDs.
+func (mu *MediaUpdate) AddRoomCategoryIDs(ids ...string) *MediaUpdate {
+	mu.mutation.AddRoomCategoryIDs(ids...)
+	return mu
+}
+
+// AddRoomCategory adds the "room_category" edges to the RoomCategory entity.
+func (mu *MediaUpdate) AddRoomCategory(r ...*RoomCategory) *MediaUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return mu.AddRoomCategoryIDs(ids...)
+}
+
+// AddRoomIDs adds the "room" edge to the Room entity by IDs.
+func (mu *MediaUpdate) AddRoomIDs(ids ...string) *MediaUpdate {
+	mu.mutation.AddRoomIDs(ids...)
+	return mu
+}
+
+// AddRoom adds the "room" edges to the Room entity.
+func (mu *MediaUpdate) AddRoom(r ...*Room) *MediaUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return mu.AddRoomIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (mu *MediaUpdate) Mutation() *MediaMutation {
 	return mu.mutation
@@ -307,6 +339,48 @@ func (mu *MediaUpdate) RemoveMenu(m ...*Menu) *MediaUpdate {
 		ids[i] = m[i].ID
 	}
 	return mu.RemoveMenuIDs(ids...)
+}
+
+// ClearRoomCategory clears all "room_category" edges to the RoomCategory entity.
+func (mu *MediaUpdate) ClearRoomCategory() *MediaUpdate {
+	mu.mutation.ClearRoomCategory()
+	return mu
+}
+
+// RemoveRoomCategoryIDs removes the "room_category" edge to RoomCategory entities by IDs.
+func (mu *MediaUpdate) RemoveRoomCategoryIDs(ids ...string) *MediaUpdate {
+	mu.mutation.RemoveRoomCategoryIDs(ids...)
+	return mu
+}
+
+// RemoveRoomCategory removes "room_category" edges to RoomCategory entities.
+func (mu *MediaUpdate) RemoveRoomCategory(r ...*RoomCategory) *MediaUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return mu.RemoveRoomCategoryIDs(ids...)
+}
+
+// ClearRoom clears all "room" edges to the Room entity.
+func (mu *MediaUpdate) ClearRoom() *MediaUpdate {
+	mu.mutation.ClearRoom()
+	return mu
+}
+
+// RemoveRoomIDs removes the "room" edge to Room entities by IDs.
+func (mu *MediaUpdate) RemoveRoomIDs(ids ...string) *MediaUpdate {
+	mu.mutation.RemoveRoomIDs(ids...)
+	return mu
+}
+
+// RemoveRoom removes "room" edges to Room entities.
+func (mu *MediaUpdate) RemoveRoom(r ...*Room) *MediaUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return mu.RemoveRoomIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -613,6 +687,96 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.RoomCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomCategoryTable,
+			Columns: media.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedRoomCategoryIDs(); len(nodes) > 0 && !mu.mutation.RoomCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomCategoryTable,
+			Columns: media.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RoomCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomCategoryTable,
+			Columns: media.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.RoomCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomTable,
+			Columns: media.RoomPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedRoomIDs(); len(nodes) > 0 && !mu.mutation.RoomCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomTable,
+			Columns: media.RoomPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomTable,
+			Columns: media.RoomPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{media.Label}
@@ -807,6 +971,36 @@ func (muo *MediaUpdateOne) AddMenu(m ...*Menu) *MediaUpdateOne {
 	return muo.AddMenuIDs(ids...)
 }
 
+// AddRoomCategoryIDs adds the "room_category" edge to the RoomCategory entity by IDs.
+func (muo *MediaUpdateOne) AddRoomCategoryIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.AddRoomCategoryIDs(ids...)
+	return muo
+}
+
+// AddRoomCategory adds the "room_category" edges to the RoomCategory entity.
+func (muo *MediaUpdateOne) AddRoomCategory(r ...*RoomCategory) *MediaUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return muo.AddRoomCategoryIDs(ids...)
+}
+
+// AddRoomIDs adds the "room" edge to the Room entity by IDs.
+func (muo *MediaUpdateOne) AddRoomIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.AddRoomIDs(ids...)
+	return muo
+}
+
+// AddRoom adds the "room" edges to the Room entity.
+func (muo *MediaUpdateOne) AddRoom(r ...*Room) *MediaUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return muo.AddRoomIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (muo *MediaUpdateOne) Mutation() *MediaMutation {
 	return muo.mutation
@@ -906,6 +1100,48 @@ func (muo *MediaUpdateOne) RemoveMenu(m ...*Menu) *MediaUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return muo.RemoveMenuIDs(ids...)
+}
+
+// ClearRoomCategory clears all "room_category" edges to the RoomCategory entity.
+func (muo *MediaUpdateOne) ClearRoomCategory() *MediaUpdateOne {
+	muo.mutation.ClearRoomCategory()
+	return muo
+}
+
+// RemoveRoomCategoryIDs removes the "room_category" edge to RoomCategory entities by IDs.
+func (muo *MediaUpdateOne) RemoveRoomCategoryIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.RemoveRoomCategoryIDs(ids...)
+	return muo
+}
+
+// RemoveRoomCategory removes "room_category" edges to RoomCategory entities.
+func (muo *MediaUpdateOne) RemoveRoomCategory(r ...*RoomCategory) *MediaUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return muo.RemoveRoomCategoryIDs(ids...)
+}
+
+// ClearRoom clears all "room" edges to the Room entity.
+func (muo *MediaUpdateOne) ClearRoom() *MediaUpdateOne {
+	muo.mutation.ClearRoom()
+	return muo
+}
+
+// RemoveRoomIDs removes the "room" edge to Room entities by IDs.
+func (muo *MediaUpdateOne) RemoveRoomIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.RemoveRoomIDs(ids...)
+	return muo
+}
+
+// RemoveRoom removes "room" edges to Room entities.
+func (muo *MediaUpdateOne) RemoveRoom(r ...*Room) *MediaUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return muo.RemoveRoomIDs(ids...)
 }
 
 // Where appends a list predicates to the MediaUpdate builder.
@@ -1235,6 +1471,96 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.RoomCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomCategoryTable,
+			Columns: media.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedRoomCategoryIDs(); len(nodes) > 0 && !muo.mutation.RoomCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomCategoryTable,
+			Columns: media.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RoomCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomCategoryTable,
+			Columns: media.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.RoomCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomTable,
+			Columns: media.RoomPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedRoomIDs(); len(nodes) > 0 && !muo.mutation.RoomCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomTable,
+			Columns: media.RoomPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomTable,
+			Columns: media.RoomPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -13,6 +13,8 @@ import (
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
 	"placio-app/ent/review"
+	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -196,6 +198,36 @@ func (mc *MediaCreate) AddMenu(m ...*Menu) *MediaCreate {
 		ids[i] = m[i].ID
 	}
 	return mc.AddMenuIDs(ids...)
+}
+
+// AddRoomCategoryIDs adds the "room_category" edge to the RoomCategory entity by IDs.
+func (mc *MediaCreate) AddRoomCategoryIDs(ids ...string) *MediaCreate {
+	mc.mutation.AddRoomCategoryIDs(ids...)
+	return mc
+}
+
+// AddRoomCategory adds the "room_category" edges to the RoomCategory entity.
+func (mc *MediaCreate) AddRoomCategory(r ...*RoomCategory) *MediaCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return mc.AddRoomCategoryIDs(ids...)
+}
+
+// AddRoomIDs adds the "room" edge to the Room entity by IDs.
+func (mc *MediaCreate) AddRoomIDs(ids ...string) *MediaCreate {
+	mc.mutation.AddRoomIDs(ids...)
+	return mc
+}
+
+// AddRoom adds the "room" edges to the Room entity.
+func (mc *MediaCreate) AddRoom(r ...*Room) *MediaCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return mc.AddRoomIDs(ids...)
 }
 
 // Mutation returns the MediaMutation object of the builder.
@@ -426,6 +458,38 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.RoomCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomCategoryTable,
+			Columns: media.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.RoomTable,
+			Columns: media.RoomPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

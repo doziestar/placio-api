@@ -92,6 +92,8 @@ type Tx struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
+	// RoomCategory is the client for interacting with the RoomCategory builders.
+	RoomCategory *RoomCategoryClient
 	// Staff is the client for interacting with the Staff builders.
 	Staff *StaffClient
 	// Template is the client for interacting with the Template builders.
@@ -289,6 +291,7 @@ func (tx *Tx) init() {
 	tx.Resourse = NewResourseClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
+	tx.RoomCategory = NewRoomCategoryClient(tx.config)
 	tx.Staff = NewStaffClient(tx.config)
 	tx.Template = NewTemplateClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)

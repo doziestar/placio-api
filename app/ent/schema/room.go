@@ -19,6 +19,7 @@ func (RoomCategory) Fields() []ent.Field {
 			Immutable(),
 		field.String("name"),
 		field.String("description").Optional(),
+		field.String("price").Optional(),
 	}
 }
 
@@ -26,8 +27,7 @@ func (RoomCategory) Fields() []ent.Field {
 func (RoomCategory) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("place", Place.Type).
-			Ref("room_categories").
-			Unique(),
+			Ref("room_categories"),
 		edge.To("rooms", Room.Type),
 		edge.To("media", Media.Type),
 		edge.To("amenities", Amenity.Type),
@@ -48,7 +48,8 @@ func (Room) Fields() []ent.Field {
 		field.String("room_number"),
 		field.String("room_type"),
 		field.String("room_status"),
-		field.Float("price"),
+		field.String("room_rating"),
+		field.Float("room_price"),
 		field.Enum("status").Values("available", "unavailable", "maintenance", "reserved"),
 		field.JSON("extras", map[string]interface{}{}).Optional(),
 		field.String("description").Optional(),
@@ -61,11 +62,9 @@ func (Room) Fields() []ent.Field {
 func (Room) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("place", Place.Type).
-			Ref("rooms").
-			Unique(),
+			Ref("rooms"),
 		edge.From("room_category", RoomCategory.Type).
-			Ref("rooms").
-			Unique(),
+			Ref("rooms"),
 		edge.To("bookings", Booking.Type),
 		edge.To("amenities", Amenity.Type),
 		edge.To("media", Media.Type),

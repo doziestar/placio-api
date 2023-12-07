@@ -43,6 +43,7 @@ import (
 	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
@@ -113,6 +114,7 @@ const (
 	TypeResourse                = "Resourse"
 	TypeReview                  = "Review"
 	TypeRoom                    = "Room"
+	TypeRoomCategory            = "RoomCategory"
 	TypeStaff                   = "Staff"
 	TypeTemplate                = "Template"
 	TypeTicket                  = "Ticket"
@@ -2208,18 +2210,24 @@ func (m *AccountWalletMutation) ResetEdge(name string) error {
 // AmenityMutation represents an operation that mutates the Amenity nodes in the graph.
 type AmenityMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	name          *string
-	icon          *string
-	clearedFields map[string]struct{}
-	places        map[string]struct{}
-	removedplaces map[string]struct{}
-	clearedplaces bool
-	done          bool
-	oldValue      func(context.Context) (*Amenity, error)
-	predicates    []predicate.Amenity
+	op                     Op
+	typ                    string
+	id                     *string
+	name                   *string
+	icon                   *string
+	clearedFields          map[string]struct{}
+	places                 map[string]struct{}
+	removedplaces          map[string]struct{}
+	clearedplaces          bool
+	rooms                  map[string]struct{}
+	removedrooms           map[string]struct{}
+	clearedrooms           bool
+	room_categories        map[string]struct{}
+	removedroom_categories map[string]struct{}
+	clearedroom_categories bool
+	done                   bool
+	oldValue               func(context.Context) (*Amenity, error)
+	predicates             []predicate.Amenity
 }
 
 var _ ent.Mutation = (*AmenityMutation)(nil)
@@ -2452,6 +2460,114 @@ func (m *AmenityMutation) ResetPlaces() {
 	m.removedplaces = nil
 }
 
+// AddRoomIDs adds the "rooms" edge to the Room entity by ids.
+func (m *AmenityMutation) AddRoomIDs(ids ...string) {
+	if m.rooms == nil {
+		m.rooms = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.rooms[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRooms clears the "rooms" edge to the Room entity.
+func (m *AmenityMutation) ClearRooms() {
+	m.clearedrooms = true
+}
+
+// RoomsCleared reports if the "rooms" edge to the Room entity was cleared.
+func (m *AmenityMutation) RoomsCleared() bool {
+	return m.clearedrooms
+}
+
+// RemoveRoomIDs removes the "rooms" edge to the Room entity by IDs.
+func (m *AmenityMutation) RemoveRoomIDs(ids ...string) {
+	if m.removedrooms == nil {
+		m.removedrooms = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.rooms, ids[i])
+		m.removedrooms[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRooms returns the removed IDs of the "rooms" edge to the Room entity.
+func (m *AmenityMutation) RemovedRoomsIDs() (ids []string) {
+	for id := range m.removedrooms {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RoomsIDs returns the "rooms" edge IDs in the mutation.
+func (m *AmenityMutation) RoomsIDs() (ids []string) {
+	for id := range m.rooms {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRooms resets all changes to the "rooms" edge.
+func (m *AmenityMutation) ResetRooms() {
+	m.rooms = nil
+	m.clearedrooms = false
+	m.removedrooms = nil
+}
+
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by ids.
+func (m *AmenityMutation) AddRoomCategoryIDs(ids ...string) {
+	if m.room_categories == nil {
+		m.room_categories = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.room_categories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRoomCategories clears the "room_categories" edge to the RoomCategory entity.
+func (m *AmenityMutation) ClearRoomCategories() {
+	m.clearedroom_categories = true
+}
+
+// RoomCategoriesCleared reports if the "room_categories" edge to the RoomCategory entity was cleared.
+func (m *AmenityMutation) RoomCategoriesCleared() bool {
+	return m.clearedroom_categories
+}
+
+// RemoveRoomCategoryIDs removes the "room_categories" edge to the RoomCategory entity by IDs.
+func (m *AmenityMutation) RemoveRoomCategoryIDs(ids ...string) {
+	if m.removedroom_categories == nil {
+		m.removedroom_categories = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.room_categories, ids[i])
+		m.removedroom_categories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRoomCategories returns the removed IDs of the "room_categories" edge to the RoomCategory entity.
+func (m *AmenityMutation) RemovedRoomCategoriesIDs() (ids []string) {
+	for id := range m.removedroom_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RoomCategoriesIDs returns the "room_categories" edge IDs in the mutation.
+func (m *AmenityMutation) RoomCategoriesIDs() (ids []string) {
+	for id := range m.room_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRoomCategories resets all changes to the "room_categories" edge.
+func (m *AmenityMutation) ResetRoomCategories() {
+	m.room_categories = nil
+	m.clearedroom_categories = false
+	m.removedroom_categories = nil
+}
+
 // Where appends a list predicates to the AmenityMutation builder.
 func (m *AmenityMutation) Where(ps ...predicate.Amenity) {
 	m.predicates = append(m.predicates, ps...)
@@ -2602,9 +2718,15 @@ func (m *AmenityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AmenityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.places != nil {
 		edges = append(edges, amenity.EdgePlaces)
+	}
+	if m.rooms != nil {
+		edges = append(edges, amenity.EdgeRooms)
+	}
+	if m.room_categories != nil {
+		edges = append(edges, amenity.EdgeRoomCategories)
 	}
 	return edges
 }
@@ -2619,15 +2741,33 @@ func (m *AmenityMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case amenity.EdgeRooms:
+		ids := make([]ent.Value, 0, len(m.rooms))
+		for id := range m.rooms {
+			ids = append(ids, id)
+		}
+		return ids
+	case amenity.EdgeRoomCategories:
+		ids := make([]ent.Value, 0, len(m.room_categories))
+		for id := range m.room_categories {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AmenityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.removedplaces != nil {
 		edges = append(edges, amenity.EdgePlaces)
+	}
+	if m.removedrooms != nil {
+		edges = append(edges, amenity.EdgeRooms)
+	}
+	if m.removedroom_categories != nil {
+		edges = append(edges, amenity.EdgeRoomCategories)
 	}
 	return edges
 }
@@ -2642,15 +2782,33 @@ func (m *AmenityMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case amenity.EdgeRooms:
+		ids := make([]ent.Value, 0, len(m.removedrooms))
+		for id := range m.removedrooms {
+			ids = append(ids, id)
+		}
+		return ids
+	case amenity.EdgeRoomCategories:
+		ids := make([]ent.Value, 0, len(m.removedroom_categories))
+		for id := range m.removedroom_categories {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AmenityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.clearedplaces {
 		edges = append(edges, amenity.EdgePlaces)
+	}
+	if m.clearedrooms {
+		edges = append(edges, amenity.EdgeRooms)
+	}
+	if m.clearedroom_categories {
+		edges = append(edges, amenity.EdgeRoomCategories)
 	}
 	return edges
 }
@@ -2661,6 +2819,10 @@ func (m *AmenityMutation) EdgeCleared(name string) bool {
 	switch name {
 	case amenity.EdgePlaces:
 		return m.clearedplaces
+	case amenity.EdgeRooms:
+		return m.clearedrooms
+	case amenity.EdgeRoomCategories:
+		return m.clearedroom_categories
 	}
 	return false
 }
@@ -2679,6 +2841,12 @@ func (m *AmenityMutation) ResetEdge(name string) error {
 	switch name {
 	case amenity.EdgePlaces:
 		m.ResetPlaces()
+		return nil
+	case amenity.EdgeRooms:
+		m.ResetRooms()
+		return nil
+	case amenity.EdgeRoomCategories:
+		m.ResetRoomCategories()
 		return nil
 	}
 	return fmt.Errorf("unknown Amenity edge %s", name)
@@ -20687,6 +20855,12 @@ type MediaMutation struct {
 	menu                   map[string]struct{}
 	removedmenu            map[string]struct{}
 	clearedmenu            bool
+	room_category          map[string]struct{}
+	removedroom_category   map[string]struct{}
+	clearedroom_category   bool
+	room                   map[string]struct{}
+	removedroom            map[string]struct{}
+	clearedroom            bool
 	done                   bool
 	oldValue               func(context.Context) (*Media, error)
 	predicates             []predicate.Media
@@ -21346,6 +21520,114 @@ func (m *MediaMutation) ResetMenu() {
 	m.removedmenu = nil
 }
 
+// AddRoomCategoryIDs adds the "room_category" edge to the RoomCategory entity by ids.
+func (m *MediaMutation) AddRoomCategoryIDs(ids ...string) {
+	if m.room_category == nil {
+		m.room_category = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.room_category[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRoomCategory clears the "room_category" edge to the RoomCategory entity.
+func (m *MediaMutation) ClearRoomCategory() {
+	m.clearedroom_category = true
+}
+
+// RoomCategoryCleared reports if the "room_category" edge to the RoomCategory entity was cleared.
+func (m *MediaMutation) RoomCategoryCleared() bool {
+	return m.clearedroom_category
+}
+
+// RemoveRoomCategoryIDs removes the "room_category" edge to the RoomCategory entity by IDs.
+func (m *MediaMutation) RemoveRoomCategoryIDs(ids ...string) {
+	if m.removedroom_category == nil {
+		m.removedroom_category = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.room_category, ids[i])
+		m.removedroom_category[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRoomCategory returns the removed IDs of the "room_category" edge to the RoomCategory entity.
+func (m *MediaMutation) RemovedRoomCategoryIDs() (ids []string) {
+	for id := range m.removedroom_category {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RoomCategoryIDs returns the "room_category" edge IDs in the mutation.
+func (m *MediaMutation) RoomCategoryIDs() (ids []string) {
+	for id := range m.room_category {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRoomCategory resets all changes to the "room_category" edge.
+func (m *MediaMutation) ResetRoomCategory() {
+	m.room_category = nil
+	m.clearedroom_category = false
+	m.removedroom_category = nil
+}
+
+// AddRoomIDs adds the "room" edge to the Room entity by ids.
+func (m *MediaMutation) AddRoomIDs(ids ...string) {
+	if m.room == nil {
+		m.room = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.room[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRoom clears the "room" edge to the Room entity.
+func (m *MediaMutation) ClearRoom() {
+	m.clearedroom = true
+}
+
+// RoomCleared reports if the "room" edge to the Room entity was cleared.
+func (m *MediaMutation) RoomCleared() bool {
+	return m.clearedroom
+}
+
+// RemoveRoomIDs removes the "room" edge to the Room entity by IDs.
+func (m *MediaMutation) RemoveRoomIDs(ids ...string) {
+	if m.removedroom == nil {
+		m.removedroom = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.room, ids[i])
+		m.removedroom[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRoom returns the removed IDs of the "room" edge to the Room entity.
+func (m *MediaMutation) RemovedRoomIDs() (ids []string) {
+	for id := range m.removedroom {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RoomIDs returns the "room" edge IDs in the mutation.
+func (m *MediaMutation) RoomIDs() (ids []string) {
+	for id := range m.room {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRoom resets all changes to the "room" edge.
+func (m *MediaMutation) ResetRoom() {
+	m.room = nil
+	m.clearedroom = false
+	m.removedroom = nil
+}
+
 // Where appends a list predicates to the MediaMutation builder.
 func (m *MediaMutation) Where(ps ...predicate.Media) {
 	m.predicates = append(m.predicates, ps...)
@@ -21591,7 +21873,7 @@ func (m *MediaMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *MediaMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 8)
 	if m.post != nil {
 		edges = append(edges, media.EdgePost)
 	}
@@ -21609,6 +21891,12 @@ func (m *MediaMutation) AddedEdges() []string {
 	}
 	if m.menu != nil {
 		edges = append(edges, media.EdgeMenu)
+	}
+	if m.room_category != nil {
+		edges = append(edges, media.EdgeRoomCategory)
+	}
+	if m.room != nil {
+		edges = append(edges, media.EdgeRoom)
 	}
 	return edges
 }
@@ -21649,13 +21937,25 @@ func (m *MediaMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case media.EdgeRoomCategory:
+		ids := make([]ent.Value, 0, len(m.room_category))
+		for id := range m.room_category {
+			ids = append(ids, id)
+		}
+		return ids
+	case media.EdgeRoom:
+		ids := make([]ent.Value, 0, len(m.room))
+		for id := range m.room {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MediaMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 8)
 	if m.removedcategories != nil {
 		edges = append(edges, media.EdgeCategories)
 	}
@@ -21667,6 +21967,12 @@ func (m *MediaMutation) RemovedEdges() []string {
 	}
 	if m.removedmenu != nil {
 		edges = append(edges, media.EdgeMenu)
+	}
+	if m.removedroom_category != nil {
+		edges = append(edges, media.EdgeRoomCategory)
+	}
+	if m.removedroom != nil {
+		edges = append(edges, media.EdgeRoom)
 	}
 	return edges
 }
@@ -21699,13 +22005,25 @@ func (m *MediaMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case media.EdgeRoomCategory:
+		ids := make([]ent.Value, 0, len(m.removedroom_category))
+		for id := range m.removedroom_category {
+			ids = append(ids, id)
+		}
+		return ids
+	case media.EdgeRoom:
+		ids := make([]ent.Value, 0, len(m.removedroom))
+		for id := range m.removedroom {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *MediaMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 8)
 	if m.clearedpost {
 		edges = append(edges, media.EdgePost)
 	}
@@ -21723,6 +22041,12 @@ func (m *MediaMutation) ClearedEdges() []string {
 	}
 	if m.clearedmenu {
 		edges = append(edges, media.EdgeMenu)
+	}
+	if m.clearedroom_category {
+		edges = append(edges, media.EdgeRoomCategory)
+	}
+	if m.clearedroom {
+		edges = append(edges, media.EdgeRoom)
 	}
 	return edges
 }
@@ -21743,6 +22067,10 @@ func (m *MediaMutation) EdgeCleared(name string) bool {
 		return m.clearedplace_inventory
 	case media.EdgeMenu:
 		return m.clearedmenu
+	case media.EdgeRoomCategory:
+		return m.clearedroom_category
+	case media.EdgeRoom:
+		return m.clearedroom
 	}
 	return false
 }
@@ -21782,6 +22110,12 @@ func (m *MediaMutation) ResetEdge(name string) error {
 		return nil
 	case media.EdgeMenu:
 		m.ResetMenu()
+		return nil
+	case media.EdgeRoomCategory:
+		m.ResetRoomCategory()
+		return nil
+	case media.EdgeRoom:
+		m.ResetRoom()
 		return nil
 	}
 	return fmt.Errorf("unknown Media edge %s", name)
@@ -30890,6 +31224,9 @@ type PlaceMutation struct {
 	staffs                     map[string]struct{}
 	removedstaffs              map[string]struct{}
 	clearedstaffs              bool
+	room_categories            map[string]struct{}
+	removedroom_categories     map[string]struct{}
+	clearedroom_categories     bool
 	done                       bool
 	oldValue                   func(context.Context) (*Place, error)
 	predicates                 []predicate.Place
@@ -33881,6 +34218,60 @@ func (m *PlaceMutation) ResetStaffs() {
 	m.removedstaffs = nil
 }
 
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by ids.
+func (m *PlaceMutation) AddRoomCategoryIDs(ids ...string) {
+	if m.room_categories == nil {
+		m.room_categories = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.room_categories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRoomCategories clears the "room_categories" edge to the RoomCategory entity.
+func (m *PlaceMutation) ClearRoomCategories() {
+	m.clearedroom_categories = true
+}
+
+// RoomCategoriesCleared reports if the "room_categories" edge to the RoomCategory entity was cleared.
+func (m *PlaceMutation) RoomCategoriesCleared() bool {
+	return m.clearedroom_categories
+}
+
+// RemoveRoomCategoryIDs removes the "room_categories" edge to the RoomCategory entity by IDs.
+func (m *PlaceMutation) RemoveRoomCategoryIDs(ids ...string) {
+	if m.removedroom_categories == nil {
+		m.removedroom_categories = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.room_categories, ids[i])
+		m.removedroom_categories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRoomCategories returns the removed IDs of the "room_categories" edge to the RoomCategory entity.
+func (m *PlaceMutation) RemovedRoomCategoriesIDs() (ids []string) {
+	for id := range m.removedroom_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RoomCategoriesIDs returns the "room_categories" edge IDs in the mutation.
+func (m *PlaceMutation) RoomCategoriesIDs() (ids []string) {
+	for id := range m.room_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRoomCategories resets all changes to the "room_categories" edge.
+func (m *PlaceMutation) ResetRoomCategories() {
+	m.room_categories = nil
+	m.clearedroom_categories = false
+	m.removedroom_categories = nil
+}
+
 // Where appends a list predicates to the PlaceMutation builder.
 func (m *PlaceMutation) Where(ps ...predicate.Place) {
 	m.predicates = append(m.predicates, ps...)
@@ -34849,7 +35240,7 @@ func (m *PlaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 20)
+	edges := make([]string, 0, 21)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -34909,6 +35300,9 @@ func (m *PlaceMutation) AddedEdges() []string {
 	}
 	if m.staffs != nil {
 		edges = append(edges, place.EdgeStaffs)
+	}
+	if m.room_categories != nil {
+		edges = append(edges, place.EdgeRoomCategories)
 	}
 	return edges
 }
@@ -35035,13 +35429,19 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeRoomCategories:
+		ids := make([]ent.Value, 0, len(m.room_categories))
+		for id := range m.room_categories {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 20)
+	edges := make([]string, 0, 21)
 	if m.removedusers != nil {
 		edges = append(edges, place.EdgeUsers)
 	}
@@ -35098,6 +35498,9 @@ func (m *PlaceMutation) RemovedEdges() []string {
 	}
 	if m.removedstaffs != nil {
 		edges = append(edges, place.EdgeStaffs)
+	}
+	if m.removedroom_categories != nil {
+		edges = append(edges, place.EdgeRoomCategories)
 	}
 	return edges
 }
@@ -35220,13 +35623,19 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeRoomCategories:
+		ids := make([]ent.Value, 0, len(m.removedroom_categories))
+		for id := range m.removedroom_categories {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 20)
+	edges := make([]string, 0, 21)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -35287,6 +35696,9 @@ func (m *PlaceMutation) ClearedEdges() []string {
 	if m.clearedstaffs {
 		edges = append(edges, place.EdgeStaffs)
 	}
+	if m.clearedroom_categories {
+		edges = append(edges, place.EdgeRoomCategories)
+	}
 	return edges
 }
 
@@ -35334,6 +35746,8 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 		return m.clearedtables
 	case place.EdgeStaffs:
 		return m.clearedstaffs
+	case place.EdgeRoomCategories:
+		return m.clearedroom_categories
 	}
 	return false
 }
@@ -35412,6 +35826,9 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 		return nil
 	case place.EdgeStaffs:
 		m.ResetStaffs()
+		return nil
+	case place.EdgeRoomCategories:
+		m.ResetRoomCategories()
 		return nil
 	}
 	return fmt.Errorf("unknown Place edge %s", name)
@@ -43457,22 +43874,22 @@ func (m *ReactionMutation) ResetEdge(name string) error {
 // ReservationMutation represents an operation that mutates the Reservation nodes in the graph.
 type ReservationMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *string
-	date              *time.Time
-	time              *time.Time
-	numberOfPeople    *int
-	addnumberOfPeople *int
-	status            *string
-	clearedFields     map[string]struct{}
-	place             *string
-	clearedplace      bool
-	user              *string
-	cleareduser       bool
-	done              bool
-	oldValue          func(context.Context) (*Reservation, error)
-	predicates        []predicate.Reservation
+	op            Op
+	typ           string
+	id            *string
+	startDate     *time.Time
+	endDate       *time.Time
+	status        *string
+	clearedFields map[string]struct{}
+	place         *string
+	clearedplace  bool
+	room          *string
+	clearedroom   bool
+	user          *string
+	cleareduser   bool
+	done          bool
+	oldValue      func(context.Context) (*Reservation, error)
+	predicates    []predicate.Reservation
 }
 
 var _ ent.Mutation = (*ReservationMutation)(nil)
@@ -43579,132 +43996,76 @@ func (m *ReservationMutation) IDs(ctx context.Context) ([]string, error) {
 	}
 }
 
-// SetDate sets the "date" field.
-func (m *ReservationMutation) SetDate(t time.Time) {
-	m.date = &t
+// SetStartDate sets the "startDate" field.
+func (m *ReservationMutation) SetStartDate(t time.Time) {
+	m.startDate = &t
 }
 
-// Date returns the value of the "date" field in the mutation.
-func (m *ReservationMutation) Date() (r time.Time, exists bool) {
-	v := m.date
+// StartDate returns the value of the "startDate" field in the mutation.
+func (m *ReservationMutation) StartDate() (r time.Time, exists bool) {
+	v := m.startDate
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDate returns the old "date" field's value of the Reservation entity.
+// OldStartDate returns the old "startDate" field's value of the Reservation entity.
 // If the Reservation object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReservationMutation) OldDate(ctx context.Context) (v time.Time, err error) {
+func (m *ReservationMutation) OldStartDate(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDate is only allowed on UpdateOne operations")
+		return v, errors.New("OldStartDate is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDate requires an ID field in the mutation")
+		return v, errors.New("OldStartDate requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDate: %w", err)
+		return v, fmt.Errorf("querying old value for OldStartDate: %w", err)
 	}
-	return oldValue.Date, nil
+	return oldValue.StartDate, nil
 }
 
-// ResetDate resets all changes to the "date" field.
-func (m *ReservationMutation) ResetDate() {
-	m.date = nil
+// ResetStartDate resets all changes to the "startDate" field.
+func (m *ReservationMutation) ResetStartDate() {
+	m.startDate = nil
 }
 
-// SetTime sets the "time" field.
-func (m *ReservationMutation) SetTime(t time.Time) {
-	m.time = &t
+// SetEndDate sets the "endDate" field.
+func (m *ReservationMutation) SetEndDate(t time.Time) {
+	m.endDate = &t
 }
 
-// Time returns the value of the "time" field in the mutation.
-func (m *ReservationMutation) Time() (r time.Time, exists bool) {
-	v := m.time
+// EndDate returns the value of the "endDate" field in the mutation.
+func (m *ReservationMutation) EndDate() (r time.Time, exists bool) {
+	v := m.endDate
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldTime returns the old "time" field's value of the Reservation entity.
+// OldEndDate returns the old "endDate" field's value of the Reservation entity.
 // If the Reservation object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReservationMutation) OldTime(ctx context.Context) (v time.Time, err error) {
+func (m *ReservationMutation) OldEndDate(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTime is only allowed on UpdateOne operations")
+		return v, errors.New("OldEndDate is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTime requires an ID field in the mutation")
+		return v, errors.New("OldEndDate requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTime: %w", err)
+		return v, fmt.Errorf("querying old value for OldEndDate: %w", err)
 	}
-	return oldValue.Time, nil
+	return oldValue.EndDate, nil
 }
 
-// ResetTime resets all changes to the "time" field.
-func (m *ReservationMutation) ResetTime() {
-	m.time = nil
-}
-
-// SetNumberOfPeople sets the "numberOfPeople" field.
-func (m *ReservationMutation) SetNumberOfPeople(i int) {
-	m.numberOfPeople = &i
-	m.addnumberOfPeople = nil
-}
-
-// NumberOfPeople returns the value of the "numberOfPeople" field in the mutation.
-func (m *ReservationMutation) NumberOfPeople() (r int, exists bool) {
-	v := m.numberOfPeople
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldNumberOfPeople returns the old "numberOfPeople" field's value of the Reservation entity.
-// If the Reservation object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReservationMutation) OldNumberOfPeople(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNumberOfPeople is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNumberOfPeople requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNumberOfPeople: %w", err)
-	}
-	return oldValue.NumberOfPeople, nil
-}
-
-// AddNumberOfPeople adds i to the "numberOfPeople" field.
-func (m *ReservationMutation) AddNumberOfPeople(i int) {
-	if m.addnumberOfPeople != nil {
-		*m.addnumberOfPeople += i
-	} else {
-		m.addnumberOfPeople = &i
-	}
-}
-
-// AddedNumberOfPeople returns the value that was added to the "numberOfPeople" field in this mutation.
-func (m *ReservationMutation) AddedNumberOfPeople() (r int, exists bool) {
-	v := m.addnumberOfPeople
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetNumberOfPeople resets all changes to the "numberOfPeople" field.
-func (m *ReservationMutation) ResetNumberOfPeople() {
-	m.numberOfPeople = nil
-	m.addnumberOfPeople = nil
+// ResetEndDate resets all changes to the "endDate" field.
+func (m *ReservationMutation) ResetEndDate() {
+	m.endDate = nil
 }
 
 // SetStatus sets the "status" field.
@@ -43782,6 +44143,45 @@ func (m *ReservationMutation) ResetPlace() {
 	m.clearedplace = false
 }
 
+// SetRoomID sets the "room" edge to the Room entity by id.
+func (m *ReservationMutation) SetRoomID(id string) {
+	m.room = &id
+}
+
+// ClearRoom clears the "room" edge to the Room entity.
+func (m *ReservationMutation) ClearRoom() {
+	m.clearedroom = true
+}
+
+// RoomCleared reports if the "room" edge to the Room entity was cleared.
+func (m *ReservationMutation) RoomCleared() bool {
+	return m.clearedroom
+}
+
+// RoomID returns the "room" edge ID in the mutation.
+func (m *ReservationMutation) RoomID() (id string, exists bool) {
+	if m.room != nil {
+		return *m.room, true
+	}
+	return
+}
+
+// RoomIDs returns the "room" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RoomID instead. It exists only for internal usage by the builders.
+func (m *ReservationMutation) RoomIDs() (ids []string) {
+	if id := m.room; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRoom resets all changes to the "room" edge.
+func (m *ReservationMutation) ResetRoom() {
+	m.room = nil
+	m.clearedroom = false
+}
+
 // SetUserID sets the "user" edge to the User entity by id.
 func (m *ReservationMutation) SetUserID(id string) {
 	m.user = &id
@@ -43855,15 +44255,12 @@ func (m *ReservationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ReservationMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.date != nil {
-		fields = append(fields, reservation.FieldDate)
+	fields := make([]string, 0, 3)
+	if m.startDate != nil {
+		fields = append(fields, reservation.FieldStartDate)
 	}
-	if m.time != nil {
-		fields = append(fields, reservation.FieldTime)
-	}
-	if m.numberOfPeople != nil {
-		fields = append(fields, reservation.FieldNumberOfPeople)
+	if m.endDate != nil {
+		fields = append(fields, reservation.FieldEndDate)
 	}
 	if m.status != nil {
 		fields = append(fields, reservation.FieldStatus)
@@ -43876,12 +44273,10 @@ func (m *ReservationMutation) Fields() []string {
 // schema.
 func (m *ReservationMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case reservation.FieldDate:
-		return m.Date()
-	case reservation.FieldTime:
-		return m.Time()
-	case reservation.FieldNumberOfPeople:
-		return m.NumberOfPeople()
+	case reservation.FieldStartDate:
+		return m.StartDate()
+	case reservation.FieldEndDate:
+		return m.EndDate()
 	case reservation.FieldStatus:
 		return m.Status()
 	}
@@ -43893,12 +44288,10 @@ func (m *ReservationMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ReservationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case reservation.FieldDate:
-		return m.OldDate(ctx)
-	case reservation.FieldTime:
-		return m.OldTime(ctx)
-	case reservation.FieldNumberOfPeople:
-		return m.OldNumberOfPeople(ctx)
+	case reservation.FieldStartDate:
+		return m.OldStartDate(ctx)
+	case reservation.FieldEndDate:
+		return m.OldEndDate(ctx)
 	case reservation.FieldStatus:
 		return m.OldStatus(ctx)
 	}
@@ -43910,26 +44303,19 @@ func (m *ReservationMutation) OldField(ctx context.Context, name string) (ent.Va
 // type.
 func (m *ReservationMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case reservation.FieldDate:
+	case reservation.FieldStartDate:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetDate(v)
+		m.SetStartDate(v)
 		return nil
-	case reservation.FieldTime:
+	case reservation.FieldEndDate:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetTime(v)
-		return nil
-	case reservation.FieldNumberOfPeople:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetNumberOfPeople(v)
+		m.SetEndDate(v)
 		return nil
 	case reservation.FieldStatus:
 		v, ok := value.(string)
@@ -43945,21 +44331,13 @@ func (m *ReservationMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *ReservationMutation) AddedFields() []string {
-	var fields []string
-	if m.addnumberOfPeople != nil {
-		fields = append(fields, reservation.FieldNumberOfPeople)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *ReservationMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case reservation.FieldNumberOfPeople:
-		return m.AddedNumberOfPeople()
-	}
 	return nil, false
 }
 
@@ -43968,13 +44346,6 @@ func (m *ReservationMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ReservationMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case reservation.FieldNumberOfPeople:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddNumberOfPeople(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Reservation numeric field %s", name)
 }
@@ -44002,14 +44373,11 @@ func (m *ReservationMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ReservationMutation) ResetField(name string) error {
 	switch name {
-	case reservation.FieldDate:
-		m.ResetDate()
+	case reservation.FieldStartDate:
+		m.ResetStartDate()
 		return nil
-	case reservation.FieldTime:
-		m.ResetTime()
-		return nil
-	case reservation.FieldNumberOfPeople:
-		m.ResetNumberOfPeople()
+	case reservation.FieldEndDate:
+		m.ResetEndDate()
 		return nil
 	case reservation.FieldStatus:
 		m.ResetStatus()
@@ -44020,9 +44388,12 @@ func (m *ReservationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ReservationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.place != nil {
 		edges = append(edges, reservation.EdgePlace)
+	}
+	if m.room != nil {
+		edges = append(edges, reservation.EdgeRoom)
 	}
 	if m.user != nil {
 		edges = append(edges, reservation.EdgeUser)
@@ -44038,6 +44409,10 @@ func (m *ReservationMutation) AddedIDs(name string) []ent.Value {
 		if id := m.place; id != nil {
 			return []ent.Value{*id}
 		}
+	case reservation.EdgeRoom:
+		if id := m.room; id != nil {
+			return []ent.Value{*id}
+		}
 	case reservation.EdgeUser:
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
@@ -44048,7 +44423,7 @@ func (m *ReservationMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ReservationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -44060,9 +44435,12 @@ func (m *ReservationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ReservationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedplace {
 		edges = append(edges, reservation.EdgePlace)
+	}
+	if m.clearedroom {
+		edges = append(edges, reservation.EdgeRoom)
 	}
 	if m.cleareduser {
 		edges = append(edges, reservation.EdgeUser)
@@ -44076,6 +44454,8 @@ func (m *ReservationMutation) EdgeCleared(name string) bool {
 	switch name {
 	case reservation.EdgePlace:
 		return m.clearedplace
+	case reservation.EdgeRoom:
+		return m.clearedroom
 	case reservation.EdgeUser:
 		return m.cleareduser
 	}
@@ -44088,6 +44468,9 @@ func (m *ReservationMutation) ClearEdge(name string) error {
 	switch name {
 	case reservation.EdgePlace:
 		m.ClearPlace()
+		return nil
+	case reservation.EdgeRoom:
+		m.ClearRoom()
 		return nil
 	case reservation.EdgeUser:
 		m.ClearUser()
@@ -44102,6 +44485,9 @@ func (m *ReservationMutation) ResetEdge(name string) error {
 	switch name {
 	case reservation.EdgePlace:
 		m.ResetPlace()
+		return nil
+	case reservation.EdgeRoom:
+		m.ResetRoom()
 		return nil
 	case reservation.EdgeUser:
 		m.ResetUser()
@@ -46136,25 +46522,42 @@ func (m *ReviewMutation) ResetEdge(name string) error {
 // RoomMutation represents an operation that mutates the Room nodes in the graph.
 type RoomMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *string
-	number          *string
-	_type           *string
-	price           *float64
-	addprice        *float64
-	description     *string
-	availability    *bool
-	image           *string
-	clearedFields   map[string]struct{}
-	place           *string
-	clearedplace    bool
-	bookings        map[string]struct{}
-	removedbookings map[string]struct{}
-	clearedbookings bool
-	done            bool
-	oldValue        func(context.Context) (*Room, error)
-	predicates      []predicate.Room
+	op                   Op
+	typ                  string
+	id                   *string
+	room_number          *string
+	room_type            *string
+	room_status          *string
+	room_rating          *string
+	room_price           *float64
+	addroom_price        *float64
+	status               *room.Status
+	extras               *map[string]interface{}
+	description          *string
+	availability         *bool
+	image                *string
+	clearedFields        map[string]struct{}
+	place                map[string]struct{}
+	removedplace         map[string]struct{}
+	clearedplace         bool
+	room_category        map[string]struct{}
+	removedroom_category map[string]struct{}
+	clearedroom_category bool
+	bookings             map[string]struct{}
+	removedbookings      map[string]struct{}
+	clearedbookings      bool
+	amenities            map[string]struct{}
+	removedamenities     map[string]struct{}
+	clearedamenities     bool
+	media                map[string]struct{}
+	removedmedia         map[string]struct{}
+	clearedmedia         bool
+	reservations         map[string]struct{}
+	removedreservations  map[string]struct{}
+	clearedreservations  bool
+	done                 bool
+	oldValue             func(context.Context) (*Room, error)
+	predicates           []predicate.Room
 }
 
 var _ ent.Mutation = (*RoomMutation)(nil)
@@ -46261,132 +46664,289 @@ func (m *RoomMutation) IDs(ctx context.Context) ([]string, error) {
 	}
 }
 
-// SetNumber sets the "number" field.
-func (m *RoomMutation) SetNumber(s string) {
-	m.number = &s
+// SetRoomNumber sets the "room_number" field.
+func (m *RoomMutation) SetRoomNumber(s string) {
+	m.room_number = &s
 }
 
-// Number returns the value of the "number" field in the mutation.
-func (m *RoomMutation) Number() (r string, exists bool) {
-	v := m.number
+// RoomNumber returns the value of the "room_number" field in the mutation.
+func (m *RoomMutation) RoomNumber() (r string, exists bool) {
+	v := m.room_number
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldNumber returns the old "number" field's value of the Room entity.
+// OldRoomNumber returns the old "room_number" field's value of the Room entity.
 // If the Room object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoomMutation) OldNumber(ctx context.Context) (v string, err error) {
+func (m *RoomMutation) OldRoomNumber(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNumber is only allowed on UpdateOne operations")
+		return v, errors.New("OldRoomNumber is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNumber requires an ID field in the mutation")
+		return v, errors.New("OldRoomNumber requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNumber: %w", err)
+		return v, fmt.Errorf("querying old value for OldRoomNumber: %w", err)
 	}
-	return oldValue.Number, nil
+	return oldValue.RoomNumber, nil
 }
 
-// ResetNumber resets all changes to the "number" field.
-func (m *RoomMutation) ResetNumber() {
-	m.number = nil
+// ResetRoomNumber resets all changes to the "room_number" field.
+func (m *RoomMutation) ResetRoomNumber() {
+	m.room_number = nil
 }
 
-// SetType sets the "type" field.
-func (m *RoomMutation) SetType(s string) {
-	m._type = &s
+// SetRoomType sets the "room_type" field.
+func (m *RoomMutation) SetRoomType(s string) {
+	m.room_type = &s
 }
 
-// GetType returns the value of the "type" field in the mutation.
-func (m *RoomMutation) GetType() (r string, exists bool) {
-	v := m._type
+// RoomType returns the value of the "room_type" field in the mutation.
+func (m *RoomMutation) RoomType() (r string, exists bool) {
+	v := m.room_type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldType returns the old "type" field's value of the Room entity.
+// OldRoomType returns the old "room_type" field's value of the Room entity.
 // If the Room object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoomMutation) OldType(ctx context.Context) (v string, err error) {
+func (m *RoomMutation) OldRoomType(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldType is only allowed on UpdateOne operations")
+		return v, errors.New("OldRoomType is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldType requires an ID field in the mutation")
+		return v, errors.New("OldRoomType requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldType: %w", err)
+		return v, fmt.Errorf("querying old value for OldRoomType: %w", err)
 	}
-	return oldValue.Type, nil
+	return oldValue.RoomType, nil
 }
 
-// ResetType resets all changes to the "type" field.
-func (m *RoomMutation) ResetType() {
-	m._type = nil
+// ResetRoomType resets all changes to the "room_type" field.
+func (m *RoomMutation) ResetRoomType() {
+	m.room_type = nil
 }
 
-// SetPrice sets the "price" field.
-func (m *RoomMutation) SetPrice(f float64) {
-	m.price = &f
-	m.addprice = nil
+// SetRoomStatus sets the "room_status" field.
+func (m *RoomMutation) SetRoomStatus(s string) {
+	m.room_status = &s
 }
 
-// Price returns the value of the "price" field in the mutation.
-func (m *RoomMutation) Price() (r float64, exists bool) {
-	v := m.price
+// RoomStatus returns the value of the "room_status" field in the mutation.
+func (m *RoomMutation) RoomStatus() (r string, exists bool) {
+	v := m.room_status
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldPrice returns the old "price" field's value of the Room entity.
+// OldRoomStatus returns the old "room_status" field's value of the Room entity.
 // If the Room object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoomMutation) OldPrice(ctx context.Context) (v float64, err error) {
+func (m *RoomMutation) OldRoomStatus(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPrice is only allowed on UpdateOne operations")
+		return v, errors.New("OldRoomStatus is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPrice requires an ID field in the mutation")
+		return v, errors.New("OldRoomStatus requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPrice: %w", err)
+		return v, fmt.Errorf("querying old value for OldRoomStatus: %w", err)
 	}
-	return oldValue.Price, nil
+	return oldValue.RoomStatus, nil
 }
 
-// AddPrice adds f to the "price" field.
-func (m *RoomMutation) AddPrice(f float64) {
-	if m.addprice != nil {
-		*m.addprice += f
+// ResetRoomStatus resets all changes to the "room_status" field.
+func (m *RoomMutation) ResetRoomStatus() {
+	m.room_status = nil
+}
+
+// SetRoomRating sets the "room_rating" field.
+func (m *RoomMutation) SetRoomRating(s string) {
+	m.room_rating = &s
+}
+
+// RoomRating returns the value of the "room_rating" field in the mutation.
+func (m *RoomMutation) RoomRating() (r string, exists bool) {
+	v := m.room_rating
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRoomRating returns the old "room_rating" field's value of the Room entity.
+// If the Room object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomMutation) OldRoomRating(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRoomRating is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRoomRating requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRoomRating: %w", err)
+	}
+	return oldValue.RoomRating, nil
+}
+
+// ResetRoomRating resets all changes to the "room_rating" field.
+func (m *RoomMutation) ResetRoomRating() {
+	m.room_rating = nil
+}
+
+// SetRoomPrice sets the "room_price" field.
+func (m *RoomMutation) SetRoomPrice(f float64) {
+	m.room_price = &f
+	m.addroom_price = nil
+}
+
+// RoomPrice returns the value of the "room_price" field in the mutation.
+func (m *RoomMutation) RoomPrice() (r float64, exists bool) {
+	v := m.room_price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRoomPrice returns the old "room_price" field's value of the Room entity.
+// If the Room object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomMutation) OldRoomPrice(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRoomPrice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRoomPrice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRoomPrice: %w", err)
+	}
+	return oldValue.RoomPrice, nil
+}
+
+// AddRoomPrice adds f to the "room_price" field.
+func (m *RoomMutation) AddRoomPrice(f float64) {
+	if m.addroom_price != nil {
+		*m.addroom_price += f
 	} else {
-		m.addprice = &f
+		m.addroom_price = &f
 	}
 }
 
-// AddedPrice returns the value that was added to the "price" field in this mutation.
-func (m *RoomMutation) AddedPrice() (r float64, exists bool) {
-	v := m.addprice
+// AddedRoomPrice returns the value that was added to the "room_price" field in this mutation.
+func (m *RoomMutation) AddedRoomPrice() (r float64, exists bool) {
+	v := m.addroom_price
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetPrice resets all changes to the "price" field.
-func (m *RoomMutation) ResetPrice() {
-	m.price = nil
-	m.addprice = nil
+// ResetRoomPrice resets all changes to the "room_price" field.
+func (m *RoomMutation) ResetRoomPrice() {
+	m.room_price = nil
+	m.addroom_price = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *RoomMutation) SetStatus(r room.Status) {
+	m.status = &r
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *RoomMutation) Status() (r room.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Room entity.
+// If the Room object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomMutation) OldStatus(ctx context.Context) (v room.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *RoomMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetExtras sets the "extras" field.
+func (m *RoomMutation) SetExtras(value map[string]interface{}) {
+	m.extras = &value
+}
+
+// Extras returns the value of the "extras" field in the mutation.
+func (m *RoomMutation) Extras() (r map[string]interface{}, exists bool) {
+	v := m.extras
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExtras returns the old "extras" field's value of the Room entity.
+// If the Room object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomMutation) OldExtras(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExtras is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExtras requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExtras: %w", err)
+	}
+	return oldValue.Extras, nil
+}
+
+// ClearExtras clears the value of the "extras" field.
+func (m *RoomMutation) ClearExtras() {
+	m.extras = nil
+	m.clearedFields[room.FieldExtras] = struct{}{}
+}
+
+// ExtrasCleared returns if the "extras" field was cleared in this mutation.
+func (m *RoomMutation) ExtrasCleared() bool {
+	_, ok := m.clearedFields[room.FieldExtras]
+	return ok
+}
+
+// ResetExtras resets all changes to the "extras" field.
+func (m *RoomMutation) ResetExtras() {
+	m.extras = nil
+	delete(m.clearedFields, room.FieldExtras)
 }
 
 // SetDescription sets the "description" field.
@@ -46523,9 +47083,14 @@ func (m *RoomMutation) ResetImage() {
 	delete(m.clearedFields, room.FieldImage)
 }
 
-// SetPlaceID sets the "place" edge to the Place entity by id.
-func (m *RoomMutation) SetPlaceID(id string) {
-	m.place = &id
+// AddPlaceIDs adds the "place" edge to the Place entity by ids.
+func (m *RoomMutation) AddPlaceIDs(ids ...string) {
+	if m.place == nil {
+		m.place = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.place[ids[i]] = struct{}{}
+	}
 }
 
 // ClearPlace clears the "place" edge to the Place entity.
@@ -46538,20 +47103,29 @@ func (m *RoomMutation) PlaceCleared() bool {
 	return m.clearedplace
 }
 
-// PlaceID returns the "place" edge ID in the mutation.
-func (m *RoomMutation) PlaceID() (id string, exists bool) {
-	if m.place != nil {
-		return *m.place, true
+// RemovePlaceIDs removes the "place" edge to the Place entity by IDs.
+func (m *RoomMutation) RemovePlaceIDs(ids ...string) {
+	if m.removedplace == nil {
+		m.removedplace = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.place, ids[i])
+		m.removedplace[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlace returns the removed IDs of the "place" edge to the Place entity.
+func (m *RoomMutation) RemovedPlaceIDs() (ids []string) {
+	for id := range m.removedplace {
+		ids = append(ids, id)
 	}
 	return
 }
 
 // PlaceIDs returns the "place" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// PlaceID instead. It exists only for internal usage by the builders.
 func (m *RoomMutation) PlaceIDs() (ids []string) {
-	if id := m.place; id != nil {
-		ids = append(ids, *id)
+	for id := range m.place {
+		ids = append(ids, id)
 	}
 	return
 }
@@ -46560,6 +47134,61 @@ func (m *RoomMutation) PlaceIDs() (ids []string) {
 func (m *RoomMutation) ResetPlace() {
 	m.place = nil
 	m.clearedplace = false
+	m.removedplace = nil
+}
+
+// AddRoomCategoryIDs adds the "room_category" edge to the RoomCategory entity by ids.
+func (m *RoomMutation) AddRoomCategoryIDs(ids ...string) {
+	if m.room_category == nil {
+		m.room_category = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.room_category[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRoomCategory clears the "room_category" edge to the RoomCategory entity.
+func (m *RoomMutation) ClearRoomCategory() {
+	m.clearedroom_category = true
+}
+
+// RoomCategoryCleared reports if the "room_category" edge to the RoomCategory entity was cleared.
+func (m *RoomMutation) RoomCategoryCleared() bool {
+	return m.clearedroom_category
+}
+
+// RemoveRoomCategoryIDs removes the "room_category" edge to the RoomCategory entity by IDs.
+func (m *RoomMutation) RemoveRoomCategoryIDs(ids ...string) {
+	if m.removedroom_category == nil {
+		m.removedroom_category = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.room_category, ids[i])
+		m.removedroom_category[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRoomCategory returns the removed IDs of the "room_category" edge to the RoomCategory entity.
+func (m *RoomMutation) RemovedRoomCategoryIDs() (ids []string) {
+	for id := range m.removedroom_category {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RoomCategoryIDs returns the "room_category" edge IDs in the mutation.
+func (m *RoomMutation) RoomCategoryIDs() (ids []string) {
+	for id := range m.room_category {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRoomCategory resets all changes to the "room_category" edge.
+func (m *RoomMutation) ResetRoomCategory() {
+	m.room_category = nil
+	m.clearedroom_category = false
+	m.removedroom_category = nil
 }
 
 // AddBookingIDs adds the "bookings" edge to the Booking entity by ids.
@@ -46616,6 +47245,168 @@ func (m *RoomMutation) ResetBookings() {
 	m.removedbookings = nil
 }
 
+// AddAmenityIDs adds the "amenities" edge to the Amenity entity by ids.
+func (m *RoomMutation) AddAmenityIDs(ids ...string) {
+	if m.amenities == nil {
+		m.amenities = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.amenities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAmenities clears the "amenities" edge to the Amenity entity.
+func (m *RoomMutation) ClearAmenities() {
+	m.clearedamenities = true
+}
+
+// AmenitiesCleared reports if the "amenities" edge to the Amenity entity was cleared.
+func (m *RoomMutation) AmenitiesCleared() bool {
+	return m.clearedamenities
+}
+
+// RemoveAmenityIDs removes the "amenities" edge to the Amenity entity by IDs.
+func (m *RoomMutation) RemoveAmenityIDs(ids ...string) {
+	if m.removedamenities == nil {
+		m.removedamenities = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.amenities, ids[i])
+		m.removedamenities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAmenities returns the removed IDs of the "amenities" edge to the Amenity entity.
+func (m *RoomMutation) RemovedAmenitiesIDs() (ids []string) {
+	for id := range m.removedamenities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AmenitiesIDs returns the "amenities" edge IDs in the mutation.
+func (m *RoomMutation) AmenitiesIDs() (ids []string) {
+	for id := range m.amenities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAmenities resets all changes to the "amenities" edge.
+func (m *RoomMutation) ResetAmenities() {
+	m.amenities = nil
+	m.clearedamenities = false
+	m.removedamenities = nil
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by ids.
+func (m *RoomMutation) AddMediumIDs(ids ...string) {
+	if m.media == nil {
+		m.media = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.media[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMedia clears the "media" edge to the Media entity.
+func (m *RoomMutation) ClearMedia() {
+	m.clearedmedia = true
+}
+
+// MediaCleared reports if the "media" edge to the Media entity was cleared.
+func (m *RoomMutation) MediaCleared() bool {
+	return m.clearedmedia
+}
+
+// RemoveMediumIDs removes the "media" edge to the Media entity by IDs.
+func (m *RoomMutation) RemoveMediumIDs(ids ...string) {
+	if m.removedmedia == nil {
+		m.removedmedia = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.media, ids[i])
+		m.removedmedia[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMedia returns the removed IDs of the "media" edge to the Media entity.
+func (m *RoomMutation) RemovedMediaIDs() (ids []string) {
+	for id := range m.removedmedia {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MediaIDs returns the "media" edge IDs in the mutation.
+func (m *RoomMutation) MediaIDs() (ids []string) {
+	for id := range m.media {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMedia resets all changes to the "media" edge.
+func (m *RoomMutation) ResetMedia() {
+	m.media = nil
+	m.clearedmedia = false
+	m.removedmedia = nil
+}
+
+// AddReservationIDs adds the "reservations" edge to the Reservation entity by ids.
+func (m *RoomMutation) AddReservationIDs(ids ...string) {
+	if m.reservations == nil {
+		m.reservations = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.reservations[ids[i]] = struct{}{}
+	}
+}
+
+// ClearReservations clears the "reservations" edge to the Reservation entity.
+func (m *RoomMutation) ClearReservations() {
+	m.clearedreservations = true
+}
+
+// ReservationsCleared reports if the "reservations" edge to the Reservation entity was cleared.
+func (m *RoomMutation) ReservationsCleared() bool {
+	return m.clearedreservations
+}
+
+// RemoveReservationIDs removes the "reservations" edge to the Reservation entity by IDs.
+func (m *RoomMutation) RemoveReservationIDs(ids ...string) {
+	if m.removedreservations == nil {
+		m.removedreservations = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.reservations, ids[i])
+		m.removedreservations[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedReservations returns the removed IDs of the "reservations" edge to the Reservation entity.
+func (m *RoomMutation) RemovedReservationsIDs() (ids []string) {
+	for id := range m.removedreservations {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ReservationsIDs returns the "reservations" edge IDs in the mutation.
+func (m *RoomMutation) ReservationsIDs() (ids []string) {
+	for id := range m.reservations {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetReservations resets all changes to the "reservations" edge.
+func (m *RoomMutation) ResetReservations() {
+	m.reservations = nil
+	m.clearedreservations = false
+	m.removedreservations = nil
+}
+
 // Where appends a list predicates to the RoomMutation builder.
 func (m *RoomMutation) Where(ps ...predicate.Room) {
 	m.predicates = append(m.predicates, ps...)
@@ -46650,15 +47441,27 @@ func (m *RoomMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoomMutation) Fields() []string {
-	fields := make([]string, 0, 6)
-	if m.number != nil {
-		fields = append(fields, room.FieldNumber)
+	fields := make([]string, 0, 10)
+	if m.room_number != nil {
+		fields = append(fields, room.FieldRoomNumber)
 	}
-	if m._type != nil {
-		fields = append(fields, room.FieldType)
+	if m.room_type != nil {
+		fields = append(fields, room.FieldRoomType)
 	}
-	if m.price != nil {
-		fields = append(fields, room.FieldPrice)
+	if m.room_status != nil {
+		fields = append(fields, room.FieldRoomStatus)
+	}
+	if m.room_rating != nil {
+		fields = append(fields, room.FieldRoomRating)
+	}
+	if m.room_price != nil {
+		fields = append(fields, room.FieldRoomPrice)
+	}
+	if m.status != nil {
+		fields = append(fields, room.FieldStatus)
+	}
+	if m.extras != nil {
+		fields = append(fields, room.FieldExtras)
 	}
 	if m.description != nil {
 		fields = append(fields, room.FieldDescription)
@@ -46677,12 +47480,20 @@ func (m *RoomMutation) Fields() []string {
 // schema.
 func (m *RoomMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case room.FieldNumber:
-		return m.Number()
-	case room.FieldType:
-		return m.GetType()
-	case room.FieldPrice:
-		return m.Price()
+	case room.FieldRoomNumber:
+		return m.RoomNumber()
+	case room.FieldRoomType:
+		return m.RoomType()
+	case room.FieldRoomStatus:
+		return m.RoomStatus()
+	case room.FieldRoomRating:
+		return m.RoomRating()
+	case room.FieldRoomPrice:
+		return m.RoomPrice()
+	case room.FieldStatus:
+		return m.Status()
+	case room.FieldExtras:
+		return m.Extras()
 	case room.FieldDescription:
 		return m.Description()
 	case room.FieldAvailability:
@@ -46698,12 +47509,20 @@ func (m *RoomMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *RoomMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case room.FieldNumber:
-		return m.OldNumber(ctx)
-	case room.FieldType:
-		return m.OldType(ctx)
-	case room.FieldPrice:
-		return m.OldPrice(ctx)
+	case room.FieldRoomNumber:
+		return m.OldRoomNumber(ctx)
+	case room.FieldRoomType:
+		return m.OldRoomType(ctx)
+	case room.FieldRoomStatus:
+		return m.OldRoomStatus(ctx)
+	case room.FieldRoomRating:
+		return m.OldRoomRating(ctx)
+	case room.FieldRoomPrice:
+		return m.OldRoomPrice(ctx)
+	case room.FieldStatus:
+		return m.OldStatus(ctx)
+	case room.FieldExtras:
+		return m.OldExtras(ctx)
 	case room.FieldDescription:
 		return m.OldDescription(ctx)
 	case room.FieldAvailability:
@@ -46719,26 +47538,54 @@ func (m *RoomMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *RoomMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case room.FieldNumber:
+	case room.FieldRoomNumber:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetNumber(v)
+		m.SetRoomNumber(v)
 		return nil
-	case room.FieldType:
+	case room.FieldRoomType:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetType(v)
+		m.SetRoomType(v)
 		return nil
-	case room.FieldPrice:
+	case room.FieldRoomStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRoomStatus(v)
+		return nil
+	case room.FieldRoomRating:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRoomRating(v)
+		return nil
+	case room.FieldRoomPrice:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetPrice(v)
+		m.SetRoomPrice(v)
+		return nil
+	case room.FieldStatus:
+		v, ok := value.(room.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case room.FieldExtras:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExtras(v)
 		return nil
 	case room.FieldDescription:
 		v, ok := value.(string)
@@ -46769,8 +47616,8 @@ func (m *RoomMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *RoomMutation) AddedFields() []string {
 	var fields []string
-	if m.addprice != nil {
-		fields = append(fields, room.FieldPrice)
+	if m.addroom_price != nil {
+		fields = append(fields, room.FieldRoomPrice)
 	}
 	return fields
 }
@@ -46780,8 +47627,8 @@ func (m *RoomMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *RoomMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case room.FieldPrice:
-		return m.AddedPrice()
+	case room.FieldRoomPrice:
+		return m.AddedRoomPrice()
 	}
 	return nil, false
 }
@@ -46791,12 +47638,12 @@ func (m *RoomMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *RoomMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case room.FieldPrice:
+	case room.FieldRoomPrice:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddPrice(v)
+		m.AddRoomPrice(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Room numeric field %s", name)
@@ -46806,6 +47653,9 @@ func (m *RoomMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RoomMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(room.FieldExtras) {
+		fields = append(fields, room.FieldExtras)
+	}
 	if m.FieldCleared(room.FieldDescription) {
 		fields = append(fields, room.FieldDescription)
 	}
@@ -46826,6 +47676,9 @@ func (m *RoomMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RoomMutation) ClearField(name string) error {
 	switch name {
+	case room.FieldExtras:
+		m.ClearExtras()
+		return nil
 	case room.FieldDescription:
 		m.ClearDescription()
 		return nil
@@ -46840,14 +47693,26 @@ func (m *RoomMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *RoomMutation) ResetField(name string) error {
 	switch name {
-	case room.FieldNumber:
-		m.ResetNumber()
+	case room.FieldRoomNumber:
+		m.ResetRoomNumber()
 		return nil
-	case room.FieldType:
-		m.ResetType()
+	case room.FieldRoomType:
+		m.ResetRoomType()
 		return nil
-	case room.FieldPrice:
-		m.ResetPrice()
+	case room.FieldRoomStatus:
+		m.ResetRoomStatus()
+		return nil
+	case room.FieldRoomRating:
+		m.ResetRoomRating()
+		return nil
+	case room.FieldRoomPrice:
+		m.ResetRoomPrice()
+		return nil
+	case room.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case room.FieldExtras:
+		m.ResetExtras()
 		return nil
 	case room.FieldDescription:
 		m.ResetDescription()
@@ -46864,12 +47729,24 @@ func (m *RoomMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RoomMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 6)
 	if m.place != nil {
 		edges = append(edges, room.EdgePlace)
 	}
+	if m.room_category != nil {
+		edges = append(edges, room.EdgeRoomCategory)
+	}
 	if m.bookings != nil {
 		edges = append(edges, room.EdgeBookings)
+	}
+	if m.amenities != nil {
+		edges = append(edges, room.EdgeAmenities)
+	}
+	if m.media != nil {
+		edges = append(edges, room.EdgeMedia)
+	}
+	if m.reservations != nil {
+		edges = append(edges, room.EdgeReservations)
 	}
 	return edges
 }
@@ -46879,12 +47756,38 @@ func (m *RoomMutation) AddedEdges() []string {
 func (m *RoomMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case room.EdgePlace:
-		if id := m.place; id != nil {
-			return []ent.Value{*id}
+		ids := make([]ent.Value, 0, len(m.place))
+		for id := range m.place {
+			ids = append(ids, id)
 		}
+		return ids
+	case room.EdgeRoomCategory:
+		ids := make([]ent.Value, 0, len(m.room_category))
+		for id := range m.room_category {
+			ids = append(ids, id)
+		}
+		return ids
 	case room.EdgeBookings:
 		ids := make([]ent.Value, 0, len(m.bookings))
 		for id := range m.bookings {
+			ids = append(ids, id)
+		}
+		return ids
+	case room.EdgeAmenities:
+		ids := make([]ent.Value, 0, len(m.amenities))
+		for id := range m.amenities {
+			ids = append(ids, id)
+		}
+		return ids
+	case room.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.media))
+		for id := range m.media {
+			ids = append(ids, id)
+		}
+		return ids
+	case room.EdgeReservations:
+		ids := make([]ent.Value, 0, len(m.reservations))
+		for id := range m.reservations {
 			ids = append(ids, id)
 		}
 		return ids
@@ -46894,9 +47797,24 @@ func (m *RoomMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RoomMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 6)
+	if m.removedplace != nil {
+		edges = append(edges, room.EdgePlace)
+	}
+	if m.removedroom_category != nil {
+		edges = append(edges, room.EdgeRoomCategory)
+	}
 	if m.removedbookings != nil {
 		edges = append(edges, room.EdgeBookings)
+	}
+	if m.removedamenities != nil {
+		edges = append(edges, room.EdgeAmenities)
+	}
+	if m.removedmedia != nil {
+		edges = append(edges, room.EdgeMedia)
+	}
+	if m.removedreservations != nil {
+		edges = append(edges, room.EdgeReservations)
 	}
 	return edges
 }
@@ -46905,9 +47823,39 @@ func (m *RoomMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *RoomMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case room.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.removedplace))
+		for id := range m.removedplace {
+			ids = append(ids, id)
+		}
+		return ids
+	case room.EdgeRoomCategory:
+		ids := make([]ent.Value, 0, len(m.removedroom_category))
+		for id := range m.removedroom_category {
+			ids = append(ids, id)
+		}
+		return ids
 	case room.EdgeBookings:
 		ids := make([]ent.Value, 0, len(m.removedbookings))
 		for id := range m.removedbookings {
+			ids = append(ids, id)
+		}
+		return ids
+	case room.EdgeAmenities:
+		ids := make([]ent.Value, 0, len(m.removedamenities))
+		for id := range m.removedamenities {
+			ids = append(ids, id)
+		}
+		return ids
+	case room.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.removedmedia))
+		for id := range m.removedmedia {
+			ids = append(ids, id)
+		}
+		return ids
+	case room.EdgeReservations:
+		ids := make([]ent.Value, 0, len(m.removedreservations))
+		for id := range m.removedreservations {
 			ids = append(ids, id)
 		}
 		return ids
@@ -46917,12 +47865,24 @@ func (m *RoomMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RoomMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 6)
 	if m.clearedplace {
 		edges = append(edges, room.EdgePlace)
 	}
+	if m.clearedroom_category {
+		edges = append(edges, room.EdgeRoomCategory)
+	}
 	if m.clearedbookings {
 		edges = append(edges, room.EdgeBookings)
+	}
+	if m.clearedamenities {
+		edges = append(edges, room.EdgeAmenities)
+	}
+	if m.clearedmedia {
+		edges = append(edges, room.EdgeMedia)
+	}
+	if m.clearedreservations {
+		edges = append(edges, room.EdgeReservations)
 	}
 	return edges
 }
@@ -46933,8 +47893,16 @@ func (m *RoomMutation) EdgeCleared(name string) bool {
 	switch name {
 	case room.EdgePlace:
 		return m.clearedplace
+	case room.EdgeRoomCategory:
+		return m.clearedroom_category
 	case room.EdgeBookings:
 		return m.clearedbookings
+	case room.EdgeAmenities:
+		return m.clearedamenities
+	case room.EdgeMedia:
+		return m.clearedmedia
+	case room.EdgeReservations:
+		return m.clearedreservations
 	}
 	return false
 }
@@ -46943,9 +47911,6 @@ func (m *RoomMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *RoomMutation) ClearEdge(name string) error {
 	switch name {
-	case room.EdgePlace:
-		m.ClearPlace()
-		return nil
 	}
 	return fmt.Errorf("unknown Room unique edge %s", name)
 }
@@ -46957,11 +47922,846 @@ func (m *RoomMutation) ResetEdge(name string) error {
 	case room.EdgePlace:
 		m.ResetPlace()
 		return nil
+	case room.EdgeRoomCategory:
+		m.ResetRoomCategory()
+		return nil
 	case room.EdgeBookings:
 		m.ResetBookings()
 		return nil
+	case room.EdgeAmenities:
+		m.ResetAmenities()
+		return nil
+	case room.EdgeMedia:
+		m.ResetMedia()
+		return nil
+	case room.EdgeReservations:
+		m.ResetReservations()
+		return nil
 	}
 	return fmt.Errorf("unknown Room edge %s", name)
+}
+
+// RoomCategoryMutation represents an operation that mutates the RoomCategory nodes in the graph.
+type RoomCategoryMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *string
+	name             *string
+	description      *string
+	price            *string
+	clearedFields    map[string]struct{}
+	place            map[string]struct{}
+	removedplace     map[string]struct{}
+	clearedplace     bool
+	rooms            map[string]struct{}
+	removedrooms     map[string]struct{}
+	clearedrooms     bool
+	media            map[string]struct{}
+	removedmedia     map[string]struct{}
+	clearedmedia     bool
+	amenities        map[string]struct{}
+	removedamenities map[string]struct{}
+	clearedamenities bool
+	done             bool
+	oldValue         func(context.Context) (*RoomCategory, error)
+	predicates       []predicate.RoomCategory
+}
+
+var _ ent.Mutation = (*RoomCategoryMutation)(nil)
+
+// roomcategoryOption allows management of the mutation configuration using functional options.
+type roomcategoryOption func(*RoomCategoryMutation)
+
+// newRoomCategoryMutation creates new mutation for the RoomCategory entity.
+func newRoomCategoryMutation(c config, op Op, opts ...roomcategoryOption) *RoomCategoryMutation {
+	m := &RoomCategoryMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeRoomCategory,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withRoomCategoryID sets the ID field of the mutation.
+func withRoomCategoryID(id string) roomcategoryOption {
+	return func(m *RoomCategoryMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *RoomCategory
+		)
+		m.oldValue = func(ctx context.Context) (*RoomCategory, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().RoomCategory.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withRoomCategory sets the old RoomCategory of the mutation.
+func withRoomCategory(node *RoomCategory) roomcategoryOption {
+	return func(m *RoomCategoryMutation) {
+		m.oldValue = func(context.Context) (*RoomCategory, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m RoomCategoryMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m RoomCategoryMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of RoomCategory entities.
+func (m *RoomCategoryMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *RoomCategoryMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *RoomCategoryMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().RoomCategory.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetName sets the "name" field.
+func (m *RoomCategoryMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *RoomCategoryMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the RoomCategory entity.
+// If the RoomCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomCategoryMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *RoomCategoryMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *RoomCategoryMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *RoomCategoryMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the RoomCategory entity.
+// If the RoomCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomCategoryMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *RoomCategoryMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[roomcategory.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *RoomCategoryMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[roomcategory.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *RoomCategoryMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, roomcategory.FieldDescription)
+}
+
+// SetPrice sets the "price" field.
+func (m *RoomCategoryMutation) SetPrice(s string) {
+	m.price = &s
+}
+
+// Price returns the value of the "price" field in the mutation.
+func (m *RoomCategoryMutation) Price() (r string, exists bool) {
+	v := m.price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrice returns the old "price" field's value of the RoomCategory entity.
+// If the RoomCategory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomCategoryMutation) OldPrice(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrice: %w", err)
+	}
+	return oldValue.Price, nil
+}
+
+// ClearPrice clears the value of the "price" field.
+func (m *RoomCategoryMutation) ClearPrice() {
+	m.price = nil
+	m.clearedFields[roomcategory.FieldPrice] = struct{}{}
+}
+
+// PriceCleared returns if the "price" field was cleared in this mutation.
+func (m *RoomCategoryMutation) PriceCleared() bool {
+	_, ok := m.clearedFields[roomcategory.FieldPrice]
+	return ok
+}
+
+// ResetPrice resets all changes to the "price" field.
+func (m *RoomCategoryMutation) ResetPrice() {
+	m.price = nil
+	delete(m.clearedFields, roomcategory.FieldPrice)
+}
+
+// AddPlaceIDs adds the "place" edge to the Place entity by ids.
+func (m *RoomCategoryMutation) AddPlaceIDs(ids ...string) {
+	if m.place == nil {
+		m.place = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.place[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *RoomCategoryMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *RoomCategoryMutation) PlaceCleared() bool {
+	return m.clearedplace
+}
+
+// RemovePlaceIDs removes the "place" edge to the Place entity by IDs.
+func (m *RoomCategoryMutation) RemovePlaceIDs(ids ...string) {
+	if m.removedplace == nil {
+		m.removedplace = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.place, ids[i])
+		m.removedplace[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlace returns the removed IDs of the "place" edge to the Place entity.
+func (m *RoomCategoryMutation) RemovedPlaceIDs() (ids []string) {
+	for id := range m.removedplace {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+func (m *RoomCategoryMutation) PlaceIDs() (ids []string) {
+	for id := range m.place {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *RoomCategoryMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+	m.removedplace = nil
+}
+
+// AddRoomIDs adds the "rooms" edge to the Room entity by ids.
+func (m *RoomCategoryMutation) AddRoomIDs(ids ...string) {
+	if m.rooms == nil {
+		m.rooms = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.rooms[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRooms clears the "rooms" edge to the Room entity.
+func (m *RoomCategoryMutation) ClearRooms() {
+	m.clearedrooms = true
+}
+
+// RoomsCleared reports if the "rooms" edge to the Room entity was cleared.
+func (m *RoomCategoryMutation) RoomsCleared() bool {
+	return m.clearedrooms
+}
+
+// RemoveRoomIDs removes the "rooms" edge to the Room entity by IDs.
+func (m *RoomCategoryMutation) RemoveRoomIDs(ids ...string) {
+	if m.removedrooms == nil {
+		m.removedrooms = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.rooms, ids[i])
+		m.removedrooms[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRooms returns the removed IDs of the "rooms" edge to the Room entity.
+func (m *RoomCategoryMutation) RemovedRoomsIDs() (ids []string) {
+	for id := range m.removedrooms {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RoomsIDs returns the "rooms" edge IDs in the mutation.
+func (m *RoomCategoryMutation) RoomsIDs() (ids []string) {
+	for id := range m.rooms {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRooms resets all changes to the "rooms" edge.
+func (m *RoomCategoryMutation) ResetRooms() {
+	m.rooms = nil
+	m.clearedrooms = false
+	m.removedrooms = nil
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by ids.
+func (m *RoomCategoryMutation) AddMediumIDs(ids ...string) {
+	if m.media == nil {
+		m.media = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.media[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMedia clears the "media" edge to the Media entity.
+func (m *RoomCategoryMutation) ClearMedia() {
+	m.clearedmedia = true
+}
+
+// MediaCleared reports if the "media" edge to the Media entity was cleared.
+func (m *RoomCategoryMutation) MediaCleared() bool {
+	return m.clearedmedia
+}
+
+// RemoveMediumIDs removes the "media" edge to the Media entity by IDs.
+func (m *RoomCategoryMutation) RemoveMediumIDs(ids ...string) {
+	if m.removedmedia == nil {
+		m.removedmedia = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.media, ids[i])
+		m.removedmedia[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMedia returns the removed IDs of the "media" edge to the Media entity.
+func (m *RoomCategoryMutation) RemovedMediaIDs() (ids []string) {
+	for id := range m.removedmedia {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MediaIDs returns the "media" edge IDs in the mutation.
+func (m *RoomCategoryMutation) MediaIDs() (ids []string) {
+	for id := range m.media {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMedia resets all changes to the "media" edge.
+func (m *RoomCategoryMutation) ResetMedia() {
+	m.media = nil
+	m.clearedmedia = false
+	m.removedmedia = nil
+}
+
+// AddAmenityIDs adds the "amenities" edge to the Amenity entity by ids.
+func (m *RoomCategoryMutation) AddAmenityIDs(ids ...string) {
+	if m.amenities == nil {
+		m.amenities = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.amenities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAmenities clears the "amenities" edge to the Amenity entity.
+func (m *RoomCategoryMutation) ClearAmenities() {
+	m.clearedamenities = true
+}
+
+// AmenitiesCleared reports if the "amenities" edge to the Amenity entity was cleared.
+func (m *RoomCategoryMutation) AmenitiesCleared() bool {
+	return m.clearedamenities
+}
+
+// RemoveAmenityIDs removes the "amenities" edge to the Amenity entity by IDs.
+func (m *RoomCategoryMutation) RemoveAmenityIDs(ids ...string) {
+	if m.removedamenities == nil {
+		m.removedamenities = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.amenities, ids[i])
+		m.removedamenities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAmenities returns the removed IDs of the "amenities" edge to the Amenity entity.
+func (m *RoomCategoryMutation) RemovedAmenitiesIDs() (ids []string) {
+	for id := range m.removedamenities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AmenitiesIDs returns the "amenities" edge IDs in the mutation.
+func (m *RoomCategoryMutation) AmenitiesIDs() (ids []string) {
+	for id := range m.amenities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAmenities resets all changes to the "amenities" edge.
+func (m *RoomCategoryMutation) ResetAmenities() {
+	m.amenities = nil
+	m.clearedamenities = false
+	m.removedamenities = nil
+}
+
+// Where appends a list predicates to the RoomCategoryMutation builder.
+func (m *RoomCategoryMutation) Where(ps ...predicate.RoomCategory) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the RoomCategoryMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *RoomCategoryMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.RoomCategory, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *RoomCategoryMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *RoomCategoryMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (RoomCategory).
+func (m *RoomCategoryMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *RoomCategoryMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.name != nil {
+		fields = append(fields, roomcategory.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, roomcategory.FieldDescription)
+	}
+	if m.price != nil {
+		fields = append(fields, roomcategory.FieldPrice)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *RoomCategoryMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case roomcategory.FieldName:
+		return m.Name()
+	case roomcategory.FieldDescription:
+		return m.Description()
+	case roomcategory.FieldPrice:
+		return m.Price()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *RoomCategoryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case roomcategory.FieldName:
+		return m.OldName(ctx)
+	case roomcategory.FieldDescription:
+		return m.OldDescription(ctx)
+	case roomcategory.FieldPrice:
+		return m.OldPrice(ctx)
+	}
+	return nil, fmt.Errorf("unknown RoomCategory field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RoomCategoryMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case roomcategory.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case roomcategory.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case roomcategory.FieldPrice:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrice(v)
+		return nil
+	}
+	return fmt.Errorf("unknown RoomCategory field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *RoomCategoryMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *RoomCategoryMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RoomCategoryMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown RoomCategory numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *RoomCategoryMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(roomcategory.FieldDescription) {
+		fields = append(fields, roomcategory.FieldDescription)
+	}
+	if m.FieldCleared(roomcategory.FieldPrice) {
+		fields = append(fields, roomcategory.FieldPrice)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *RoomCategoryMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *RoomCategoryMutation) ClearField(name string) error {
+	switch name {
+	case roomcategory.FieldDescription:
+		m.ClearDescription()
+		return nil
+	case roomcategory.FieldPrice:
+		m.ClearPrice()
+		return nil
+	}
+	return fmt.Errorf("unknown RoomCategory nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *RoomCategoryMutation) ResetField(name string) error {
+	switch name {
+	case roomcategory.FieldName:
+		m.ResetName()
+		return nil
+	case roomcategory.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case roomcategory.FieldPrice:
+		m.ResetPrice()
+		return nil
+	}
+	return fmt.Errorf("unknown RoomCategory field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *RoomCategoryMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.place != nil {
+		edges = append(edges, roomcategory.EdgePlace)
+	}
+	if m.rooms != nil {
+		edges = append(edges, roomcategory.EdgeRooms)
+	}
+	if m.media != nil {
+		edges = append(edges, roomcategory.EdgeMedia)
+	}
+	if m.amenities != nil {
+		edges = append(edges, roomcategory.EdgeAmenities)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *RoomCategoryMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case roomcategory.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.place))
+		for id := range m.place {
+			ids = append(ids, id)
+		}
+		return ids
+	case roomcategory.EdgeRooms:
+		ids := make([]ent.Value, 0, len(m.rooms))
+		for id := range m.rooms {
+			ids = append(ids, id)
+		}
+		return ids
+	case roomcategory.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.media))
+		for id := range m.media {
+			ids = append(ids, id)
+		}
+		return ids
+	case roomcategory.EdgeAmenities:
+		ids := make([]ent.Value, 0, len(m.amenities))
+		for id := range m.amenities {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *RoomCategoryMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.removedplace != nil {
+		edges = append(edges, roomcategory.EdgePlace)
+	}
+	if m.removedrooms != nil {
+		edges = append(edges, roomcategory.EdgeRooms)
+	}
+	if m.removedmedia != nil {
+		edges = append(edges, roomcategory.EdgeMedia)
+	}
+	if m.removedamenities != nil {
+		edges = append(edges, roomcategory.EdgeAmenities)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *RoomCategoryMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case roomcategory.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.removedplace))
+		for id := range m.removedplace {
+			ids = append(ids, id)
+		}
+		return ids
+	case roomcategory.EdgeRooms:
+		ids := make([]ent.Value, 0, len(m.removedrooms))
+		for id := range m.removedrooms {
+			ids = append(ids, id)
+		}
+		return ids
+	case roomcategory.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.removedmedia))
+		for id := range m.removedmedia {
+			ids = append(ids, id)
+		}
+		return ids
+	case roomcategory.EdgeAmenities:
+		ids := make([]ent.Value, 0, len(m.removedamenities))
+		for id := range m.removedamenities {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *RoomCategoryMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedplace {
+		edges = append(edges, roomcategory.EdgePlace)
+	}
+	if m.clearedrooms {
+		edges = append(edges, roomcategory.EdgeRooms)
+	}
+	if m.clearedmedia {
+		edges = append(edges, roomcategory.EdgeMedia)
+	}
+	if m.clearedamenities {
+		edges = append(edges, roomcategory.EdgeAmenities)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *RoomCategoryMutation) EdgeCleared(name string) bool {
+	switch name {
+	case roomcategory.EdgePlace:
+		return m.clearedplace
+	case roomcategory.EdgeRooms:
+		return m.clearedrooms
+	case roomcategory.EdgeMedia:
+		return m.clearedmedia
+	case roomcategory.EdgeAmenities:
+		return m.clearedamenities
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *RoomCategoryMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown RoomCategory unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *RoomCategoryMutation) ResetEdge(name string) error {
+	switch name {
+	case roomcategory.EdgePlace:
+		m.ResetPlace()
+		return nil
+	case roomcategory.EdgeRooms:
+		m.ResetRooms()
+		return nil
+	case roomcategory.EdgeMedia:
+		m.ResetMedia()
+		return nil
+	case roomcategory.EdgeAmenities:
+		m.ResetAmenities()
+		return nil
+	}
+	return fmt.Errorf("unknown RoomCategory edge %s", name)
 }
 
 // StaffMutation represents an operation that mutates the Staff nodes in the graph.

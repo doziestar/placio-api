@@ -38,6 +38,10 @@ const (
 	EdgePlaceInventory = "place_inventory"
 	// EdgeMenu holds the string denoting the menu edge name in mutations.
 	EdgeMenu = "menu"
+	// EdgeRoomCategory holds the string denoting the room_category edge name in mutations.
+	EdgeRoomCategory = "room_category"
+	// EdgeRoom holds the string denoting the room edge name in mutations.
+	EdgeRoom = "room"
 	// Table holds the table name of the media in the database.
 	Table = "media"
 	// PostTable is the table that holds the post relation/edge.
@@ -74,6 +78,16 @@ const (
 	// MenuInverseTable is the table name for the Menu entity.
 	// It exists in this package in order to avoid circular dependency with the "menu" package.
 	MenuInverseTable = "menus"
+	// RoomCategoryTable is the table that holds the room_category relation/edge. The primary key declared below.
+	RoomCategoryTable = "room_category_media"
+	// RoomCategoryInverseTable is the table name for the RoomCategory entity.
+	// It exists in this package in order to avoid circular dependency with the "roomcategory" package.
+	RoomCategoryInverseTable = "room_categories"
+	// RoomTable is the table that holds the room relation/edge. The primary key declared below.
+	RoomTable = "room_media"
+	// RoomInverseTable is the table name for the Room entity.
+	// It exists in this package in order to avoid circular dependency with the "room" package.
+	RoomInverseTable = "rooms"
 )
 
 // Columns holds all SQL columns for media fields.
@@ -109,6 +123,12 @@ var (
 	// MenuPrimaryKey and MenuColumn2 are the table columns denoting the
 	// primary key for the menu relation (M2M).
 	MenuPrimaryKey = []string{"menu_id", "media_id"}
+	// RoomCategoryPrimaryKey and RoomCategoryColumn2 are the table columns denoting the
+	// primary key for the room_category relation (M2M).
+	RoomCategoryPrimaryKey = []string{"room_category_id", "media_id"}
+	// RoomPrimaryKey and RoomColumn2 are the table columns denoting the
+	// primary key for the room relation (M2M).
+	RoomPrimaryKey = []string{"room_id", "media_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -248,6 +268,34 @@ func ByMenu(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newMenuStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRoomCategoryCount orders the results by room_category count.
+func ByRoomCategoryCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRoomCategoryStep(), opts...)
+	}
+}
+
+// ByRoomCategory orders the results by room_category terms.
+func ByRoomCategory(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoomCategoryStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRoomCount orders the results by room count.
+func ByRoomCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRoomStep(), opts...)
+	}
+}
+
+// ByRoom orders the results by room terms.
+func ByRoom(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoomStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPostStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -288,5 +336,19 @@ func newMenuStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MenuInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, MenuTable, MenuPrimaryKey...),
+	)
+}
+func newRoomCategoryStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RoomCategoryInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, RoomCategoryTable, RoomCategoryPrimaryKey...),
+	)
+}
+func newRoomStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RoomInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, RoomTable, RoomPrimaryKey...),
 	)
 }

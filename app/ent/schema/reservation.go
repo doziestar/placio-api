@@ -20,7 +20,6 @@ func (Reservation) Fields() []ent.Field {
 		field.Time("startDate"),
 		field.Time("endDate"),
 		field.String("status"),
-		field.String("status"),
 	}
 }
 

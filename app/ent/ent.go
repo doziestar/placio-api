@@ -46,6 +46,7 @@ import (
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
@@ -165,6 +166,7 @@ func checkColumn(table, column string) error {
 			resourse.Table:                resourse.ValidColumn,
 			review.Table:                  review.ValidColumn,
 			room.Table:                    room.ValidColumn,
+			roomcategory.Table:            roomcategory.ValidColumn,
 			staff.Table:                   staff.ValidColumn,
 			template.Table:                template.ValidColumn,
 			ticket.Table:                  ticket.ValidColumn,

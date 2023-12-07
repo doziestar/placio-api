@@ -51,6 +51,7 @@ import (
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
@@ -156,6 +157,8 @@ type Client struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
+	// RoomCategory is the client for interacting with the RoomCategory builders.
+	RoomCategory *RoomCategoryClient
 	// Staff is the client for interacting with the Staff builders.
 	Staff *StaffClient
 	// Template is the client for interacting with the Template builders.
@@ -233,6 +236,7 @@ func (c *Client) init() {
 	c.Resourse = NewResourseClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.Room = NewRoomClient(c.config)
+	c.RoomCategory = NewRoomCategoryClient(c.config)
 	c.Staff = NewStaffClient(c.config)
 	c.Template = NewTemplateClient(c.config)
 	c.Ticket = NewTicketClient(c.config)
@@ -378,6 +382,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Resourse:                NewResourseClient(cfg),
 		Review:                  NewReviewClient(cfg),
 		Room:                    NewRoomClient(cfg),
+		RoomCategory:            NewRoomCategoryClient(cfg),
 		Staff:                   NewStaffClient(cfg),
 		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
@@ -450,6 +455,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Resourse:                NewResourseClient(cfg),
 		Review:                  NewReviewClient(cfg),
 		Room:                    NewRoomClient(cfg),
+		RoomCategory:            NewRoomCategoryClient(cfg),
 		Staff:                   NewStaffClient(cfg),
 		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
@@ -499,10 +505,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Media, c.Menu, c.MenuItem, c.Notification, c.Order, c.OrderItem, c.Payment,
 		c.Permission, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute,
 		c.PlaceTable, c.Post, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock,
-		c.Resourse, c.Review, c.Room, c.Staff, c.Template, c.Ticket, c.TicketOption,
-		c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
-		c.Website,
+		c.Resourse, c.Review, c.Room, c.RoomCategory, c.Staff, c.Template, c.Ticket,
+		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
+		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
+		c.UserLikePlace, c.Website,
 	} {
 		n.Use(hooks...)
 	}
@@ -519,10 +525,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Media, c.Menu, c.MenuItem, c.Notification, c.Order, c.OrderItem, c.Payment,
 		c.Permission, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute,
 		c.PlaceTable, c.Post, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock,
-		c.Resourse, c.Review, c.Room, c.Staff, c.Template, c.Ticket, c.TicketOption,
-		c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
-		c.Website,
+		c.Resourse, c.Review, c.Room, c.RoomCategory, c.Staff, c.Template, c.Ticket,
+		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
+		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
+		c.UserLikePlace, c.Website,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -611,6 +617,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Review.mutate(ctx, m)
 	case *RoomMutation:
 		return c.Room.mutate(ctx, m)
+	case *RoomCategoryMutation:
+		return c.RoomCategory.mutate(ctx, m)
 	case *StaffMutation:
 		return c.Staff.mutate(ctx, m)
 	case *TemplateMutation:
@@ -1073,6 +1081,38 @@ func (c *AmenityClient) QueryPlaces(a *Amenity) *PlaceQuery {
 			sqlgraph.From(amenity.Table, amenity.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, amenity.PlacesTable, amenity.PlacesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRooms queries the rooms edge of a Amenity.
+func (c *AmenityClient) QueryRooms(a *Amenity) *RoomQuery {
+	query := (&RoomClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(amenity.Table, amenity.FieldID, id),
+			sqlgraph.To(room.Table, room.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, amenity.RoomsTable, amenity.RoomsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRoomCategories queries the room_categories edge of a Amenity.
+func (c *AmenityClient) QueryRoomCategories(a *Amenity) *RoomCategoryQuery {
+	query := (&RoomCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(amenity.Table, amenity.FieldID, id),
+			sqlgraph.To(roomcategory.Table, roomcategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, amenity.RoomCategoriesTable, amenity.RoomCategoriesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -4596,6 +4636,38 @@ func (c *MediaClient) QueryMenu(m *Media) *MenuQuery {
 	return query
 }
 
+// QueryRoomCategory queries the room_category edge of a Media.
+func (c *MediaClient) QueryRoomCategory(m *Media) *RoomCategoryQuery {
+	query := (&RoomCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(roomcategory.Table, roomcategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.RoomCategoryTable, media.RoomCategoryPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRoom queries the room edge of a Media.
+func (c *MediaClient) QueryRoom(m *Media) *RoomQuery {
+	query := (&RoomClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(room.Table, room.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.RoomTable, media.RoomPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *MediaClient) Hooks() []Hook {
 	return c.hooks.Media
@@ -6116,7 +6188,7 @@ func (c *PlaceClient) QueryRooms(pl *Place) *RoomQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(place.Table, place.FieldID, id),
 			sqlgraph.To(room.Table, room.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, place.RoomsTable, place.RoomsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, place.RoomsTable, place.RoomsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -6309,6 +6381,22 @@ func (c *PlaceClient) QueryStaffs(pl *Place) *StaffQuery {
 			sqlgraph.From(place.Table, place.FieldID, id),
 			sqlgraph.To(staff.Table, staff.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, place.StaffsTable, place.StaffsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRoomCategories queries the room_categories edge of a Place.
+func (c *PlaceClient) QueryRoomCategories(pl *Place) *RoomCategoryQuery {
+	query := (&RoomCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(roomcategory.Table, roomcategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, place.RoomCategoriesTable, place.RoomCategoriesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -7761,6 +7849,22 @@ func (c *ReservationClient) QueryPlace(r *Reservation) *PlaceQuery {
 	return query
 }
 
+// QueryRoom queries the room edge of a Reservation.
+func (c *ReservationClient) QueryRoom(r *Reservation) *RoomQuery {
+	query := (&RoomClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reservation.Table, reservation.FieldID, id),
+			sqlgraph.To(room.Table, room.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, reservation.RoomTable, reservation.RoomColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryUser queries the user edge of a Reservation.
 func (c *ReservationClient) QueryUser(r *Reservation) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
@@ -8462,7 +8566,23 @@ func (c *RoomClient) QueryPlace(r *Room) *PlaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(room.Table, room.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, room.PlaceTable, room.PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, room.PlaceTable, room.PlacePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRoomCategory queries the room_category edge of a Room.
+func (c *RoomClient) QueryRoomCategory(r *Room) *RoomCategoryQuery {
+	query := (&RoomCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(room.Table, room.FieldID, id),
+			sqlgraph.To(roomcategory.Table, roomcategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, room.RoomCategoryTable, room.RoomCategoryPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -8479,6 +8599,54 @@ func (c *RoomClient) QueryBookings(r *Room) *BookingQuery {
 			sqlgraph.From(room.Table, room.FieldID, id),
 			sqlgraph.To(booking.Table, booking.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, room.BookingsTable, room.BookingsColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAmenities queries the amenities edge of a Room.
+func (c *RoomClient) QueryAmenities(r *Room) *AmenityQuery {
+	query := (&AmenityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(room.Table, room.FieldID, id),
+			sqlgraph.To(amenity.Table, amenity.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, room.AmenitiesTable, room.AmenitiesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a Room.
+func (c *RoomClient) QueryMedia(r *Room) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(room.Table, room.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, room.MediaTable, room.MediaPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReservations queries the reservations edge of a Room.
+func (c *RoomClient) QueryReservations(r *Room) *ReservationQuery {
+	query := (&ReservationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(room.Table, room.FieldID, id),
+			sqlgraph.To(reservation.Table, reservation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, room.ReservationsTable, room.ReservationsColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -8508,6 +8676,203 @@ func (c *RoomClient) mutate(ctx context.Context, m *RoomMutation) (Value, error)
 		return (&RoomDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Room mutation op: %q", m.Op())
+	}
+}
+
+// RoomCategoryClient is a client for the RoomCategory schema.
+type RoomCategoryClient struct {
+	config
+}
+
+// NewRoomCategoryClient returns a client for the RoomCategory from the given config.
+func NewRoomCategoryClient(c config) *RoomCategoryClient {
+	return &RoomCategoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `roomcategory.Hooks(f(g(h())))`.
+func (c *RoomCategoryClient) Use(hooks ...Hook) {
+	c.hooks.RoomCategory = append(c.hooks.RoomCategory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `roomcategory.Intercept(f(g(h())))`.
+func (c *RoomCategoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.RoomCategory = append(c.inters.RoomCategory, interceptors...)
+}
+
+// Create returns a builder for creating a RoomCategory entity.
+func (c *RoomCategoryClient) Create() *RoomCategoryCreate {
+	mutation := newRoomCategoryMutation(c.config, OpCreate)
+	return &RoomCategoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of RoomCategory entities.
+func (c *RoomCategoryClient) CreateBulk(builders ...*RoomCategoryCreate) *RoomCategoryCreateBulk {
+	return &RoomCategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *RoomCategoryClient) MapCreateBulk(slice any, setFunc func(*RoomCategoryCreate, int)) *RoomCategoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &RoomCategoryCreateBulk{err: fmt.Errorf("calling to RoomCategoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*RoomCategoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &RoomCategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for RoomCategory.
+func (c *RoomCategoryClient) Update() *RoomCategoryUpdate {
+	mutation := newRoomCategoryMutation(c.config, OpUpdate)
+	return &RoomCategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RoomCategoryClient) UpdateOne(rc *RoomCategory) *RoomCategoryUpdateOne {
+	mutation := newRoomCategoryMutation(c.config, OpUpdateOne, withRoomCategory(rc))
+	return &RoomCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RoomCategoryClient) UpdateOneID(id string) *RoomCategoryUpdateOne {
+	mutation := newRoomCategoryMutation(c.config, OpUpdateOne, withRoomCategoryID(id))
+	return &RoomCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for RoomCategory.
+func (c *RoomCategoryClient) Delete() *RoomCategoryDelete {
+	mutation := newRoomCategoryMutation(c.config, OpDelete)
+	return &RoomCategoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RoomCategoryClient) DeleteOne(rc *RoomCategory) *RoomCategoryDeleteOne {
+	return c.DeleteOneID(rc.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RoomCategoryClient) DeleteOneID(id string) *RoomCategoryDeleteOne {
+	builder := c.Delete().Where(roomcategory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RoomCategoryDeleteOne{builder}
+}
+
+// Query returns a query builder for RoomCategory.
+func (c *RoomCategoryClient) Query() *RoomCategoryQuery {
+	return &RoomCategoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRoomCategory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a RoomCategory entity by its id.
+func (c *RoomCategoryClient) Get(ctx context.Context, id string) (*RoomCategory, error) {
+	return c.Query().Where(roomcategory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RoomCategoryClient) GetX(ctx context.Context, id string) *RoomCategory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlace queries the place edge of a RoomCategory.
+func (c *RoomCategoryClient) QueryPlace(rc *RoomCategory) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(roomcategory.Table, roomcategory.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, roomcategory.PlaceTable, roomcategory.PlacePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(rc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRooms queries the rooms edge of a RoomCategory.
+func (c *RoomCategoryClient) QueryRooms(rc *RoomCategory) *RoomQuery {
+	query := (&RoomClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(roomcategory.Table, roomcategory.FieldID, id),
+			sqlgraph.To(room.Table, room.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, roomcategory.RoomsTable, roomcategory.RoomsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(rc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a RoomCategory.
+func (c *RoomCategoryClient) QueryMedia(rc *RoomCategory) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(roomcategory.Table, roomcategory.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, roomcategory.MediaTable, roomcategory.MediaPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(rc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAmenities queries the amenities edge of a RoomCategory.
+func (c *RoomCategoryClient) QueryAmenities(rc *RoomCategory) *AmenityQuery {
+	query := (&AmenityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(roomcategory.Table, roomcategory.FieldID, id),
+			sqlgraph.To(amenity.Table, amenity.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, roomcategory.AmenitiesTable, roomcategory.AmenitiesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(rc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *RoomCategoryClient) Hooks() []Hook {
+	return c.hooks.RoomCategory
+}
+
+// Interceptors returns the client interceptors.
+func (c *RoomCategoryClient) Interceptors() []Interceptor {
+	return c.inters.RoomCategory
+}
+
+func (c *RoomCategoryClient) mutate(ctx context.Context, m *RoomCategoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RoomCategoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RoomCategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RoomCategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RoomCategoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown RoomCategory mutation op: %q", m.Op())
 	}
 }
 
@@ -11178,10 +11543,10 @@ type (
 		Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
 		Notification, Order, OrderItem, Payment, Permission, Place, PlaceInventory,
 		PlaceInventoryAttribute, PlaceTable, Post, Rating, Reaction, Reservation,
-		ReservationBlock, Resourse, Review, Room, Staff, Template, Ticket,
-		TicketOption, TransactionHistory, User, UserBusiness, UserFollowBusiness,
-		UserFollowEvent, UserFollowPlace, UserFollowUser, UserLikePlace,
-		Website []ent.Hook
+		ReservationBlock, Resourse, Review, Room, RoomCategory, Staff, Template,
+		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
+		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
+		UserLikePlace, Website []ent.Hook
 	}
 	inters struct {
 		AccountSettings, AccountWallet, Amenity, Booking, Business,
@@ -11190,9 +11555,9 @@ type (
 		Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
 		Notification, Order, OrderItem, Payment, Permission, Place, PlaceInventory,
 		PlaceInventoryAttribute, PlaceTable, Post, Rating, Reaction, Reservation,
-		ReservationBlock, Resourse, Review, Room, Staff, Template, Ticket,
-		TicketOption, TransactionHistory, User, UserBusiness, UserFollowBusiness,
-		UserFollowEvent, UserFollowPlace, UserFollowUser, UserLikePlace,
-		Website []ent.Interceptor
+		ReservationBlock, Resourse, Review, Room, RoomCategory, Staff, Template,
+		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
+		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
+		UserLikePlace, Website []ent.Interceptor
 	}
 )
