@@ -146,9 +146,13 @@ type PlaceEdges struct {
 	Plans []*Plan `json:"plans,omitempty"`
 	// Trainers holds the value of the trainers edge.
 	Trainers []*Trainer `json:"trainers,omitempty"`
+	// Members holds the value of the members edge.
+	Members []*User `json:"members,omitempty"`
+	// RegularUsers holds the value of the regularUsers edge.
+	RegularUsers []*User `json:"regularUsers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [23]bool
+	loadedTypes [25]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -360,6 +364,24 @@ func (e PlaceEdges) TrainersOrErr() ([]*Trainer, error) {
 		return e.Trainers, nil
 	}
 	return nil, &NotLoadedError{edge: "trainers"}
+}
+
+// MembersOrErr returns the Members value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) MembersOrErr() ([]*User, error) {
+	if e.loadedTypes[23] {
+		return e.Members, nil
+	}
+	return nil, &NotLoadedError{edge: "members"}
+}
+
+// RegularUsersOrErr returns the RegularUsers value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) RegularUsersOrErr() ([]*User, error) {
+	if e.loadedTypes[24] {
+		return e.RegularUsers, nil
+	}
+	return nil, &NotLoadedError{edge: "regularUsers"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -778,6 +800,16 @@ func (pl *Place) QueryPlans() *PlanQuery {
 // QueryTrainers queries the "trainers" edge of the Place entity.
 func (pl *Place) QueryTrainers() *TrainerQuery {
 	return NewPlaceClient(pl.config).QueryTrainers(pl)
+}
+
+// QueryMembers queries the "members" edge of the Place entity.
+func (pl *Place) QueryMembers() *UserQuery {
+	return NewPlaceClient(pl.config).QueryMembers(pl)
+}
+
+// QueryRegularUsers queries the "regularUsers" edge of the Place entity.
+func (pl *Place) QueryRegularUsers() *UserQuery {
+	return NewPlaceClient(pl.config).QueryRegularUsers(pl)
 }
 
 // Update returns a builder for updating this Place.

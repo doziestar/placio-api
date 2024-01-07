@@ -142,9 +142,13 @@ type UserEdges struct {
 	Subscriptions []*Subscription `json:"subscriptions,omitempty"`
 	// Trainers holds the value of the trainers edge.
 	Trainers []*Trainer `json:"trainers,omitempty"`
+	// MemberOf holds the value of the memberOf edge.
+	MemberOf []*Place `json:"memberOf,omitempty"`
+	// Customer holds the value of the customer edge.
+	Customer []*Place `json:"customer,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [36]bool
+	loadedTypes [38]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -477,6 +481,24 @@ func (e UserEdges) TrainersOrErr() ([]*Trainer, error) {
 		return e.Trainers, nil
 	}
 	return nil, &NotLoadedError{edge: "trainers"}
+}
+
+// MemberOfOrErr returns the MemberOf value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) MemberOfOrErr() ([]*Place, error) {
+	if e.loadedTypes[36] {
+		return e.MemberOf, nil
+	}
+	return nil, &NotLoadedError{edge: "memberOf"}
+}
+
+// CustomerOrErr returns the Customer value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CustomerOrErr() ([]*Place, error) {
+	if e.loadedTypes[37] {
+		return e.Customer, nil
+	}
+	return nil, &NotLoadedError{edge: "customer"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -842,6 +864,16 @@ func (u *User) QuerySubscriptions() *SubscriptionQuery {
 // QueryTrainers queries the "trainers" edge of the User entity.
 func (u *User) QueryTrainers() *TrainerQuery {
 	return NewUserClient(u.config).QueryTrainers(u)
+}
+
+// QueryMemberOf queries the "memberOf" edge of the User entity.
+func (u *User) QueryMemberOf() *PlaceQuery {
+	return NewUserClient(u.config).QueryMemberOf(u)
+}
+
+// QueryCustomer queries the "customer" edge of the User entity.
+func (u *User) QueryCustomer() *PlaceQuery {
+	return NewUserClient(u.config).QueryCustomer(u)
 }
 
 // Update returns a builder for updating this User.

@@ -2332,6 +2332,56 @@ var (
 			},
 		},
 	}
+	// PlaceMembersColumns holds the columns for the "place_members" table.
+	PlaceMembersColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceMembersTable holds the schema information for the "place_members" table.
+	PlaceMembersTable = &schema.Table{
+		Name:       "place_members",
+		Columns:    PlaceMembersColumns,
+		PrimaryKey: []*schema.Column{PlaceMembersColumns[0], PlaceMembersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_members_place_id",
+				Columns:    []*schema.Column{PlaceMembersColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_members_user_id",
+				Columns:    []*schema.Column{PlaceMembersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlaceRegularUsersColumns holds the columns for the "place_regularUsers" table.
+	PlaceRegularUsersColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceRegularUsersTable holds the schema information for the "place_regularUsers" table.
+	PlaceRegularUsersTable = &schema.Table{
+		Name:       "place_regularUsers",
+		Columns:    PlaceRegularUsersColumns,
+		PrimaryKey: []*schema.Column{PlaceRegularUsersColumns[0], PlaceRegularUsersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_regularUsers_place_id",
+				Columns:    []*schema.Column{PlaceRegularUsersColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_regularUsers_user_id",
+				Columns:    []*schema.Column{PlaceRegularUsersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PlaceInventoryMediaColumns holds the columns for the "place_inventory_media" table.
 	PlaceInventoryMediaColumns = []*schema.Column{
 		{Name: "place_inventory_id", Type: field.TypeString, Size: 36},
@@ -2837,6 +2887,8 @@ var (
 		PlaceStaffsTable,
 		PlaceRoomCategoriesTable,
 		PlaceTrainersTable,
+		PlaceMembersTable,
+		PlaceRegularUsersTable,
 		PlaceInventoryMediaTable,
 		PlaceTableOrdersTable,
 		PlanUsersTable,
@@ -3001,6 +3053,10 @@ func init() {
 	PlaceRoomCategoriesTable.ForeignKeys[1].RefTable = RoomCategoriesTable
 	PlaceTrainersTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceTrainersTable.ForeignKeys[1].RefTable = TrainersTable
+	PlaceMembersTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceMembersTable.ForeignKeys[1].RefTable = UsersTable
+	PlaceRegularUsersTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceRegularUsersTable.ForeignKeys[1].RefTable = UsersTable
 	PlaceInventoryMediaTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	PlaceInventoryMediaTable.ForeignKeys[1].RefTable = MediaTable
 	PlaceTableOrdersTable.ForeignKeys[0].RefTable = PlaceTablesTable

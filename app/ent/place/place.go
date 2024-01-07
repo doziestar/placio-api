@@ -131,6 +131,10 @@ const (
 	EdgePlans = "plans"
 	// EdgeTrainers holds the string denoting the trainers edge name in mutations.
 	EdgeTrainers = "trainers"
+	// EdgeMembers holds the string denoting the members edge name in mutations.
+	EdgeMembers = "members"
+	// EdgeRegularUsers holds the string denoting the regularusers edge name in mutations.
+	EdgeRegularUsers = "regularUsers"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -272,6 +276,16 @@ const (
 	// TrainersInverseTable is the table name for the Trainer entity.
 	// It exists in this package in order to avoid circular dependency with the "trainer" package.
 	TrainersInverseTable = "trainers"
+	// MembersTable is the table that holds the members relation/edge. The primary key declared below.
+	MembersTable = "place_members"
+	// MembersInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	MembersInverseTable = "users"
+	// RegularUsersTable is the table that holds the regularUsers relation/edge. The primary key declared below.
+	RegularUsersTable = "place_regularUsers"
+	// RegularUsersInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	RegularUsersInverseTable = "users"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -356,6 +370,12 @@ var (
 	// TrainersPrimaryKey and TrainersColumn2 are the table columns denoting the
 	// primary key for the trainers relation (M2M).
 	TrainersPrimaryKey = []string{"place_id", "trainer_id"}
+	// MembersPrimaryKey and MembersColumn2 are the table columns denoting the
+	// primary key for the members relation (M2M).
+	MembersPrimaryKey = []string{"place_id", "user_id"}
+	// RegularUsersPrimaryKey and RegularUsersColumn2 are the table columns denoting the
+	// primary key for the regularUsers relation (M2M).
+	RegularUsersPrimaryKey = []string{"place_id", "user_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -854,6 +874,34 @@ func ByTrainers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTrainersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMembersCount orders the results by members count.
+func ByMembersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMembersStep(), opts...)
+	}
+}
+
+// ByMembers orders the results by members terms.
+func ByMembers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMembersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRegularUsersCount orders the results by regularUsers count.
+func ByRegularUsersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRegularUsersStep(), opts...)
+	}
+}
+
+// ByRegularUsers orders the results by regularUsers terms.
+func ByRegularUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRegularUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -1013,5 +1061,19 @@ func newTrainersStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TrainersInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, TrainersTable, TrainersPrimaryKey...),
+	)
+}
+func newMembersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MembersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, MembersTable, MembersPrimaryKey...),
+	)
+}
+func newRegularUsersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RegularUsersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, RegularUsersTable, RegularUsersPrimaryKey...),
 	)
 }

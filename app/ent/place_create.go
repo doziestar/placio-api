@@ -813,6 +813,36 @@ func (pc *PlaceCreate) AddTrainers(t ...*Trainer) *PlaceCreate {
 	return pc.AddTrainerIDs(ids...)
 }
 
+// AddMemberIDs adds the "members" edge to the User entity by IDs.
+func (pc *PlaceCreate) AddMemberIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddMemberIDs(ids...)
+	return pc
+}
+
+// AddMembers adds the "members" edges to the User entity.
+func (pc *PlaceCreate) AddMembers(u ...*User) *PlaceCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pc.AddMemberIDs(ids...)
+}
+
+// AddRegularUserIDs adds the "regularUsers" edge to the User entity by IDs.
+func (pc *PlaceCreate) AddRegularUserIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddRegularUserIDs(ids...)
+	return pc
+}
+
+// AddRegularUsers adds the "regularUsers" edges to the User entity.
+func (pc *PlaceCreate) AddRegularUsers(u ...*User) *PlaceCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pc.AddRegularUserIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pc *PlaceCreate) Mutation() *PlaceMutation {
 	return pc.mutation
@@ -1464,6 +1494,38 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.MembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MembersTable,
+			Columns: place.MembersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.RegularUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RegularUsersTable,
+			Columns: place.RegularUsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
