@@ -14,7 +14,9 @@ import (
 	"placio-app/ent/amenity"
 	"placio-app/ent/business"
 	"placio-app/ent/category"
+	"placio-app/ent/menu"
 	"placio-app/ent/place"
+	"placio-app/ent/placetable"
 	"placio-app/utility"
 	"placio-pkg/errors"
 	"strings"
@@ -102,6 +104,7 @@ func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Cont
 		Where(place.HasBusinessWith(business.ID(businessId))).
 		WithMedias().
 		WithTables(func(query *ent.PlaceTableQuery) {
+			query.Where(placetable.DeletedAtIsNil())
 			query.WithOrders(func(query *ent.OrderQuery) {
 				query.WithUser()
 			})
@@ -115,6 +118,7 @@ func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Cont
 		WithBusiness().
 		WithUsers().
 		WithMenus(func(query *ent.MenuQuery) {
+			query.Where(menu.DeletedAtIsNil())
 			query.WithMenuItems(func(query *ent.MenuItemQuery) {
 				query.WithMedia(func(query *ent.MediaQuery) {
 				})
@@ -143,7 +147,14 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		WithCategoryAssignments().
 		WithEvents().
 		WithAmenities().
-		WithMenus().
+		WithMenus(func(query *ent.MenuQuery) {
+			query.Where(menu.DeletedAtIsNil())
+			query.WithMenuItems(func(query *ent.MenuItemQuery) {
+				query.WithMedia(func(query *ent.MediaQuery) {
+				})
+			})
+		
+		}).
 		WithFaqs().
 		WithMedias().
 		First(ctx)
