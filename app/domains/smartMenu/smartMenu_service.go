@@ -204,6 +204,18 @@ func (s *SmartMenuService) UpdateMenuItem(ctx context.Context, menuItemId string
 		update.SetDiscountPercentage(menuItemDto.DiscountPercentage)
 	}
 
+	if menuItemDto.IsAvailable != true {
+		update.SetIsAvailable(menuItemDto.IsAvailable)
+	}
+
+	if menuItemDto.SpicinessLevel != "" {
+		update.SetSpicinessLevel(menuItemDto.SpicinessLevel)
+	}
+
+	if menuItemDto.RelatedItems != nil {
+		update.SetRelatedItems(menuItemDto.RelatedItems)
+	}
+
 	// Optional boolean fields
 	update.SetIsDeleted(menuItemDto.IsDeleted)
 	update.SetIsFeatured(menuItemDto.IsFeatured)
