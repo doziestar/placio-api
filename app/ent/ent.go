@@ -22,6 +22,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/featurerelease"
+	"placio-app/ent/fitness"
 	"placio-app/ent/help"
 	"placio-app/ent/inventoryattribute"
 	"placio-app/ent/inventorytype"
@@ -38,6 +39,7 @@ import (
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
@@ -142,6 +144,7 @@ func checkColumn(table, column string) error {
 			event.Table:                   event.ValidColumn,
 			faq.Table:                     faq.ValidColumn,
 			featurerelease.Table:          featurerelease.ValidColumn,
+			fitness.Table:                 fitness.ValidColumn,
 			help.Table:                    help.ValidColumn,
 			inventoryattribute.Table:      inventoryattribute.ValidColumn,
 			inventorytype.Table:           inventorytype.ValidColumn,
@@ -158,6 +161,7 @@ func checkColumn(table, column string) error {
 			placeinventory.Table:          placeinventory.ValidColumn,
 			placeinventoryattribute.Table: placeinventoryattribute.ValidColumn,
 			placetable.Table:              placetable.ValidColumn,
+			plan.Table:                    plan.ValidColumn,
 			post.Table:                    post.ValidColumn,
 			rating.Table:                  rating.ValidColumn,
 			reaction.Table:                reaction.ValidColumn,

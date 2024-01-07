@@ -42,6 +42,8 @@ const (
 	EdgeRoomCategory = "room_category"
 	// EdgeRoom holds the string denoting the room edge name in mutations.
 	EdgeRoom = "room"
+	// EdgePlan holds the string denoting the plan edge name in mutations.
+	EdgePlan = "plan"
 	// Table holds the table name of the media in the database.
 	Table = "media"
 	// PostTable is the table that holds the post relation/edge.
@@ -88,6 +90,13 @@ const (
 	// RoomInverseTable is the table name for the Room entity.
 	// It exists in this package in order to avoid circular dependency with the "room" package.
 	RoomInverseTable = "rooms"
+	// PlanTable is the table that holds the plan relation/edge.
+	PlanTable = "media"
+	// PlanInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlanInverseTable = "plans"
+	// PlanColumn is the table column denoting the plan relation/edge.
+	PlanColumn = "plan_media"
 )
 
 // Columns holds all SQL columns for media fields.
@@ -105,6 +114,7 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"menu_item_media",
+	"plan_media",
 	"post_medias",
 	"review_medias",
 	"website_assets",
@@ -296,6 +306,13 @@ func ByRoom(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRoomStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlanField orders the results by plan field.
+func ByPlanField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlanStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newPostStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -350,5 +367,12 @@ func newRoomStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RoomInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, RoomTable, RoomPrimaryKey...),
+	)
+}
+func newPlanStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlanInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, PlanTable, PlanColumn),
 	)
 }

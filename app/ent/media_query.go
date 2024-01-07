@@ -12,6 +12,7 @@ import (
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
@@ -38,6 +39,7 @@ type MediaQuery struct {
 	withMenu           *MenuQuery
 	withRoomCategory   *RoomCategoryQuery
 	withRoom           *RoomQuery
+	withPlan           *PlanQuery
 	withFKs            bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -251,6 +253,28 @@ func (mq *MediaQuery) QueryRoom() *RoomQuery {
 	return query
 }
 
+// QueryPlan chains the current query on the "plan" edge.
+func (mq *MediaQuery) QueryPlan() *PlanQuery {
+	query := (&PlanClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, selector),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, media.PlanTable, media.PlanColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Media entity from the query.
 // Returns a *NotFoundError when no Media was found.
 func (mq *MediaQuery) First(ctx context.Context) (*Media, error) {
@@ -451,6 +475,7 @@ func (mq *MediaQuery) Clone() *MediaQuery {
 		withMenu:           mq.withMenu.Clone(),
 		withRoomCategory:   mq.withRoomCategory.Clone(),
 		withRoom:           mq.withRoom.Clone(),
+		withPlan:           mq.withPlan.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -545,6 +570,17 @@ func (mq *MediaQuery) WithRoom(opts ...func(*RoomQuery)) *MediaQuery {
 	return mq
 }
 
+// WithPlan tells the query-builder to eager-load the nodes that are connected to
+// the "plan" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MediaQuery) WithPlan(opts ...func(*PlanQuery)) *MediaQuery {
+	query := (&PlanClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withPlan = query
+	return mq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -624,7 +660,7 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		nodes       = []*Media{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			mq.withPost != nil,
 			mq.withReview != nil,
 			mq.withCategories != nil,
@@ -633,9 +669,10 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 			mq.withMenu != nil,
 			mq.withRoomCategory != nil,
 			mq.withRoom != nil,
+			mq.withPlan != nil,
 		}
 	)
-	if mq.withPost != nil || mq.withReview != nil {
+	if mq.withPost != nil || mq.withReview != nil || mq.withPlan != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -710,6 +747,12 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		if err := mq.loadRoom(ctx, query, nodes,
 			func(n *Media) { n.Edges.Room = []*Room{} },
 			func(n *Media, e *Room) { n.Edges.Room = append(n.Edges.Room, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withPlan; query != nil {
+		if err := mq.loadPlan(ctx, query, nodes, nil,
+			func(n *Media, e *Plan) { n.Edges.Plan = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1142,6 +1185,38 @@ func (mq *MediaQuery) loadRoom(ctx context.Context, query *RoomQuery, nodes []*M
 		}
 		for kn := range nodes {
 			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (mq *MediaQuery) loadPlan(ctx context.Context, query *PlanQuery, nodes []*Media, init func(*Media), assign func(*Media, *Plan)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Media)
+	for i := range nodes {
+		if nodes[i].plan_media == nil {
+			continue
+		}
+		fk := *nodes[i].plan_media
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(plan.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "plan_media" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
 	}
 	return nil

@@ -27,6 +27,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/featurerelease"
+	"placio-app/ent/fitness"
 	"placio-app/ent/help"
 	"placio-app/ent/inventoryattribute"
 	"placio-app/ent/inventorytype"
@@ -43,6 +44,7 @@ import (
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
@@ -109,6 +111,8 @@ type Client struct {
 	FAQ *FAQClient
 	// FeatureRelease is the client for interacting with the FeatureRelease builders.
 	FeatureRelease *FeatureReleaseClient
+	// Fitness is the client for interacting with the Fitness builders.
+	Fitness *FitnessClient
 	// Help is the client for interacting with the Help builders.
 	Help *HelpClient
 	// InventoryAttribute is the client for interacting with the InventoryAttribute builders.
@@ -141,6 +145,8 @@ type Client struct {
 	PlaceInventoryAttribute *PlaceInventoryAttributeClient
 	// PlaceTable is the client for interacting with the PlaceTable builders.
 	PlaceTable *PlaceTableClient
+	// Plan is the client for interacting with the Plan builders.
+	Plan *PlanClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
@@ -212,6 +218,7 @@ func (c *Client) init() {
 	c.Event = NewEventClient(c.config)
 	c.FAQ = NewFAQClient(c.config)
 	c.FeatureRelease = NewFeatureReleaseClient(c.config)
+	c.Fitness = NewFitnessClient(c.config)
 	c.Help = NewHelpClient(c.config)
 	c.InventoryAttribute = NewInventoryAttributeClient(c.config)
 	c.InventoryType = NewInventoryTypeClient(c.config)
@@ -228,6 +235,7 @@ func (c *Client) init() {
 	c.PlaceInventory = NewPlaceInventoryClient(c.config)
 	c.PlaceInventoryAttribute = NewPlaceInventoryAttributeClient(c.config)
 	c.PlaceTable = NewPlaceTableClient(c.config)
+	c.Plan = NewPlanClient(c.config)
 	c.Post = NewPostClient(c.config)
 	c.Rating = NewRatingClient(c.config)
 	c.Reaction = NewReactionClient(c.config)
@@ -358,6 +366,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Event:                   NewEventClient(cfg),
 		FAQ:                     NewFAQClient(cfg),
 		FeatureRelease:          NewFeatureReleaseClient(cfg),
+		Fitness:                 NewFitnessClient(cfg),
 		Help:                    NewHelpClient(cfg),
 		InventoryAttribute:      NewInventoryAttributeClient(cfg),
 		InventoryType:           NewInventoryTypeClient(cfg),
@@ -374,6 +383,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PlaceInventory:          NewPlaceInventoryClient(cfg),
 		PlaceInventoryAttribute: NewPlaceInventoryAttributeClient(cfg),
 		PlaceTable:              NewPlaceTableClient(cfg),
+		Plan:                    NewPlanClient(cfg),
 		Post:                    NewPostClient(cfg),
 		Rating:                  NewRatingClient(cfg),
 		Reaction:                NewReactionClient(cfg),
@@ -431,6 +441,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Event:                   NewEventClient(cfg),
 		FAQ:                     NewFAQClient(cfg),
 		FeatureRelease:          NewFeatureReleaseClient(cfg),
+		Fitness:                 NewFitnessClient(cfg),
 		Help:                    NewHelpClient(cfg),
 		InventoryAttribute:      NewInventoryAttributeClient(cfg),
 		InventoryType:           NewInventoryTypeClient(cfg),
@@ -447,6 +458,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PlaceInventory:          NewPlaceInventoryClient(cfg),
 		PlaceInventoryAttribute: NewPlaceInventoryAttributeClient(cfg),
 		PlaceTable:              NewPlaceTableClient(cfg),
+		Plan:                    NewPlanClient(cfg),
 		Post:                    NewPostClient(cfg),
 		Rating:                  NewRatingClient(cfg),
 		Reaction:                NewReactionClient(cfg),
@@ -501,14 +513,15 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AccountSettings, c.AccountWallet, c.Amenity, c.Booking, c.Business,
 		c.BusinessFollowBusiness, c.BusinessFollowEvent, c.BusinessFollowUser,
 		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
-		c.FAQ, c.FeatureRelease, c.Help, c.InventoryAttribute, c.InventoryType, c.Like,
-		c.Media, c.Menu, c.MenuItem, c.Notification, c.Order, c.OrderItem, c.Payment,
-		c.Permission, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute,
-		c.PlaceTable, c.Post, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock,
-		c.Resourse, c.Review, c.Room, c.RoomCategory, c.Staff, c.Template, c.Ticket,
-		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
-		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
-		c.UserLikePlace, c.Website,
+		c.FAQ, c.FeatureRelease, c.Fitness, c.Help, c.InventoryAttribute,
+		c.InventoryType, c.Like, c.Media, c.Menu, c.MenuItem, c.Notification, c.Order,
+		c.OrderItem, c.Payment, c.Permission, c.Place, c.PlaceInventory,
+		c.PlaceInventoryAttribute, c.PlaceTable, c.Plan, c.Post, c.Rating, c.Reaction,
+		c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
+		c.RoomCategory, c.Staff, c.Template, c.Ticket, c.TicketOption,
+		c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
+		c.Website,
 	} {
 		n.Use(hooks...)
 	}
@@ -521,14 +534,15 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AccountSettings, c.AccountWallet, c.Amenity, c.Booking, c.Business,
 		c.BusinessFollowBusiness, c.BusinessFollowEvent, c.BusinessFollowUser,
 		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
-		c.FAQ, c.FeatureRelease, c.Help, c.InventoryAttribute, c.InventoryType, c.Like,
-		c.Media, c.Menu, c.MenuItem, c.Notification, c.Order, c.OrderItem, c.Payment,
-		c.Permission, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute,
-		c.PlaceTable, c.Post, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock,
-		c.Resourse, c.Review, c.Room, c.RoomCategory, c.Staff, c.Template, c.Ticket,
-		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
-		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
-		c.UserLikePlace, c.Website,
+		c.FAQ, c.FeatureRelease, c.Fitness, c.Help, c.InventoryAttribute,
+		c.InventoryType, c.Like, c.Media, c.Menu, c.MenuItem, c.Notification, c.Order,
+		c.OrderItem, c.Payment, c.Permission, c.Place, c.PlaceInventory,
+		c.PlaceInventoryAttribute, c.PlaceTable, c.Plan, c.Post, c.Rating, c.Reaction,
+		c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
+		c.RoomCategory, c.Staff, c.Template, c.Ticket, c.TicketOption,
+		c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
+		c.Website,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -569,6 +583,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.FAQ.mutate(ctx, m)
 	case *FeatureReleaseMutation:
 		return c.FeatureRelease.mutate(ctx, m)
+	case *FitnessMutation:
+		return c.Fitness.mutate(ctx, m)
 	case *HelpMutation:
 		return c.Help.mutate(ctx, m)
 	case *InventoryAttributeMutation:
@@ -601,6 +617,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PlaceInventoryAttribute.mutate(ctx, m)
 	case *PlaceTableMutation:
 		return c.PlaceTable.mutate(ctx, m)
+	case *PlanMutation:
+		return c.Plan.mutate(ctx, m)
 	case *PostMutation:
 		return c.Post.mutate(ctx, m)
 	case *RatingMutation:
@@ -1715,6 +1733,22 @@ func (c *BusinessClient) QueryStaffs(b *Business) *StaffQuery {
 			sqlgraph.From(business.Table, business.FieldID, id),
 			sqlgraph.To(staff.Table, staff.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, business.StaffsTable, business.StaffsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlans queries the plans edge of a Business.
+func (c *BusinessClient) QueryPlans(b *Business) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, business.PlansTable, business.PlansPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -3756,6 +3790,139 @@ func (c *FeatureReleaseClient) mutate(ctx context.Context, m *FeatureReleaseMuta
 	}
 }
 
+// FitnessClient is a client for the Fitness schema.
+type FitnessClient struct {
+	config
+}
+
+// NewFitnessClient returns a client for the Fitness from the given config.
+func NewFitnessClient(c config) *FitnessClient {
+	return &FitnessClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `fitness.Hooks(f(g(h())))`.
+func (c *FitnessClient) Use(hooks ...Hook) {
+	c.hooks.Fitness = append(c.hooks.Fitness, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `fitness.Intercept(f(g(h())))`.
+func (c *FitnessClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Fitness = append(c.inters.Fitness, interceptors...)
+}
+
+// Create returns a builder for creating a Fitness entity.
+func (c *FitnessClient) Create() *FitnessCreate {
+	mutation := newFitnessMutation(c.config, OpCreate)
+	return &FitnessCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Fitness entities.
+func (c *FitnessClient) CreateBulk(builders ...*FitnessCreate) *FitnessCreateBulk {
+	return &FitnessCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *FitnessClient) MapCreateBulk(slice any, setFunc func(*FitnessCreate, int)) *FitnessCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &FitnessCreateBulk{err: fmt.Errorf("calling to FitnessClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*FitnessCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &FitnessCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Fitness.
+func (c *FitnessClient) Update() *FitnessUpdate {
+	mutation := newFitnessMutation(c.config, OpUpdate)
+	return &FitnessUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FitnessClient) UpdateOne(f *Fitness) *FitnessUpdateOne {
+	mutation := newFitnessMutation(c.config, OpUpdateOne, withFitness(f))
+	return &FitnessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FitnessClient) UpdateOneID(id string) *FitnessUpdateOne {
+	mutation := newFitnessMutation(c.config, OpUpdateOne, withFitnessID(id))
+	return &FitnessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Fitness.
+func (c *FitnessClient) Delete() *FitnessDelete {
+	mutation := newFitnessMutation(c.config, OpDelete)
+	return &FitnessDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FitnessClient) DeleteOne(f *Fitness) *FitnessDeleteOne {
+	return c.DeleteOneID(f.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FitnessClient) DeleteOneID(id string) *FitnessDeleteOne {
+	builder := c.Delete().Where(fitness.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FitnessDeleteOne{builder}
+}
+
+// Query returns a query builder for Fitness.
+func (c *FitnessClient) Query() *FitnessQuery {
+	return &FitnessQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeFitness},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Fitness entity by its id.
+func (c *FitnessClient) Get(ctx context.Context, id string) (*Fitness, error) {
+	return c.Query().Where(fitness.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FitnessClient) GetX(ctx context.Context, id string) *Fitness {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *FitnessClient) Hooks() []Hook {
+	return c.hooks.Fitness
+}
+
+// Interceptors returns the client interceptors.
+func (c *FitnessClient) Interceptors() []Interceptor {
+	return c.inters.Fitness
+}
+
+func (c *FitnessClient) mutate(ctx context.Context, m *FitnessMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FitnessCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FitnessUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FitnessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FitnessDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Fitness mutation op: %q", m.Op())
+	}
+}
+
 // HelpClient is a client for the Help schema.
 type HelpClient struct {
 	config
@@ -4661,6 +4828,22 @@ func (c *MediaClient) QueryRoom(m *Media) *RoomQuery {
 			sqlgraph.From(media.Table, media.FieldID, id),
 			sqlgraph.To(room.Table, room.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, media.RoomTable, media.RoomPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlan queries the plan edge of a Media.
+func (c *MediaClient) QueryPlan(m *Media) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, media.PlanTable, media.PlanColumn),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -6404,6 +6587,22 @@ func (c *PlaceClient) QueryRoomCategories(pl *Place) *RoomCategoryQuery {
 	return query
 }
 
+// QueryPlans queries the plans edge of a Place.
+func (c *PlaceClient) QueryPlans(pl *Place) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, place.PlansTable, place.PlansPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
 	hooks := c.hooks.Place
@@ -7114,6 +7313,203 @@ func (c *PlaceTableClient) mutate(ctx context.Context, m *PlaceTableMutation) (V
 		return (&PlaceTableDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown PlaceTable mutation op: %q", m.Op())
+	}
+}
+
+// PlanClient is a client for the Plan schema.
+type PlanClient struct {
+	config
+}
+
+// NewPlanClient returns a client for the Plan from the given config.
+func NewPlanClient(c config) *PlanClient {
+	return &PlanClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `plan.Hooks(f(g(h())))`.
+func (c *PlanClient) Use(hooks ...Hook) {
+	c.hooks.Plan = append(c.hooks.Plan, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `plan.Intercept(f(g(h())))`.
+func (c *PlanClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Plan = append(c.inters.Plan, interceptors...)
+}
+
+// Create returns a builder for creating a Plan entity.
+func (c *PlanClient) Create() *PlanCreate {
+	mutation := newPlanMutation(c.config, OpCreate)
+	return &PlanCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Plan entities.
+func (c *PlanClient) CreateBulk(builders ...*PlanCreate) *PlanCreateBulk {
+	return &PlanCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PlanClient) MapCreateBulk(slice any, setFunc func(*PlanCreate, int)) *PlanCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PlanCreateBulk{err: fmt.Errorf("calling to PlanClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PlanCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PlanCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Plan.
+func (c *PlanClient) Update() *PlanUpdate {
+	mutation := newPlanMutation(c.config, OpUpdate)
+	return &PlanUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlanClient) UpdateOne(pl *Plan) *PlanUpdateOne {
+	mutation := newPlanMutation(c.config, OpUpdateOne, withPlan(pl))
+	return &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlanClient) UpdateOneID(id string) *PlanUpdateOne {
+	mutation := newPlanMutation(c.config, OpUpdateOne, withPlanID(id))
+	return &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Plan.
+func (c *PlanClient) Delete() *PlanDelete {
+	mutation := newPlanMutation(c.config, OpDelete)
+	return &PlanDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlanClient) DeleteOne(pl *Plan) *PlanDeleteOne {
+	return c.DeleteOneID(pl.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlanClient) DeleteOneID(id string) *PlanDeleteOne {
+	builder := c.Delete().Where(plan.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlanDeleteOne{builder}
+}
+
+// Query returns a query builder for Plan.
+func (c *PlanClient) Query() *PlanQuery {
+	return &PlanQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlan},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Plan entity by its id.
+func (c *PlanClient) Get(ctx context.Context, id string) (*Plan, error) {
+	return c.Query().Where(plan.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlanClient) GetX(ctx context.Context, id string) *Plan {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUsers queries the users edge of a Plan.
+func (c *PlanClient) QueryUsers(pl *Plan) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, plan.UsersTable, plan.UsersPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusinesses queries the businesses edge of a Plan.
+func (c *PlanClient) QueryBusinesses(pl *Plan) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, plan.BusinessesTable, plan.BusinessesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlaces queries the places edge of a Plan.
+func (c *PlanClient) QueryPlaces(pl *Plan) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, plan.PlacesTable, plan.PlacesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a Plan.
+func (c *PlanClient) QueryMedia(pl *Plan) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.MediaTable, plan.MediaColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlanClient) Hooks() []Hook {
+	return c.hooks.Plan
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlanClient) Interceptors() []Interceptor {
+	return c.inters.Plan
+}
+
+func (c *PlanClient) mutate(ctx context.Context, m *PlanMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlanCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlanUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlanDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Plan mutation op: %q", m.Op())
 	}
 }
 
@@ -10337,6 +10733,22 @@ func (c *UserClient) QueryUpdatedMenus(u *User) *MenuQuery {
 	return query
 }
 
+// QueryPlans queries the plans edge of a User.
+func (c *UserClient) QueryPlans(u *User) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, user.PlansTable, user.PlansPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	hooks := c.hooks.User
@@ -11540,9 +11952,9 @@ type (
 		AccountSettings, AccountWallet, Amenity, Booking, Business,
 		BusinessFollowBusiness, BusinessFollowEvent, BusinessFollowUser, Category,
 		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
-		Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
+		Fitness, Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
 		Notification, Order, OrderItem, Payment, Permission, Place, PlaceInventory,
-		PlaceInventoryAttribute, PlaceTable, Post, Rating, Reaction, Reservation,
+		PlaceInventoryAttribute, PlaceTable, Plan, Post, Rating, Reaction, Reservation,
 		ReservationBlock, Resourse, Review, Room, RoomCategory, Staff, Template,
 		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
 		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
@@ -11552,9 +11964,9 @@ type (
 		AccountSettings, AccountWallet, Amenity, Booking, Business,
 		BusinessFollowBusiness, BusinessFollowEvent, BusinessFollowUser, Category,
 		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
-		Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
+		Fitness, Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
 		Notification, Order, OrderItem, Payment, Permission, Place, PlaceInventory,
-		PlaceInventoryAttribute, PlaceTable, Post, Rating, Reaction, Reservation,
+		PlaceInventoryAttribute, PlaceTable, Plan, Post, Rating, Reaction, Reservation,
 		ReservationBlock, Resourse, Review, Room, RoomCategory, Staff, Template,
 		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
 		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,

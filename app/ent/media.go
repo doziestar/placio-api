@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"placio-app/ent/media"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/review"
 	"strings"
@@ -35,6 +36,7 @@ type Media struct {
 	// The values are being populated by the MediaQuery when eager-loading is set.
 	Edges           MediaEdges `json:"edges"`
 	menu_item_media *string
+	plan_media      *string
 	post_medias     *string
 	review_medias   *string
 	website_assets  *string
@@ -59,9 +61,11 @@ type MediaEdges struct {
 	RoomCategory []*RoomCategory `json:"room_category,omitempty"`
 	// Room holds the value of the room edge.
 	Room []*Room `json:"room,omitempty"`
+	// Plan holds the value of the plan edge.
+	Plan *Plan `json:"plan,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // PostOrErr returns the Post value or an error if the edge
@@ -144,6 +148,19 @@ func (e MediaEdges) RoomOrErr() ([]*Room, error) {
 	return nil, &NotLoadedError{edge: "room"}
 }
 
+// PlanOrErr returns the Plan value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e MediaEdges) PlanOrErr() (*Plan, error) {
+	if e.loadedTypes[8] {
+		if e.Plan == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: plan.Label}
+		}
+		return e.Plan, nil
+	}
+	return nil, &NotLoadedError{edge: "plan"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -157,11 +174,13 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case media.ForeignKeys[0]: // menu_item_media
 			values[i] = new(sql.NullString)
-		case media.ForeignKeys[1]: // post_medias
+		case media.ForeignKeys[1]: // plan_media
 			values[i] = new(sql.NullString)
-		case media.ForeignKeys[2]: // review_medias
+		case media.ForeignKeys[2]: // post_medias
 			values[i] = new(sql.NullString)
-		case media.ForeignKeys[3]: // website_assets
+		case media.ForeignKeys[3]: // review_medias
+			values[i] = new(sql.NullString)
+		case media.ForeignKeys[4]: // website_assets
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -229,19 +248,26 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			}
 		case media.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field plan_media", values[i])
+			} else if value.Valid {
+				m.plan_media = new(string)
+				*m.plan_media = value.String
+			}
+		case media.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field post_medias", values[i])
 			} else if value.Valid {
 				m.post_medias = new(string)
 				*m.post_medias = value.String
 			}
-		case media.ForeignKeys[2]:
+		case media.ForeignKeys[3]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field review_medias", values[i])
 			} else if value.Valid {
 				m.review_medias = new(string)
 				*m.review_medias = value.String
 			}
-		case media.ForeignKeys[3]:
+		case media.ForeignKeys[4]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field website_assets", values[i])
 			} else if value.Valid {
@@ -299,6 +325,11 @@ func (m *Media) QueryRoomCategory() *RoomCategoryQuery {
 // QueryRoom queries the "room" edge of the Media entity.
 func (m *Media) QueryRoom() *RoomQuery {
 	return NewMediaClient(m.config).QueryRoom(m)
+}
+
+// QueryPlan queries the "plan" edge of the Media entity.
+func (m *Media) QueryPlan() *PlanQuery {
+	return NewMediaClient(m.config).QueryPlan(m)
 }
 
 // Update returns a builder for updating this Media.

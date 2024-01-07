@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/order"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
@@ -914,6 +915,21 @@ func (uu *UserUpdate) AddUpdatedMenus(m ...*Menu) *UserUpdate {
 	return uu.AddUpdatedMenuIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (uu *UserUpdate) AddPlanIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddPlanIDs(ids...)
+	return uu
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (uu *UserUpdate) AddPlans(p ...*Plan) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddPlanIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1559,6 +1575,27 @@ func (uu *UserUpdate) RemoveUpdatedMenus(m ...*Menu) *UserUpdate {
 		ids[i] = m[i].ID
 	}
 	return uu.RemoveUpdatedMenuIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (uu *UserUpdate) ClearPlans() *UserUpdate {
+	uu.mutation.ClearPlans()
+	return uu
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (uu *UserUpdate) RemovePlanIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemovePlanIDs(ids...)
+	return uu
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (uu *UserUpdate) RemovePlans(p ...*Plan) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemovePlanIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -3140,6 +3177,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedPlansIDs(); len(nodes) > 0 && !uu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -4019,6 +4101,21 @@ func (uuo *UserUpdateOne) AddUpdatedMenus(m ...*Menu) *UserUpdateOne {
 	return uuo.AddUpdatedMenuIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (uuo *UserUpdateOne) AddPlanIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddPlanIDs(ids...)
+	return uuo
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (uuo *UserUpdateOne) AddPlans(p ...*Plan) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddPlanIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -4664,6 +4761,27 @@ func (uuo *UserUpdateOne) RemoveUpdatedMenus(m ...*Menu) *UserUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return uuo.RemoveUpdatedMenuIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (uuo *UserUpdateOne) ClearPlans() *UserUpdateOne {
+	uuo.mutation.ClearPlans()
+	return uuo
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (uuo *UserUpdateOne) RemovePlanIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemovePlanIDs(ids...)
+	return uuo
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (uuo *UserUpdateOne) RemovePlans(p ...*Plan) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemovePlanIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -6268,6 +6386,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedPlansIDs(); len(nodes) > 0 && !uuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

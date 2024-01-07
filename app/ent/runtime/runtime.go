@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/featurerelease"
+	"placio-app/ent/fitness"
 	"placio-app/ent/help"
 	"placio-app/ent/inventoryattribute"
 	"placio-app/ent/inventorytype"
@@ -30,6 +31,7 @@ import (
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
@@ -292,6 +294,12 @@ func init() {
 	featurereleaseDescID := featurereleaseFields[0].Descriptor()
 	// featurerelease.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	featurerelease.IDValidator = featurereleaseDescID.Validators[0].(func(string) error)
+	fitnessFields := schema.Fitness{}.Fields()
+	_ = fitnessFields
+	// fitnessDescID is the schema descriptor for id field.
+	fitnessDescID := fitnessFields[0].Descriptor()
+	// fitness.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	fitness.IDValidator = fitnessDescID.Validators[0].(func(string) error)
 	helpFields := schema.Help{}.Fields()
 	_ = helpFields
 	// helpDescStatus is the schema descriptor for status field.
@@ -576,6 +584,12 @@ func init() {
 	placetableDescID := placetableFields[0].Descriptor()
 	// placetable.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	placetable.IDValidator = placetableDescID.Validators[0].(func(string) error)
+	planFields := schema.Plan{}.Fields()
+	_ = planFields
+	// planDescID is the schema descriptor for id field.
+	planDescID := planFields[0].Descriptor()
+	// plan.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	plan.IDValidator = planDescID.Validators[0].(func(string) error)
 	postFields := schema.Post{}.Fields()
 	_ = postFields
 	// postDescContent is the schema descriptor for Content field.

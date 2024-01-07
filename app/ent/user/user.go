@@ -123,6 +123,8 @@ const (
 	EdgeCreatedMenus = "created_menus"
 	// EdgeUpdatedMenus holds the string denoting the updated_menus edge name in mutations.
 	EdgeUpdatedMenus = "updated_menus"
+	// EdgePlans holds the string denoting the plans edge name in mutations.
+	EdgePlans = "plans"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -348,6 +350,11 @@ const (
 	// UpdatedMenusInverseTable is the table name for the Menu entity.
 	// It exists in this package in order to avoid circular dependency with the "menu" package.
 	UpdatedMenusInverseTable = "menus"
+	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
+	PlansTable = "plan_users"
+	// PlansInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlansInverseTable = "plans"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -389,6 +396,9 @@ var (
 	// UpdatedMenusPrimaryKey and UpdatedMenusColumn2 are the table columns denoting the
 	// primary key for the updated_menus relation (M2M).
 	UpdatedMenusPrimaryKey = []string{"user_id", "menu_id"}
+	// PlansPrimaryKey and PlansColumn2 are the table columns denoting the
+	// primary key for the plans relation (M2M).
+	PlansPrimaryKey = []string{"plan_id", "user_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -985,6 +995,20 @@ func ByUpdatedMenus(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newUpdatedMenusStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlansCount orders the results by plans count.
+func ByPlansCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlansStep(), opts...)
+	}
+}
+
+// ByPlans orders the results by plans terms.
+func ByPlans(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlansStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -1214,5 +1238,12 @@ func newUpdatedMenusStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UpdatedMenusInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, UpdatedMenusTable, UpdatedMenusPrimaryKey...),
+	)
+}
+func newPlansStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlansInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
 	)
 }

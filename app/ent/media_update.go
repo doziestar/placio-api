@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
@@ -240,6 +241,25 @@ func (mu *MediaUpdate) AddRoom(r ...*Room) *MediaUpdate {
 	return mu.AddRoomIDs(ids...)
 }
 
+// SetPlanID sets the "plan" edge to the Plan entity by ID.
+func (mu *MediaUpdate) SetPlanID(id string) *MediaUpdate {
+	mu.mutation.SetPlanID(id)
+	return mu
+}
+
+// SetNillablePlanID sets the "plan" edge to the Plan entity by ID if the given value is not nil.
+func (mu *MediaUpdate) SetNillablePlanID(id *string) *MediaUpdate {
+	if id != nil {
+		mu = mu.SetPlanID(*id)
+	}
+	return mu
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (mu *MediaUpdate) SetPlan(p *Plan) *MediaUpdate {
+	return mu.SetPlanID(p.ID)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (mu *MediaUpdate) Mutation() *MediaMutation {
 	return mu.mutation
@@ -381,6 +401,12 @@ func (mu *MediaUpdate) RemoveRoom(r ...*Room) *MediaUpdate {
 		ids[i] = r[i].ID
 	}
 	return mu.RemoveRoomIDs(ids...)
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (mu *MediaUpdate) ClearPlan() *MediaUpdate {
+	mu.mutation.ClearPlan()
+	return mu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -777,6 +803,35 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.PlanCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.PlanTable,
+			Columns: []string{media.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.PlanTable,
+			Columns: []string{media.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{media.Label}
@@ -1001,6 +1056,25 @@ func (muo *MediaUpdateOne) AddRoom(r ...*Room) *MediaUpdateOne {
 	return muo.AddRoomIDs(ids...)
 }
 
+// SetPlanID sets the "plan" edge to the Plan entity by ID.
+func (muo *MediaUpdateOne) SetPlanID(id string) *MediaUpdateOne {
+	muo.mutation.SetPlanID(id)
+	return muo
+}
+
+// SetNillablePlanID sets the "plan" edge to the Plan entity by ID if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillablePlanID(id *string) *MediaUpdateOne {
+	if id != nil {
+		muo = muo.SetPlanID(*id)
+	}
+	return muo
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (muo *MediaUpdateOne) SetPlan(p *Plan) *MediaUpdateOne {
+	return muo.SetPlanID(p.ID)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (muo *MediaUpdateOne) Mutation() *MediaMutation {
 	return muo.mutation
@@ -1142,6 +1216,12 @@ func (muo *MediaUpdateOne) RemoveRoom(r ...*Room) *MediaUpdateOne {
 		ids[i] = r[i].ID
 	}
 	return muo.RemoveRoomIDs(ids...)
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (muo *MediaUpdateOne) ClearPlan() *MediaUpdateOne {
+	muo.mutation.ClearPlan()
+	return muo
 }
 
 // Where appends a list predicates to the MediaUpdate builder.
@@ -1561,6 +1641,35 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.PlanCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.PlanTable,
+			Columns: []string{media.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.PlanTable,
+			Columns: []string{media.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

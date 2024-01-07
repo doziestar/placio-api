@@ -54,6 +54,9 @@ type FAQ func(*sql.Selector)
 // FeatureRelease is the predicate function for featurerelease builders.
 type FeatureRelease func(*sql.Selector)
 
+// Fitness is the predicate function for fitness builders.
+type Fitness func(*sql.Selector)
+
 // Help is the predicate function for help builders.
 type Help func(*sql.Selector)
 
@@ -101,6 +104,9 @@ type PlaceInventoryAttribute func(*sql.Selector)
 
 // PlaceTable is the predicate function for placetable builders.
 type PlaceTable func(*sql.Selector)
+
+// Plan is the predicate function for plan builders.
+type Plan func(*sql.Selector)
 
 // Post is the predicate function for post builders.
 type Post func(*sql.Selector)

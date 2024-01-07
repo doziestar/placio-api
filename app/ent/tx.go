@@ -44,6 +44,8 @@ type Tx struct {
 	FAQ *FAQClient
 	// FeatureRelease is the client for interacting with the FeatureRelease builders.
 	FeatureRelease *FeatureReleaseClient
+	// Fitness is the client for interacting with the Fitness builders.
+	Fitness *FitnessClient
 	// Help is the client for interacting with the Help builders.
 	Help *HelpClient
 	// InventoryAttribute is the client for interacting with the InventoryAttribute builders.
@@ -76,6 +78,8 @@ type Tx struct {
 	PlaceInventoryAttribute *PlaceInventoryAttributeClient
 	// PlaceTable is the client for interacting with the PlaceTable builders.
 	PlaceTable *PlaceTableClient
+	// Plan is the client for interacting with the Plan builders.
+	Plan *PlanClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
@@ -267,6 +271,7 @@ func (tx *Tx) init() {
 	tx.Event = NewEventClient(tx.config)
 	tx.FAQ = NewFAQClient(tx.config)
 	tx.FeatureRelease = NewFeatureReleaseClient(tx.config)
+	tx.Fitness = NewFitnessClient(tx.config)
 	tx.Help = NewHelpClient(tx.config)
 	tx.InventoryAttribute = NewInventoryAttributeClient(tx.config)
 	tx.InventoryType = NewInventoryTypeClient(tx.config)
@@ -283,6 +288,7 @@ func (tx *Tx) init() {
 	tx.PlaceInventory = NewPlaceInventoryClient(tx.config)
 	tx.PlaceInventoryAttribute = NewPlaceInventoryAttributeClient(tx.config)
 	tx.PlaceTable = NewPlaceTableClient(tx.config)
+	tx.Plan = NewPlanClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
 	tx.Rating = NewRatingClient(tx.config)
 	tx.Reaction = NewReactionClient(tx.config)

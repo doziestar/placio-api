@@ -52,5 +52,8 @@ func (Media) Edges() []ent.Edge {
 			Ref("media"),
 		edge.From("room", Room.Type).
 			Ref("media"),
+		edge.From("plan", Plan.Type).
+			Ref("media").
+			Unique(),
 	}
 }

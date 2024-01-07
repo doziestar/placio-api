@@ -200,6 +200,18 @@ func (f FeatureReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FeatureReleaseMutation", m)
 }
 
+// The FitnessFunc type is an adapter to allow the use of ordinary
+// function as Fitness mutator.
+type FitnessFunc func(context.Context, *ent.FitnessMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FitnessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FitnessMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FitnessMutation", m)
+}
+
 // The HelpFunc type is an adapter to allow the use of ordinary
 // function as Help mutator.
 type HelpFunc func(context.Context, *ent.HelpMutation) (ent.Value, error)
@@ -390,6 +402,18 @@ func (f PlaceTableFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceTableMutation", m)
+}
+
+// The PlanFunc type is an adapter to allow the use of ordinary
+// function as Plan mutator.
+type PlanFunc func(context.Context, *ent.PlanMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PlanMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlanMutation", m)
 }
 
 // The PostFunc type is an adapter to allow the use of ordinary

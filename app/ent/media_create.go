@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
@@ -228,6 +229,25 @@ func (mc *MediaCreate) AddRoom(r ...*Room) *MediaCreate {
 		ids[i] = r[i].ID
 	}
 	return mc.AddRoomIDs(ids...)
+}
+
+// SetPlanID sets the "plan" edge to the Plan entity by ID.
+func (mc *MediaCreate) SetPlanID(id string) *MediaCreate {
+	mc.mutation.SetPlanID(id)
+	return mc
+}
+
+// SetNillablePlanID sets the "plan" edge to the Plan entity by ID if the given value is not nil.
+func (mc *MediaCreate) SetNillablePlanID(id *string) *MediaCreate {
+	if id != nil {
+		mc = mc.SetPlanID(*id)
+	}
+	return mc
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (mc *MediaCreate) SetPlan(p *Plan) *MediaCreate {
+	return mc.SetPlanID(p.ID)
 }
 
 // Mutation returns the MediaMutation object of the builder.
@@ -495,6 +515,23 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.PlanTable,
+			Columns: []string{media.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.plan_media = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
