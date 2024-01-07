@@ -44,6 +44,7 @@ import (
 	"placio-app/ent/subscription"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -790,6 +791,12 @@ func init() {
 	ticketoption.DefaultUpdatedAt = ticketoptionDescUpdatedAt.Default.(func() time.Time)
 	// ticketoption.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	ticketoption.UpdateDefaultUpdatedAt = ticketoptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	trainerFields := schema.Trainer{}.Fields()
+	_ = trainerFields
+	// trainerDescID is the schema descriptor for id field.
+	trainerDescID := trainerFields[0].Descriptor()
+	// trainer.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	trainer.IDValidator = trainerDescID.Validators[0].(func(string) error)
 	transactionhistoryFields := schema.TransactionHistory{}.Fields()
 	_ = transactionhistoryFields
 	// transactionhistoryDescDate is the schema descriptor for date field.

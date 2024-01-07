@@ -30,6 +30,7 @@ import (
 	"placio-app/ent/review"
 	"placio-app/ent/staff"
 	"placio-app/ent/subscription"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -86,6 +87,7 @@ type UserQuery struct {
 	withUpdatedMenus         *MenuQuery
 	withPlans                *PlanQuery
 	withSubscriptions        *SubscriptionQuery
+	withTrainers             *TrainerQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -892,6 +894,28 @@ func (uq *UserQuery) QuerySubscriptions() *SubscriptionQuery {
 	return query
 }
 
+// QueryTrainers chains the current query on the "trainers" edge.
+func (uq *UserQuery) QueryTrainers() *TrainerQuery {
+	query := (&TrainerClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(trainer.Table, trainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.TrainersTable, user.TrainersPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -1119,6 +1143,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withUpdatedMenus:         uq.withUpdatedMenus.Clone(),
 		withPlans:                uq.withPlans.Clone(),
 		withSubscriptions:        uq.withSubscriptions.Clone(),
+		withTrainers:             uq.withTrainers.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -1510,6 +1535,17 @@ func (uq *UserQuery) WithSubscriptions(opts ...func(*SubscriptionQuery)) *UserQu
 	return uq
 }
 
+// WithTrainers tells the query-builder to eager-load the nodes that are connected to
+// the "trainers" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithTrainers(opts ...func(*TrainerQuery)) *UserQuery {
+	query := (&TrainerClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withTrainers = query
+	return uq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1588,7 +1624,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [35]bool{
+		loadedTypes = [36]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -1624,6 +1660,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withUpdatedMenus != nil,
 			uq.withPlans != nil,
 			uq.withSubscriptions != nil,
+			uq.withTrainers != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1892,6 +1929,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadSubscriptions(ctx, query, nodes,
 			func(n *User) { n.Edges.Subscriptions = []*Subscription{} },
 			func(n *User, e *Subscription) { n.Edges.Subscriptions = append(n.Edges.Subscriptions, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withTrainers; query != nil {
+		if err := uq.loadTrainers(ctx, query, nodes,
+			func(n *User) { n.Edges.Trainers = []*Trainer{} },
+			func(n *User, e *Trainer) { n.Edges.Trainers = append(n.Edges.Trainers, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -3123,6 +3167,67 @@ func (uq *UserQuery) loadSubscriptions(ctx context.Context, query *SubscriptionQ
 			return fmt.Errorf(`unexpected referenced foreign-key "user_subscriptions" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadTrainers(ctx context.Context, query *TrainerQuery, nodes []*User, init func(*User), assign func(*User, *Trainer)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*User)
+	nids := make(map[string]map[*User]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(user.TrainersTable)
+		s.Join(joinT).On(s.C(trainer.FieldID), joinT.C(user.TrainersPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(user.TrainersPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(user.TrainersPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*User]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Trainer](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "trainers" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
 	}
 	return nil
 }

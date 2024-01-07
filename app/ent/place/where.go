@@ -2290,6 +2290,29 @@ func HasPlansWith(preds ...predicate.Plan) predicate.Place {
 	})
 }
 
+// HasTrainers applies the HasEdge predicate on the "trainers" edge.
+func HasTrainers() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, TrainersTable, TrainersPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTrainersWith applies the HasEdge predicate on the "trainers" edge with a given conditions (other predicates).
+func HasTrainersWith(preds ...predicate.Trainer) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newTrainersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Place) predicate.Place {
 	return predicate.Place(sql.AndPredicates(predicates...))

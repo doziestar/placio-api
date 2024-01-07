@@ -153,6 +153,9 @@ type Ticket func(*sql.Selector)
 // TicketOption is the predicate function for ticketoption builders.
 type TicketOption func(*sql.Selector)
 
+// Trainer is the predicate function for trainer builders.
+type Trainer func(*sql.Selector)
+
 // TransactionHistory is the predicate function for transactionhistory builders.
 type TransactionHistory func(*sql.Selector)
 

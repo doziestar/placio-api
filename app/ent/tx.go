@@ -110,6 +110,8 @@ type Tx struct {
 	Ticket *TicketClient
 	// TicketOption is the client for interacting with the TicketOption builders.
 	TicketOption *TicketOptionClient
+	// Trainer is the client for interacting with the Trainer builders.
+	Trainer *TrainerClient
 	// TransactionHistory is the client for interacting with the TransactionHistory builders.
 	TransactionHistory *TransactionHistoryClient
 	// User is the client for interacting with the User builders.
@@ -308,6 +310,7 @@ func (tx *Tx) init() {
 	tx.Template = NewTemplateClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)
 	tx.TicketOption = NewTicketOptionClient(tx.config)
+	tx.Trainer = NewTrainerClient(tx.config)
 	tx.TransactionHistory = NewTransactionHistoryClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserBusiness = NewUserBusinessClient(tx.config)

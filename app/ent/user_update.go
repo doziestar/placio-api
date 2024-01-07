@@ -28,6 +28,7 @@ import (
 	"placio-app/ent/review"
 	"placio-app/ent/staff"
 	"placio-app/ent/subscription"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -946,6 +947,21 @@ func (uu *UserUpdate) AddSubscriptions(s ...*Subscription) *UserUpdate {
 	return uu.AddSubscriptionIDs(ids...)
 }
 
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (uu *UserUpdate) AddTrainerIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddTrainerIDs(ids...)
+	return uu
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (uu *UserUpdate) AddTrainers(t ...*Trainer) *UserUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.AddTrainerIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1633,6 +1649,27 @@ func (uu *UserUpdate) RemoveSubscriptions(s ...*Subscription) *UserUpdate {
 		ids[i] = s[i].ID
 	}
 	return uu.RemoveSubscriptionIDs(ids...)
+}
+
+// ClearTrainers clears all "trainers" edges to the Trainer entity.
+func (uu *UserUpdate) ClearTrainers() *UserUpdate {
+	uu.mutation.ClearTrainers()
+	return uu
+}
+
+// RemoveTrainerIDs removes the "trainers" edge to Trainer entities by IDs.
+func (uu *UserUpdate) RemoveTrainerIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveTrainerIDs(ids...)
+	return uu
+}
+
+// RemoveTrainers removes "trainers" edges to Trainer entities.
+func (uu *UserUpdate) RemoveTrainers(t ...*Trainer) *UserUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.RemoveTrainerIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -3304,6 +3341,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTrainersIDs(); len(nodes) > 0 && !uu.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -4213,6 +4295,21 @@ func (uuo *UserUpdateOne) AddSubscriptions(s ...*Subscription) *UserUpdateOne {
 	return uuo.AddSubscriptionIDs(ids...)
 }
 
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (uuo *UserUpdateOne) AddTrainerIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddTrainerIDs(ids...)
+	return uuo
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (uuo *UserUpdateOne) AddTrainers(t ...*Trainer) *UserUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.AddTrainerIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -4900,6 +4997,27 @@ func (uuo *UserUpdateOne) RemoveSubscriptions(s ...*Subscription) *UserUpdateOne
 		ids[i] = s[i].ID
 	}
 	return uuo.RemoveSubscriptionIDs(ids...)
+}
+
+// ClearTrainers clears all "trainers" edges to the Trainer entity.
+func (uuo *UserUpdateOne) ClearTrainers() *UserUpdateOne {
+	uuo.mutation.ClearTrainers()
+	return uuo
+}
+
+// RemoveTrainerIDs removes the "trainers" edge to Trainer entities by IDs.
+func (uuo *UserUpdateOne) RemoveTrainerIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveTrainerIDs(ids...)
+	return uuo
+}
+
+// RemoveTrainers removes "trainers" edges to Trainer entities.
+func (uuo *UserUpdateOne) RemoveTrainers(t ...*Trainer) *UserUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.RemoveTrainerIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -6594,6 +6712,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTrainersIDs(); len(nodes) > 0 && !uuo.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

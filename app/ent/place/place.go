@@ -129,6 +129,8 @@ const (
 	EdgeRoomCategories = "room_categories"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
 	EdgePlans = "plans"
+	// EdgeTrainers holds the string denoting the trainers edge name in mutations.
+	EdgeTrainers = "trainers"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -265,6 +267,11 @@ const (
 	// PlansInverseTable is the table name for the Plan entity.
 	// It exists in this package in order to avoid circular dependency with the "plan" package.
 	PlansInverseTable = "plans"
+	// TrainersTable is the table that holds the trainers relation/edge. The primary key declared below.
+	TrainersTable = "place_trainers"
+	// TrainersInverseTable is the table name for the Trainer entity.
+	// It exists in this package in order to avoid circular dependency with the "trainer" package.
+	TrainersInverseTable = "trainers"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -346,6 +353,9 @@ var (
 	// PlansPrimaryKey and PlansColumn2 are the table columns denoting the
 	// primary key for the plans relation (M2M).
 	PlansPrimaryKey = []string{"plan_id", "place_id"}
+	// TrainersPrimaryKey and TrainersColumn2 are the table columns denoting the
+	// primary key for the trainers relation (M2M).
+	TrainersPrimaryKey = []string{"place_id", "trainer_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -830,6 +840,20 @@ func ByPlans(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPlansStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTrainersCount orders the results by trainers count.
+func ByTrainersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTrainersStep(), opts...)
+	}
+}
+
+// ByTrainers orders the results by trainers terms.
+func ByTrainers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTrainersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -982,5 +1006,12 @@ func newPlansStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlansInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+	)
+}
+func newTrainersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TrainersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, TrainersTable, TrainersPrimaryKey...),
 	)
 }

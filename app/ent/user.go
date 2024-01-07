@@ -140,9 +140,11 @@ type UserEdges struct {
 	Plans []*Plan `json:"plans,omitempty"`
 	// Subscriptions holds the value of the subscriptions edge.
 	Subscriptions []*Subscription `json:"subscriptions,omitempty"`
+	// Trainers holds the value of the trainers edge.
+	Trainers []*Trainer `json:"trainers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [35]bool
+	loadedTypes [36]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -466,6 +468,15 @@ func (e UserEdges) SubscriptionsOrErr() ([]*Subscription, error) {
 		return e.Subscriptions, nil
 	}
 	return nil, &NotLoadedError{edge: "subscriptions"}
+}
+
+// TrainersOrErr returns the Trainers value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TrainersOrErr() ([]*Trainer, error) {
+	if e.loadedTypes[35] {
+		return e.Trainers, nil
+	}
+	return nil, &NotLoadedError{edge: "trainers"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -826,6 +837,11 @@ func (u *User) QueryPlans() *PlanQuery {
 // QuerySubscriptions queries the "subscriptions" edge of the User entity.
 func (u *User) QuerySubscriptions() *SubscriptionQuery {
 	return NewUserClient(u.config).QuerySubscriptions(u)
+}
+
+// QueryTrainers queries the "trainers" edge of the User entity.
+func (u *User) QueryTrainers() *TrainerQuery {
+	return NewUserClient(u.config).QueryTrainers(u)
 }
 
 // Update returns a builder for updating this User.

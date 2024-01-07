@@ -144,9 +144,11 @@ type PlaceEdges struct {
 	RoomCategories []*RoomCategory `json:"room_categories,omitempty"`
 	// Plans holds the value of the plans edge.
 	Plans []*Plan `json:"plans,omitempty"`
+	// Trainers holds the value of the trainers edge.
+	Trainers []*Trainer `json:"trainers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [22]bool
+	loadedTypes [23]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -349,6 +351,15 @@ func (e PlaceEdges) PlansOrErr() ([]*Plan, error) {
 		return e.Plans, nil
 	}
 	return nil, &NotLoadedError{edge: "plans"}
+}
+
+// TrainersOrErr returns the Trainers value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) TrainersOrErr() ([]*Trainer, error) {
+	if e.loadedTypes[22] {
+		return e.Trainers, nil
+	}
+	return nil, &NotLoadedError{edge: "trainers"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -762,6 +773,11 @@ func (pl *Place) QueryRoomCategories() *RoomCategoryQuery {
 // QueryPlans queries the "plans" edge of the Place entity.
 func (pl *Place) QueryPlans() *PlanQuery {
 	return NewPlaceClient(pl.config).QueryPlans(pl)
+}
+
+// QueryTrainers queries the "trainers" edge of the Place entity.
+func (pl *Place) QueryTrainers() *TrainerQuery {
+	return NewPlaceClient(pl.config).QueryTrainers(pl)
 }
 
 // Update returns a builder for updating this Place.

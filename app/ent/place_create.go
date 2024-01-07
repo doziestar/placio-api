@@ -26,6 +26,7 @@ import (
 	"placio-app/ent/room"
 	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
+	"placio-app/ent/trainer"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userlikeplace"
@@ -797,6 +798,21 @@ func (pc *PlaceCreate) AddPlans(p ...*Plan) *PlaceCreate {
 	return pc.AddPlanIDs(ids...)
 }
 
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (pc *PlaceCreate) AddTrainerIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddTrainerIDs(ids...)
+	return pc
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (pc *PlaceCreate) AddTrainers(t ...*Trainer) *PlaceCreate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pc.AddTrainerIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pc *PlaceCreate) Mutation() *PlaceMutation {
 	return pc.mutation
@@ -1432,6 +1448,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.TrainersTable,
+			Columns: place.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

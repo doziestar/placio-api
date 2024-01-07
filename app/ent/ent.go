@@ -55,6 +55,7 @@ import (
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -179,6 +180,7 @@ func checkColumn(table, column string) error {
 			template.Table:                template.ValidColumn,
 			ticket.Table:                  ticket.ValidColumn,
 			ticketoption.Table:            ticketoption.ValidColumn,
+			trainer.Table:                 trainer.ValidColumn,
 			transactionhistory.Table:      transactionhistory.ValidColumn,
 			user.Table:                    user.ValidColumn,
 			userbusiness.Table:            userbusiness.ValidColumn,

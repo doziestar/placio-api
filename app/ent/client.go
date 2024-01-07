@@ -60,6 +60,7 @@ import (
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -179,6 +180,8 @@ type Client struct {
 	Ticket *TicketClient
 	// TicketOption is the client for interacting with the TicketOption builders.
 	TicketOption *TicketOptionClient
+	// Trainer is the client for interacting with the Trainer builders.
+	Trainer *TrainerClient
 	// TransactionHistory is the client for interacting with the TransactionHistory builders.
 	TransactionHistory *TransactionHistoryClient
 	// User is the client for interacting with the User builders.
@@ -257,6 +260,7 @@ func (c *Client) init() {
 	c.Template = NewTemplateClient(c.config)
 	c.Ticket = NewTicketClient(c.config)
 	c.TicketOption = NewTicketOptionClient(c.config)
+	c.Trainer = NewTrainerClient(c.config)
 	c.TransactionHistory = NewTransactionHistoryClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserBusiness = NewUserBusinessClient(c.config)
@@ -407,6 +411,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
 		TicketOption:            NewTicketOptionClient(cfg),
+		Trainer:                 NewTrainerClient(cfg),
 		TransactionHistory:      NewTransactionHistoryClient(cfg),
 		User:                    NewUserClient(cfg),
 		UserBusiness:            NewUserBusinessClient(cfg),
@@ -484,6 +489,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
 		TicketOption:            NewTicketOptionClient(cfg),
+		Trainer:                 NewTrainerClient(cfg),
 		TransactionHistory:      NewTransactionHistoryClient(cfg),
 		User:                    NewUserClient(cfg),
 		UserBusiness:            NewUserBusinessClient(cfg),
@@ -531,7 +537,7 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PlaceInventoryAttribute, c.PlaceTable, c.Plan, c.Post, c.Price, c.Rating,
 		c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
 		c.RoomCategory, c.Staff, c.Subscription, c.Template, c.Ticket, c.TicketOption,
-		c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.Trainer, c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
 		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
 		c.Website,
 	} {
@@ -552,7 +558,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PlaceInventoryAttribute, c.PlaceTable, c.Plan, c.Post, c.Price, c.Rating,
 		c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
 		c.RoomCategory, c.Staff, c.Subscription, c.Template, c.Ticket, c.TicketOption,
-		c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.Trainer, c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
 		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
 		c.Website,
 	} {
@@ -661,6 +667,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Ticket.mutate(ctx, m)
 	case *TicketOptionMutation:
 		return c.TicketOption.mutate(ctx, m)
+	case *TrainerMutation:
+		return c.Trainer.mutate(ctx, m)
 	case *TransactionHistoryMutation:
 		return c.TransactionHistory.mutate(ctx, m)
 	case *UserMutation:
@@ -6619,6 +6627,22 @@ func (c *PlaceClient) QueryPlans(pl *Place) *PlanQuery {
 	return query
 }
 
+// QueryTrainers queries the trainers edge of a Place.
+func (c *PlaceClient) QueryTrainers(pl *Place) *TrainerQuery {
+	query := (&TrainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(trainer.Table, trainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, place.TrainersTable, place.TrainersPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
 	hooks := c.hooks.Place
@@ -10326,6 +10350,171 @@ func (c *TicketOptionClient) mutate(ctx context.Context, m *TicketOptionMutation
 	}
 }
 
+// TrainerClient is a client for the Trainer schema.
+type TrainerClient struct {
+	config
+}
+
+// NewTrainerClient returns a client for the Trainer from the given config.
+func NewTrainerClient(c config) *TrainerClient {
+	return &TrainerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `trainer.Hooks(f(g(h())))`.
+func (c *TrainerClient) Use(hooks ...Hook) {
+	c.hooks.Trainer = append(c.hooks.Trainer, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `trainer.Intercept(f(g(h())))`.
+func (c *TrainerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Trainer = append(c.inters.Trainer, interceptors...)
+}
+
+// Create returns a builder for creating a Trainer entity.
+func (c *TrainerClient) Create() *TrainerCreate {
+	mutation := newTrainerMutation(c.config, OpCreate)
+	return &TrainerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Trainer entities.
+func (c *TrainerClient) CreateBulk(builders ...*TrainerCreate) *TrainerCreateBulk {
+	return &TrainerCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TrainerClient) MapCreateBulk(slice any, setFunc func(*TrainerCreate, int)) *TrainerCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TrainerCreateBulk{err: fmt.Errorf("calling to TrainerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TrainerCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TrainerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Trainer.
+func (c *TrainerClient) Update() *TrainerUpdate {
+	mutation := newTrainerMutation(c.config, OpUpdate)
+	return &TrainerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TrainerClient) UpdateOne(t *Trainer) *TrainerUpdateOne {
+	mutation := newTrainerMutation(c.config, OpUpdateOne, withTrainer(t))
+	return &TrainerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TrainerClient) UpdateOneID(id string) *TrainerUpdateOne {
+	mutation := newTrainerMutation(c.config, OpUpdateOne, withTrainerID(id))
+	return &TrainerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Trainer.
+func (c *TrainerClient) Delete() *TrainerDelete {
+	mutation := newTrainerMutation(c.config, OpDelete)
+	return &TrainerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TrainerClient) DeleteOne(t *Trainer) *TrainerDeleteOne {
+	return c.DeleteOneID(t.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TrainerClient) DeleteOneID(id string) *TrainerDeleteOne {
+	builder := c.Delete().Where(trainer.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TrainerDeleteOne{builder}
+}
+
+// Query returns a query builder for Trainer.
+func (c *TrainerClient) Query() *TrainerQuery {
+	return &TrainerQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTrainer},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Trainer entity by its id.
+func (c *TrainerClient) Get(ctx context.Context, id string) (*Trainer, error) {
+	return c.Query().Where(trainer.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TrainerClient) GetX(ctx context.Context, id string) *Trainer {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Trainer.
+func (c *TrainerClient) QueryUser(t *Trainer) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(trainer.Table, trainer.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, trainer.UserTable, trainer.UserPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlace queries the place edge of a Trainer.
+func (c *TrainerClient) QueryPlace(t *Trainer) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(trainer.Table, trainer.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, trainer.PlaceTable, trainer.PlacePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TrainerClient) Hooks() []Hook {
+	return c.hooks.Trainer
+}
+
+// Interceptors returns the client interceptors.
+func (c *TrainerClient) Interceptors() []Interceptor {
+	return c.inters.Trainer
+}
+
+func (c *TrainerClient) mutate(ctx context.Context, m *TrainerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TrainerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TrainerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TrainerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TrainerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Trainer mutation op: %q", m.Op())
+	}
+}
+
 // TransactionHistoryClient is a client for the TransactionHistory schema.
 type TransactionHistoryClient struct {
 	config
@@ -11152,6 +11341,22 @@ func (c *UserClient) QuerySubscriptions(u *User) *SubscriptionQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(subscription.Table, subscription.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.SubscriptionsTable, user.SubscriptionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTrainers queries the trainers edge of a User.
+func (c *UserClient) QueryTrainers(u *User) *TrainerQuery {
+	query := (&TrainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(trainer.Table, trainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.TrainersTable, user.TrainersPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -12366,8 +12571,8 @@ type (
 		Notification, Order, OrderItem, Payment, Permission, Place, PlaceInventory,
 		PlaceInventoryAttribute, PlaceTable, Plan, Post, Price, Rating, Reaction,
 		Reservation, ReservationBlock, Resourse, Review, Room, RoomCategory, Staff,
-		Subscription, Template, Ticket, TicketOption, TransactionHistory, User,
-		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		Subscription, Template, Ticket, TicketOption, Trainer, TransactionHistory,
+		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
 		UserFollowUser, UserLikePlace, Website []ent.Hook
 	}
 	inters struct {
@@ -12378,8 +12583,8 @@ type (
 		Notification, Order, OrderItem, Payment, Permission, Place, PlaceInventory,
 		PlaceInventoryAttribute, PlaceTable, Plan, Post, Price, Rating, Reaction,
 		Reservation, ReservationBlock, Resourse, Review, Room, RoomCategory, Staff,
-		Subscription, Template, Ticket, TicketOption, TransactionHistory, User,
-		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		Subscription, Template, Ticket, TicketOption, Trainer, TransactionHistory,
+		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
 		UserFollowUser, UserLikePlace, Website []ent.Interceptor
 	}
 )

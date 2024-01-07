@@ -1537,6 +1537,19 @@ var (
 			},
 		},
 	}
+	// TrainersColumns holds the columns for the "trainers" table.
+	TrainersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString},
+		{Name: "phone", Type: field.TypeString},
+	}
+	// TrainersTable holds the schema information for the "trainers" table.
+	TrainersTable = &schema.Table{
+		Name:       "trainers",
+		Columns:    TrainersColumns,
+		PrimaryKey: []*schema.Column{TrainersColumns[0]},
+	}
 	// TransactionHistoriesColumns holds the columns for the "transaction_histories" table.
 	TransactionHistoriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -2294,6 +2307,31 @@ var (
 			},
 		},
 	}
+	// PlaceTrainersColumns holds the columns for the "place_trainers" table.
+	PlaceTrainersColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "trainer_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceTrainersTable holds the schema information for the "place_trainers" table.
+	PlaceTrainersTable = &schema.Table{
+		Name:       "place_trainers",
+		Columns:    PlaceTrainersColumns,
+		PrimaryKey: []*schema.Column{PlaceTrainersColumns[0], PlaceTrainersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_trainers_place_id",
+				Columns:    []*schema.Column{PlaceTrainersColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_trainers_trainer_id",
+				Columns:    []*schema.Column{PlaceTrainersColumns[1]},
+				RefColumns: []*schema.Column{TrainersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PlaceInventoryMediaColumns holds the columns for the "place_inventory_media" table.
 	PlaceInventoryMediaColumns = []*schema.Column{
 		{Name: "place_inventory_id", Type: field.TypeString, Size: 36},
@@ -2694,6 +2732,31 @@ var (
 			},
 		},
 	}
+	// UserTrainersColumns holds the columns for the "user_trainers" table.
+	UserTrainersColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "trainer_id", Type: field.TypeString, Size: 36},
+	}
+	// UserTrainersTable holds the schema information for the "user_trainers" table.
+	UserTrainersTable = &schema.Table{
+		Name:       "user_trainers",
+		Columns:    UserTrainersColumns,
+		PrimaryKey: []*schema.Column{UserTrainersColumns[0], UserTrainersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_trainers_user_id",
+				Columns:    []*schema.Column{UserTrainersColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_trainers_trainer_id",
+				Columns:    []*schema.Column{UserTrainersColumns[1]},
+				RefColumns: []*schema.Column{TrainersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountSettingsTable,
@@ -2745,6 +2808,7 @@ var (
 		TemplatesTable,
 		TicketsTable,
 		TicketOptionsTable,
+		TrainersTable,
 		TransactionHistoriesTable,
 		UsersTable,
 		UserBusinessesTable,
@@ -2772,6 +2836,7 @@ var (
 		PlaceNotificationsTable,
 		PlaceStaffsTable,
 		PlaceRoomCategoriesTable,
+		PlaceTrainersTable,
 		PlaceInventoryMediaTable,
 		PlaceTableOrdersTable,
 		PlanUsersTable,
@@ -2788,6 +2853,7 @@ var (
 		UserNotificationsTable,
 		UserCreatedMenusTable,
 		UserUpdatedMenusTable,
+		UserTrainersTable,
 	}
 )
 
@@ -2933,6 +2999,8 @@ func init() {
 	PlaceStaffsTable.ForeignKeys[1].RefTable = StaffsTable
 	PlaceRoomCategoriesTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceRoomCategoriesTable.ForeignKeys[1].RefTable = RoomCategoriesTable
+	PlaceTrainersTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceTrainersTable.ForeignKeys[1].RefTable = TrainersTable
 	PlaceInventoryMediaTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	PlaceInventoryMediaTable.ForeignKeys[1].RefTable = MediaTable
 	PlaceTableOrdersTable.ForeignKeys[0].RefTable = PlaceTablesTable
@@ -2965,4 +3033,6 @@ func init() {
 	UserCreatedMenusTable.ForeignKeys[1].RefTable = MenusTable
 	UserUpdatedMenusTable.ForeignKeys[0].RefTable = UsersTable
 	UserUpdatedMenusTable.ForeignKeys[1].RefTable = MenusTable
+	UserTrainersTable.ForeignKeys[0].RefTable = UsersTable
+	UserTrainersTable.ForeignKeys[1].RefTable = TrainersTable
 }

@@ -28,6 +28,7 @@ import (
 	"placio-app/ent/room"
 	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
+	"placio-app/ent/trainer"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userlikeplace"
@@ -66,6 +67,7 @@ type PlaceQuery struct {
 	withStaffs              *StaffQuery
 	withRoomCategories      *RoomCategoryQuery
 	withPlans               *PlanQuery
+	withTrainers            *TrainerQuery
 	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -587,6 +589,28 @@ func (pq *PlaceQuery) QueryPlans() *PlanQuery {
 	return query
 }
 
+// QueryTrainers chains the current query on the "trainers" edge.
+func (pq *PlaceQuery) QueryTrainers() *TrainerQuery {
+	query := (&TrainerClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, selector),
+			sqlgraph.To(trainer.Table, trainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, place.TrainersTable, place.TrainersPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Place entity from the query.
 // Returns a *NotFoundError when no Place was found.
 func (pq *PlaceQuery) First(ctx context.Context) (*Place, error) {
@@ -801,6 +825,7 @@ func (pq *PlaceQuery) Clone() *PlaceQuery {
 		withStaffs:              pq.withStaffs.Clone(),
 		withRoomCategories:      pq.withRoomCategories.Clone(),
 		withPlans:               pq.withPlans.Clone(),
+		withTrainers:            pq.withTrainers.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -1049,6 +1074,17 @@ func (pq *PlaceQuery) WithPlans(opts ...func(*PlanQuery)) *PlaceQuery {
 	return pq
 }
 
+// WithTrainers tells the query-builder to eager-load the nodes that are connected to
+// the "trainers" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlaceQuery) WithTrainers(opts ...func(*TrainerQuery)) *PlaceQuery {
+	query := (&TrainerClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withTrainers = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1128,7 +1164,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		nodes       = []*Place{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [22]bool{
+		loadedTypes = [23]bool{
 			pq.withBusiness != nil,
 			pq.withUsers != nil,
 			pq.withReviews != nil,
@@ -1151,6 +1187,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 			pq.withStaffs != nil,
 			pq.withRoomCategories != nil,
 			pq.withPlans != nil,
+			pq.withTrainers != nil,
 		}
 	)
 	if pq.withBusiness != nil {
@@ -1329,6 +1366,13 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		if err := pq.loadPlans(ctx, query, nodes,
 			func(n *Place) { n.Edges.Plans = []*Plan{} },
 			func(n *Place, e *Plan) { n.Edges.Plans = append(n.Edges.Plans, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withTrainers; query != nil {
+		if err := pq.loadTrainers(ctx, query, nodes,
+			func(n *Place) { n.Edges.Trainers = []*Trainer{} },
+			func(n *Place, e *Trainer) { n.Edges.Trainers = append(n.Edges.Trainers, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -2311,6 +2355,67 @@ func (pq *PlaceQuery) loadPlans(ctx context.Context, query *PlanQuery, nodes []*
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "plans" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (pq *PlaceQuery) loadTrainers(ctx context.Context, query *TrainerQuery, nodes []*Place, init func(*Place), assign func(*Place, *Trainer)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Place)
+	nids := make(map[string]map[*Place]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(place.TrainersTable)
+		s.Join(joinT).On(s.C(trainer.FieldID), joinT.C(place.TrainersPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(place.TrainersPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(place.TrainersPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Place]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Trainer](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "trainers" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

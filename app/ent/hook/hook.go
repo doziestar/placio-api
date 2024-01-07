@@ -596,6 +596,18 @@ func (f TicketOptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TicketOptionMutation", m)
 }
 
+// The TrainerFunc type is an adapter to allow the use of ordinary
+// function as Trainer mutator.
+type TrainerFunc func(context.Context, *ent.TrainerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TrainerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TrainerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TrainerMutation", m)
+}
+
 // The TransactionHistoryFunc type is an adapter to allow the use of ordinary
 // function as TransactionHistory mutator.
 type TransactionHistoryFunc func(context.Context, *ent.TransactionHistoryMutation) (ent.Value, error)
