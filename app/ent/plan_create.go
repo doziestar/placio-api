@@ -9,6 +9,8 @@ import (
 	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/plan"
+	"placio-app/ent/price"
+	"placio-app/ent/subscription"
 	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -134,6 +136,36 @@ func (pc *PlanCreate) AddMedia(m ...*Media) *PlanCreate {
 		ids[i] = m[i].ID
 	}
 	return pc.AddMediumIDs(ids...)
+}
+
+// AddPriceIDs adds the "prices" edge to the Price entity by IDs.
+func (pc *PlanCreate) AddPriceIDs(ids ...string) *PlanCreate {
+	pc.mutation.AddPriceIDs(ids...)
+	return pc
+}
+
+// AddPrices adds the "prices" edges to the Price entity.
+func (pc *PlanCreate) AddPrices(p ...*Price) *PlanCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddPriceIDs(ids...)
+}
+
+// AddSubscriptionIDs adds the "subscriptions" edge to the Subscription entity by IDs.
+func (pc *PlanCreate) AddSubscriptionIDs(ids ...string) *PlanCreate {
+	pc.mutation.AddSubscriptionIDs(ids...)
+	return pc
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the Subscription entity.
+func (pc *PlanCreate) AddSubscriptions(s ...*Subscription) *PlanCreate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return pc.AddSubscriptionIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -283,6 +315,38 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.PricesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.PricesTable,
+			Columns: []string{plan.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(price.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.SubscriptionsTable,
+			Columns: []string{plan.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

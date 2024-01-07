@@ -82,6 +82,8 @@ type Tx struct {
 	Plan *PlanClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
+	// Price is the client for interacting with the Price builders.
+	Price *PriceClient
 	// Rating is the client for interacting with the Rating builders.
 	Rating *RatingClient
 	// Reaction is the client for interacting with the Reaction builders.
@@ -100,6 +102,8 @@ type Tx struct {
 	RoomCategory *RoomCategoryClient
 	// Staff is the client for interacting with the Staff builders.
 	Staff *StaffClient
+	// Subscription is the client for interacting with the Subscription builders.
+	Subscription *SubscriptionClient
 	// Template is the client for interacting with the Template builders.
 	Template *TemplateClient
 	// Ticket is the client for interacting with the Ticket builders.
@@ -290,6 +294,7 @@ func (tx *Tx) init() {
 	tx.PlaceTable = NewPlaceTableClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
+	tx.Price = NewPriceClient(tx.config)
 	tx.Rating = NewRatingClient(tx.config)
 	tx.Reaction = NewReactionClient(tx.config)
 	tx.Reservation = NewReservationClient(tx.config)
@@ -299,6 +304,7 @@ func (tx *Tx) init() {
 	tx.Room = NewRoomClient(tx.config)
 	tx.RoomCategory = NewRoomCategoryClient(tx.config)
 	tx.Staff = NewStaffClient(tx.config)
+	tx.Subscription = NewSubscriptionClient(tx.config)
 	tx.Template = NewTemplateClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)
 	tx.TicketOption = NewTicketOptionClient(tx.config)

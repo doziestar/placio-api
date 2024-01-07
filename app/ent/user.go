@@ -138,9 +138,11 @@ type UserEdges struct {
 	UpdatedMenus []*Menu `json:"updated_menus,omitempty"`
 	// Plans holds the value of the plans edge.
 	Plans []*Plan `json:"plans,omitempty"`
+	// Subscriptions holds the value of the subscriptions edge.
+	Subscriptions []*Subscription `json:"subscriptions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [34]bool
+	loadedTypes [35]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -455,6 +457,15 @@ func (e UserEdges) PlansOrErr() ([]*Plan, error) {
 		return e.Plans, nil
 	}
 	return nil, &NotLoadedError{edge: "plans"}
+}
+
+// SubscriptionsOrErr returns the Subscriptions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) SubscriptionsOrErr() ([]*Subscription, error) {
+	if e.loadedTypes[34] {
+		return e.Subscriptions, nil
+	}
+	return nil, &NotLoadedError{edge: "subscriptions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -810,6 +821,11 @@ func (u *User) QueryUpdatedMenus() *MenuQuery {
 // QueryPlans queries the "plans" edge of the User entity.
 func (u *User) QueryPlans() *PlanQuery {
 	return NewUserClient(u.config).QueryPlans(u)
+}
+
+// QuerySubscriptions queries the "subscriptions" edge of the User entity.
+func (u *User) QuerySubscriptions() *SubscriptionQuery {
+	return NewUserClient(u.config).QuerySubscriptions(u)
 }
 
 // Update returns a builder for updating this User.

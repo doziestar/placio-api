@@ -31,5 +31,7 @@ func (Plan) Edges() []ent.Edge {
 		edge.To("businesses", Business.Type),
 		edge.To("places", Place.Type),
 		edge.To("media", Media.Type),
+		edge.To("prices", Price.Type),
+		edge.To("subscriptions", Subscription.Type),
 	}
 }

@@ -11,6 +11,8 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/plan"
 	"placio-app/ent/predicate"
+	"placio-app/ent/price"
+	"placio-app/ent/subscription"
 	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
@@ -170,6 +172,36 @@ func (pu *PlanUpdate) AddMedia(m ...*Media) *PlanUpdate {
 	return pu.AddMediumIDs(ids...)
 }
 
+// AddPriceIDs adds the "prices" edge to the Price entity by IDs.
+func (pu *PlanUpdate) AddPriceIDs(ids ...string) *PlanUpdate {
+	pu.mutation.AddPriceIDs(ids...)
+	return pu
+}
+
+// AddPrices adds the "prices" edges to the Price entity.
+func (pu *PlanUpdate) AddPrices(p ...*Price) *PlanUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddPriceIDs(ids...)
+}
+
+// AddSubscriptionIDs adds the "subscriptions" edge to the Subscription entity by IDs.
+func (pu *PlanUpdate) AddSubscriptionIDs(ids ...string) *PlanUpdate {
+	pu.mutation.AddSubscriptionIDs(ids...)
+	return pu
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the Subscription entity.
+func (pu *PlanUpdate) AddSubscriptions(s ...*Subscription) *PlanUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return pu.AddSubscriptionIDs(ids...)
+}
+
 // Mutation returns the PlanMutation object of the builder.
 func (pu *PlanUpdate) Mutation() *PlanMutation {
 	return pu.mutation
@@ -257,6 +289,48 @@ func (pu *PlanUpdate) RemoveMedia(m ...*Media) *PlanUpdate {
 		ids[i] = m[i].ID
 	}
 	return pu.RemoveMediumIDs(ids...)
+}
+
+// ClearPrices clears all "prices" edges to the Price entity.
+func (pu *PlanUpdate) ClearPrices() *PlanUpdate {
+	pu.mutation.ClearPrices()
+	return pu
+}
+
+// RemovePriceIDs removes the "prices" edge to Price entities by IDs.
+func (pu *PlanUpdate) RemovePriceIDs(ids ...string) *PlanUpdate {
+	pu.mutation.RemovePriceIDs(ids...)
+	return pu
+}
+
+// RemovePrices removes "prices" edges to Price entities.
+func (pu *PlanUpdate) RemovePrices(p ...*Price) *PlanUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemovePriceIDs(ids...)
+}
+
+// ClearSubscriptions clears all "subscriptions" edges to the Subscription entity.
+func (pu *PlanUpdate) ClearSubscriptions() *PlanUpdate {
+	pu.mutation.ClearSubscriptions()
+	return pu
+}
+
+// RemoveSubscriptionIDs removes the "subscriptions" edge to Subscription entities by IDs.
+func (pu *PlanUpdate) RemoveSubscriptionIDs(ids ...string) *PlanUpdate {
+	pu.mutation.RemoveSubscriptionIDs(ids...)
+	return pu
+}
+
+// RemoveSubscriptions removes "subscriptions" edges to Subscription entities.
+func (pu *PlanUpdate) RemoveSubscriptions(s ...*Subscription) *PlanUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return pu.RemoveSubscriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -504,6 +578,96 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.PricesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.PricesTable,
+			Columns: []string{plan.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(price.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedPricesIDs(); len(nodes) > 0 && !pu.mutation.PricesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.PricesTable,
+			Columns: []string{plan.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(price.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.PricesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.PricesTable,
+			Columns: []string{plan.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(price.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.SubscriptionsTable,
+			Columns: []string{plan.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedSubscriptionsIDs(); len(nodes) > 0 && !pu.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.SubscriptionsTable,
+			Columns: []string{plan.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.SubscriptionsTable,
+			Columns: []string{plan.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{plan.Label}
@@ -662,6 +826,36 @@ func (puo *PlanUpdateOne) AddMedia(m ...*Media) *PlanUpdateOne {
 	return puo.AddMediumIDs(ids...)
 }
 
+// AddPriceIDs adds the "prices" edge to the Price entity by IDs.
+func (puo *PlanUpdateOne) AddPriceIDs(ids ...string) *PlanUpdateOne {
+	puo.mutation.AddPriceIDs(ids...)
+	return puo
+}
+
+// AddPrices adds the "prices" edges to the Price entity.
+func (puo *PlanUpdateOne) AddPrices(p ...*Price) *PlanUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddPriceIDs(ids...)
+}
+
+// AddSubscriptionIDs adds the "subscriptions" edge to the Subscription entity by IDs.
+func (puo *PlanUpdateOne) AddSubscriptionIDs(ids ...string) *PlanUpdateOne {
+	puo.mutation.AddSubscriptionIDs(ids...)
+	return puo
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the Subscription entity.
+func (puo *PlanUpdateOne) AddSubscriptions(s ...*Subscription) *PlanUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return puo.AddSubscriptionIDs(ids...)
+}
+
 // Mutation returns the PlanMutation object of the builder.
 func (puo *PlanUpdateOne) Mutation() *PlanMutation {
 	return puo.mutation
@@ -749,6 +943,48 @@ func (puo *PlanUpdateOne) RemoveMedia(m ...*Media) *PlanUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return puo.RemoveMediumIDs(ids...)
+}
+
+// ClearPrices clears all "prices" edges to the Price entity.
+func (puo *PlanUpdateOne) ClearPrices() *PlanUpdateOne {
+	puo.mutation.ClearPrices()
+	return puo
+}
+
+// RemovePriceIDs removes the "prices" edge to Price entities by IDs.
+func (puo *PlanUpdateOne) RemovePriceIDs(ids ...string) *PlanUpdateOne {
+	puo.mutation.RemovePriceIDs(ids...)
+	return puo
+}
+
+// RemovePrices removes "prices" edges to Price entities.
+func (puo *PlanUpdateOne) RemovePrices(p ...*Price) *PlanUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemovePriceIDs(ids...)
+}
+
+// ClearSubscriptions clears all "subscriptions" edges to the Subscription entity.
+func (puo *PlanUpdateOne) ClearSubscriptions() *PlanUpdateOne {
+	puo.mutation.ClearSubscriptions()
+	return puo
+}
+
+// RemoveSubscriptionIDs removes the "subscriptions" edge to Subscription entities by IDs.
+func (puo *PlanUpdateOne) RemoveSubscriptionIDs(ids ...string) *PlanUpdateOne {
+	puo.mutation.RemoveSubscriptionIDs(ids...)
+	return puo
+}
+
+// RemoveSubscriptions removes "subscriptions" edges to Subscription entities.
+func (puo *PlanUpdateOne) RemoveSubscriptions(s ...*Subscription) *PlanUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return puo.RemoveSubscriptionIDs(ids...)
 }
 
 // Where appends a list predicates to the PlanUpdate builder.
@@ -1019,6 +1255,96 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.PricesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.PricesTable,
+			Columns: []string{plan.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(price.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedPricesIDs(); len(nodes) > 0 && !puo.mutation.PricesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.PricesTable,
+			Columns: []string{plan.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(price.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.PricesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.PricesTable,
+			Columns: []string{plan.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(price.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.SubscriptionsTable,
+			Columns: []string{plan.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedSubscriptionsIDs(); len(nodes) > 0 && !puo.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.SubscriptionsTable,
+			Columns: []string{plan.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.SubscriptionsTable,
+			Columns: []string{plan.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -111,6 +111,9 @@ type Plan func(*sql.Selector)
 // Post is the predicate function for post builders.
 type Post func(*sql.Selector)
 
+// Price is the predicate function for price builders.
+type Price func(*sql.Selector)
+
 // Rating is the predicate function for rating builders.
 type Rating func(*sql.Selector)
 
@@ -137,6 +140,9 @@ type RoomCategory func(*sql.Selector)
 
 // Staff is the predicate function for staff builders.
 type Staff func(*sql.Selector)
+
+// Subscription is the predicate function for subscription builders.
+type Subscription func(*sql.Selector)
 
 // Template is the predicate function for template builders.
 type Template func(*sql.Selector)

@@ -1157,6 +1157,31 @@ var (
 			},
 		},
 	}
+	// PricesColumns holds the columns for the "prices" table.
+	PricesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "price", Type: field.TypeFloat64},
+		{Name: "currency", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"session", "day", "week", "month", "year"}},
+		{Name: "duration", Type: field.TypeInt, Nullable: true},
+		{Name: "session", Type: field.TypeInt, Nullable: true},
+		{Name: "plan_prices", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// PricesTable holds the schema information for the "prices" table.
+	PricesTable = &schema.Table{
+		Name:       "prices",
+		Columns:    PricesColumns,
+		PrimaryKey: []*schema.Column{PricesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "prices_plans_prices",
+				Columns:    []*schema.Column{PricesColumns[7]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// RatingsColumns holds the columns for the "ratings" table.
 	RatingsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
@@ -1409,6 +1434,42 @@ var (
 			{
 				Symbol:     "staffs_users_staffs",
 				Columns:    []*schema.Column{StaffsColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// SubscriptionsColumns holds the columns for the "subscriptions" table.
+	SubscriptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "start_date", Type: field.TypeTime},
+		{Name: "end_date", Type: field.TypeTime},
+		{Name: "flutterwave_subscription_id", Type: field.TypeString, Nullable: true},
+		{Name: "plan_subscriptions", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "price_subscriptions", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_subscriptions", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// SubscriptionsTable holds the schema information for the "subscriptions" table.
+	SubscriptionsTable = &schema.Table{
+		Name:       "subscriptions",
+		Columns:    SubscriptionsColumns,
+		PrimaryKey: []*schema.Column{SubscriptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "subscriptions_plans_subscriptions",
+				Columns:    []*schema.Column{SubscriptionsColumns[4]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscriptions_prices_subscriptions",
+				Columns:    []*schema.Column{SubscriptionsColumns[5]},
+				RefColumns: []*schema.Column{PricesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscriptions_users_subscriptions",
+				Columns:    []*schema.Column{SubscriptionsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2670,6 +2731,7 @@ var (
 		PlaceTablesTable,
 		PlansTable,
 		PostsTable,
+		PricesTable,
 		RatingsTable,
 		ReactionsTable,
 		ReservationsTable,
@@ -2679,6 +2741,7 @@ var (
 		RoomsTable,
 		RoomCategoriesTable,
 		StaffsTable,
+		SubscriptionsTable,
 		TemplatesTable,
 		TicketsTable,
 		TicketOptionsTable,
@@ -2792,6 +2855,7 @@ func init() {
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = PostsTable
 	PostsTable.ForeignKeys[2].RefTable = UsersTable
+	PricesTable.ForeignKeys[0].RefTable = PlansTable
 	RatingsTable.ForeignKeys[0].RefTable = BusinessesTable
 	RatingsTable.ForeignKeys[1].RefTable = EventsTable
 	RatingsTable.ForeignKeys[2].RefTable = PlacesTable
@@ -2810,6 +2874,9 @@ func init() {
 	ReviewsTable.ForeignKeys[3].RefTable = EventsTable
 	ReviewsTable.ForeignKeys[4].RefTable = UsersTable
 	StaffsTable.ForeignKeys[0].RefTable = UsersTable
+	SubscriptionsTable.ForeignKeys[0].RefTable = PlansTable
+	SubscriptionsTable.ForeignKeys[1].RefTable = PricesTable
+	SubscriptionsTable.ForeignKeys[2].RefTable = UsersTable
 	TicketsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[1].RefTable = TicketsTable

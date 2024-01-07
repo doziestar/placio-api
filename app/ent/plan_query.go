@@ -12,6 +12,8 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/plan"
 	"placio-app/ent/predicate"
+	"placio-app/ent/price"
+	"placio-app/ent/subscription"
 	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
@@ -22,14 +24,16 @@ import (
 // PlanQuery is the builder for querying Plan entities.
 type PlanQuery struct {
 	config
-	ctx            *QueryContext
-	order          []plan.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.Plan
-	withUsers      *UserQuery
-	withBusinesses *BusinessQuery
-	withPlaces     *PlaceQuery
-	withMedia      *MediaQuery
+	ctx               *QueryContext
+	order             []plan.OrderOption
+	inters            []Interceptor
+	predicates        []predicate.Plan
+	withUsers         *UserQuery
+	withBusinesses    *BusinessQuery
+	withPlaces        *PlaceQuery
+	withMedia         *MediaQuery
+	withPrices        *PriceQuery
+	withSubscriptions *SubscriptionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -147,6 +151,50 @@ func (pq *PlanQuery) QueryMedia() *MediaQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(media.Table, media.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, plan.MediaTable, plan.MediaColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPrices chains the current query on the "prices" edge.
+func (pq *PlanQuery) QueryPrices() *PriceQuery {
+	query := (&PriceClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, selector),
+			sqlgraph.To(price.Table, price.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.PricesTable, plan.PricesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscriptions chains the current query on the "subscriptions" edge.
+func (pq *PlanQuery) QuerySubscriptions() *SubscriptionQuery {
+	query := (&SubscriptionClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, selector),
+			sqlgraph.To(subscription.Table, subscription.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.SubscriptionsTable, plan.SubscriptionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -341,15 +389,17 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		return nil
 	}
 	return &PlanQuery{
-		config:         pq.config,
-		ctx:            pq.ctx.Clone(),
-		order:          append([]plan.OrderOption{}, pq.order...),
-		inters:         append([]Interceptor{}, pq.inters...),
-		predicates:     append([]predicate.Plan{}, pq.predicates...),
-		withUsers:      pq.withUsers.Clone(),
-		withBusinesses: pq.withBusinesses.Clone(),
-		withPlaces:     pq.withPlaces.Clone(),
-		withMedia:      pq.withMedia.Clone(),
+		config:            pq.config,
+		ctx:               pq.ctx.Clone(),
+		order:             append([]plan.OrderOption{}, pq.order...),
+		inters:            append([]Interceptor{}, pq.inters...),
+		predicates:        append([]predicate.Plan{}, pq.predicates...),
+		withUsers:         pq.withUsers.Clone(),
+		withBusinesses:    pq.withBusinesses.Clone(),
+		withPlaces:        pq.withPlaces.Clone(),
+		withMedia:         pq.withMedia.Clone(),
+		withPrices:        pq.withPrices.Clone(),
+		withSubscriptions: pq.withSubscriptions.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -397,6 +447,28 @@ func (pq *PlanQuery) WithMedia(opts ...func(*MediaQuery)) *PlanQuery {
 		opt(query)
 	}
 	pq.withMedia = query
+	return pq
+}
+
+// WithPrices tells the query-builder to eager-load the nodes that are connected to
+// the "prices" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithPrices(opts ...func(*PriceQuery)) *PlanQuery {
+	query := (&PriceClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withPrices = query
+	return pq
+}
+
+// WithSubscriptions tells the query-builder to eager-load the nodes that are connected to
+// the "subscriptions" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithSubscriptions(opts ...func(*SubscriptionQuery)) *PlanQuery {
+	query := (&SubscriptionClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withSubscriptions = query
 	return pq
 }
 
@@ -478,11 +550,13 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	var (
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [6]bool{
 			pq.withUsers != nil,
 			pq.withBusinesses != nil,
 			pq.withPlaces != nil,
 			pq.withMedia != nil,
+			pq.withPrices != nil,
+			pq.withSubscriptions != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -528,6 +602,20 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 		if err := pq.loadMedia(ctx, query, nodes,
 			func(n *Plan) { n.Edges.Media = []*Media{} },
 			func(n *Plan, e *Media) { n.Edges.Media = append(n.Edges.Media, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withPrices; query != nil {
+		if err := pq.loadPrices(ctx, query, nodes,
+			func(n *Plan) { n.Edges.Prices = []*Price{} },
+			func(n *Plan, e *Price) { n.Edges.Prices = append(n.Edges.Prices, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withSubscriptions; query != nil {
+		if err := pq.loadSubscriptions(ctx, query, nodes,
+			func(n *Plan) { n.Edges.Subscriptions = []*Subscription{} },
+			func(n *Plan, e *Subscription) { n.Edges.Subscriptions = append(n.Edges.Subscriptions, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -743,6 +831,68 @@ func (pq *PlanQuery) loadMedia(ctx context.Context, query *MediaQuery, nodes []*
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "plan_media" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (pq *PlanQuery) loadPrices(ctx context.Context, query *PriceQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *Price)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Plan)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Price(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(plan.PricesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.plan_prices
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "plan_prices" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "plan_prices" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (pq *PlanQuery) loadSubscriptions(ctx context.Context, query *SubscriptionQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *Subscription)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Plan)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Subscription(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(plan.SubscriptionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.plan_subscriptions
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "plan_subscriptions" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "plan_subscriptions" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

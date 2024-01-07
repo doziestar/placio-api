@@ -41,6 +41,7 @@ import (
 	"placio-app/ent/placetable"
 	"placio-app/ent/plan"
 	"placio-app/ent/post"
+	"placio-app/ent/price"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
 	"placio-app/ent/reservation"
@@ -50,6 +51,7 @@ import (
 	"placio-app/ent/room"
 	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
+	"placio-app/ent/subscription"
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
@@ -163,6 +165,7 @@ func checkColumn(table, column string) error {
 			placetable.Table:              placetable.ValidColumn,
 			plan.Table:                    plan.ValidColumn,
 			post.Table:                    post.ValidColumn,
+			price.Table:                   price.ValidColumn,
 			rating.Table:                  rating.ValidColumn,
 			reaction.Table:                reaction.ValidColumn,
 			reservation.Table:             reservation.ValidColumn,
@@ -172,6 +175,7 @@ func checkColumn(table, column string) error {
 			room.Table:                    room.ValidColumn,
 			roomcategory.Table:            roomcategory.ValidColumn,
 			staff.Table:                   staff.ValidColumn,
+			subscription.Table:            subscription.ValidColumn,
 			template.Table:                template.ValidColumn,
 			ticket.Table:                  ticket.ValidColumn,
 			ticketoption.Table:            ticketoption.ValidColumn,

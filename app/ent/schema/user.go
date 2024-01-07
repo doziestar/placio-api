@@ -87,6 +87,7 @@ func (User) Edges() []ent.Edge {
 		edge.To("created_menus", Menu.Type),
 		edge.To("updated_menus", Menu.Type),
 		edge.From("plans", Plan.Type).Ref("users"),
+		edge.To("subscriptions", Subscription.Type),
 	}
 }
 

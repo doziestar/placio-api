@@ -41,9 +41,13 @@ type PlanEdges struct {
 	Places []*Place `json:"places,omitempty"`
 	// Media holds the value of the media edge.
 	Media []*Media `json:"media,omitempty"`
+	// Prices holds the value of the prices edge.
+	Prices []*Price `json:"prices,omitempty"`
+	// Subscriptions holds the value of the subscriptions edge.
+	Subscriptions []*Subscription `json:"subscriptions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [6]bool
 }
 
 // UsersOrErr returns the Users value or an error if the edge
@@ -80,6 +84,24 @@ func (e PlanEdges) MediaOrErr() ([]*Media, error) {
 		return e.Media, nil
 	}
 	return nil, &NotLoadedError{edge: "media"}
+}
+
+// PricesOrErr returns the Prices value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlanEdges) PricesOrErr() ([]*Price, error) {
+	if e.loadedTypes[4] {
+		return e.Prices, nil
+	}
+	return nil, &NotLoadedError{edge: "prices"}
+}
+
+// SubscriptionsOrErr returns the Subscriptions value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlanEdges) SubscriptionsOrErr() ([]*Subscription, error) {
+	if e.loadedTypes[5] {
+		return e.Subscriptions, nil
+	}
+	return nil, &NotLoadedError{edge: "subscriptions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -169,6 +191,16 @@ func (pl *Plan) QueryPlaces() *PlaceQuery {
 // QueryMedia queries the "media" edge of the Plan entity.
 func (pl *Plan) QueryMedia() *MediaQuery {
 	return NewPlanClient(pl.config).QueryMedia(pl)
+}
+
+// QueryPrices queries the "prices" edge of the Plan entity.
+func (pl *Plan) QueryPrices() *PriceQuery {
+	return NewPlanClient(pl.config).QueryPrices(pl)
+}
+
+// QuerySubscriptions queries the "subscriptions" edge of the Plan entity.
+func (pl *Plan) QuerySubscriptions() *SubscriptionQuery {
+	return NewPlanClient(pl.config).QuerySubscriptions(pl)
 }
 
 // Update returns a builder for updating this Plan.

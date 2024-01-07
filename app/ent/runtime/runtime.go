@@ -33,6 +33,7 @@ import (
 	"placio-app/ent/placetable"
 	"placio-app/ent/plan"
 	"placio-app/ent/post"
+	"placio-app/ent/price"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
@@ -40,6 +41,7 @@ import (
 	"placio-app/ent/roomcategory"
 	"placio-app/ent/schema"
 	"placio-app/ent/staff"
+	"placio-app/ent/subscription"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/transactionhistory"
@@ -660,6 +662,12 @@ func init() {
 	postDescID := postFields[0].Descriptor()
 	// post.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	post.IDValidator = postDescID.Validators[0].(func(string) error)
+	priceFields := schema.Price{}.Fields()
+	_ = priceFields
+	// priceDescID is the schema descriptor for id field.
+	priceDescID := priceFields[0].Descriptor()
+	// price.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	price.IDValidator = priceDescID.Validators[0].(func(string) error)
 	ratingHooks := schema.Rating{}.Hooks()
 	rating.Hooks[0] = ratingHooks[0]
 	ratingFields := schema.Rating{}.Fields()
@@ -752,6 +760,12 @@ func init() {
 	staffDescID := staffFields[0].Descriptor()
 	// staff.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	staff.IDValidator = staffDescID.Validators[0].(func(string) error)
+	subscriptionFields := schema.Subscription{}.Fields()
+	_ = subscriptionFields
+	// subscriptionDescID is the schema descriptor for id field.
+	subscriptionDescID := subscriptionFields[0].Descriptor()
+	// subscription.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	subscription.IDValidator = subscriptionDescID.Validators[0].(func(string) error)
 	ticketFields := schema.Ticket{}.Fields()
 	_ = ticketFields
 	// ticketDescCreatedAt is the schema descriptor for createdAt field.
