@@ -129,9 +129,9 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		reservationController.RegisterRoutes(routerGroupV1)
 
 		// room
-		roomService := inventory.NewRoomService(client)
-		roomController := inventory.NewRoomController(roomService)
-		roomController.RegisterRoutes(routerGroupV1)
+		//roomService := inventory.NewRoomService(client)
+		//roomController := inventory.NewRoomController(roomService)
+		//roomController.RegisterRoutes(routerGroupV1)
 
 		// menu
 		menuService := inventory.NewMenuService(client)
