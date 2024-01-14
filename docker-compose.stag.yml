@@ -36,26 +36,23 @@ services:
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
-  askai:
-    ports:
-      - "8282:8282"
-    environment:
-      - PORT=8282
-    env_file:
-      - /home/placio/.env
+  doziestar:
+    image: doziestar
     restart: always
     build:
-      context: ./askai
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./dozie/Dockerfile
+    ports:
+      - 5000:5000
     networks:
       - default
     labels:
       - traefik.enable=true
       - traefik.docker.network=default
-      - "traefik.http.routers.askai-secure.entrypoints=websecure"
-      - "traefik.http.routers.askai-secure.rule=Host(`askai.palnight.com`)"
-      - "traefik.http.routers.askai-secure.service=askai"
-      - "traefik.http.services.askai.loadbalancer.server.port=8282"
+      - "traefik.http.routers.doziestar-secure.entrypoints=websecure"
+      - "traefik.http.routers.doziestar-secure.rule=Host(`doziestar.com`)"
+      - "traefik.http.routers.doziestar-secure.service=doziestar"
+      - "traefik.http.services.doziestar.loadbalancer.server.port=5000"
 
   placio-backend:
     ports:
