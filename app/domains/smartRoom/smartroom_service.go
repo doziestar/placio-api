@@ -43,6 +43,7 @@ func NewSmartRoomService(client *ent.Client, mediaService media.MediaService) IS
 }
 
 func (s *SmartRoomService) CreateRoomCategory(ctx context.Context, placeId string, roomCategoryDto *ent.RoomCategory, mediaFiles []*multipart.FileHeader) (*ent.RoomCategory, error) {
+	log.Printf("Creating room category for place ID '%s'", placeId)
 	// Check for empty placeId or roomCategoryDto
 	if placeId == "" || roomCategoryDto == nil {
 		return nil, errors.New("placeId and roomCategory data must be provided")

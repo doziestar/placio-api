@@ -36,24 +36,6 @@ services:
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
-  doziestar:
-    image: doziestar
-    restart: always
-    build:
-      context: .
-      dockerfile: ./dozie/Dockerfile
-    ports:
-      - 5000:5000
-    networks:
-      - default
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - "traefik.http.routers.doziestar-secure.entrypoints=websecure"
-      - "traefik.http.routers.doziestar-secure.rule=Host(`doziestar.com`)"
-      - "traefik.http.routers.doziestar-secure.service=doziestar"
-      - "traefik.http.services.doziestar.loadbalancer.server.port=5000"
-
   placio-backend:
     ports:
       - "7070:7070"

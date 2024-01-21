@@ -32,14 +32,6 @@ services:
     networks:
       - default
 
-  doziestar:
-    image: doziestar
-    build:
-      context: .
-      dockerfile: ./dozie/Dockerfile
-    ports:
-      - 5000:5000
-
   africa_insight:
     build:
       context: ./africa_insight

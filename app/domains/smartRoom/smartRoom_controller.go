@@ -2,6 +2,7 @@ package smartRoom
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"placio-app/ent"
 	"placio-app/utility"
@@ -52,34 +53,48 @@ func (c *SmartRoomController) RegisterRoutes(router, routerWithAuth *gin.RouterG
 }
 
 func (c *SmartRoomController) createRoomCategory(ctx *gin.Context) error {
+	log.Println("createRoomCategory")
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		return err
 	}
-
+	log.Println("createRoomCategory", form)
 	placeID := ctx.Param("placeId")
+	log.Println("createRoomCategory", placeID)
 
 	if placeID == "" {
 		return errors.IDMissing
 	}
 
+	log.Println("createRoomCategory", placeID)
+
 	var roomCategory *ent.RoomCategory
 
-	if len(form.File["medias"]) == 0 {
+	log.Println("createRoomCategory", roomCategory)
+
+	if medias, exists := form.File["medias"]; !exists || len(medias) == 0 {
 		return errors.ErrMediaMissing
 	}
 
+	log.Println("createRoomCategory", roomCategory)
+	log.Println("createRoomCategory", form.Value)
 	if name, exists := form.Value["name"]; exists {
 		roomCategory.Name = name[0]
 	}
+
+	log.Println("createRoomCategory", roomCategory)
 
 	if description, exists := form.Value["description"]; exists {
 		roomCategory.Description = description[0]
 	}
 
+	log.Println("createRoomCategory", roomCategory)
+
 	if price, exists := form.Value["price"]; exists {
 		roomCategory.Price = price[0]
 	}
+
+	log.Println("roomCategory", roomCategory)
 
 	roomCategory, err = c.smartRoomService.CreateRoomCategory(ctx, placeID, roomCategory, form.File["medias"])
 	if err != nil {
