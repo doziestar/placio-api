@@ -123,6 +123,16 @@ const (
 	EdgeCreatedMenus = "created_menus"
 	// EdgeUpdatedMenus holds the string denoting the updated_menus edge name in mutations.
 	EdgeUpdatedMenus = "updated_menus"
+	// EdgePlans holds the string denoting the plans edge name in mutations.
+	EdgePlans = "plans"
+	// EdgeSubscriptions holds the string denoting the subscriptions edge name in mutations.
+	EdgeSubscriptions = "subscriptions"
+	// EdgeTrainers holds the string denoting the trainers edge name in mutations.
+	EdgeTrainers = "trainers"
+	// EdgeMemberOf holds the string denoting the memberof edge name in mutations.
+	EdgeMemberOf = "memberOf"
+	// EdgeCustomer holds the string denoting the customer edge name in mutations.
+	EdgeCustomer = "customer"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -348,6 +358,33 @@ const (
 	// UpdatedMenusInverseTable is the table name for the Menu entity.
 	// It exists in this package in order to avoid circular dependency with the "menu" package.
 	UpdatedMenusInverseTable = "menus"
+	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
+	PlansTable = "plan_users"
+	// PlansInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlansInverseTable = "plans"
+	// SubscriptionsTable is the table that holds the subscriptions relation/edge.
+	SubscriptionsTable = "subscriptions"
+	// SubscriptionsInverseTable is the table name for the Subscription entity.
+	// It exists in this package in order to avoid circular dependency with the "subscription" package.
+	SubscriptionsInverseTable = "subscriptions"
+	// SubscriptionsColumn is the table column denoting the subscriptions relation/edge.
+	SubscriptionsColumn = "user_subscriptions"
+	// TrainersTable is the table that holds the trainers relation/edge. The primary key declared below.
+	TrainersTable = "user_trainers"
+	// TrainersInverseTable is the table name for the Trainer entity.
+	// It exists in this package in order to avoid circular dependency with the "trainer" package.
+	TrainersInverseTable = "trainers"
+	// MemberOfTable is the table that holds the memberOf relation/edge. The primary key declared below.
+	MemberOfTable = "place_members"
+	// MemberOfInverseTable is the table name for the Place entity.
+	// It exists in this package in order to avoid circular dependency with the "place" package.
+	MemberOfInverseTable = "places"
+	// CustomerTable is the table that holds the customer relation/edge. The primary key declared below.
+	CustomerTable = "place_regularUsers"
+	// CustomerInverseTable is the table name for the Place entity.
+	// It exists in this package in order to avoid circular dependency with the "place" package.
+	CustomerInverseTable = "places"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -389,6 +426,18 @@ var (
 	// UpdatedMenusPrimaryKey and UpdatedMenusColumn2 are the table columns denoting the
 	// primary key for the updated_menus relation (M2M).
 	UpdatedMenusPrimaryKey = []string{"user_id", "menu_id"}
+	// PlansPrimaryKey and PlansColumn2 are the table columns denoting the
+	// primary key for the plans relation (M2M).
+	PlansPrimaryKey = []string{"plan_id", "user_id"}
+	// TrainersPrimaryKey and TrainersColumn2 are the table columns denoting the
+	// primary key for the trainers relation (M2M).
+	TrainersPrimaryKey = []string{"user_id", "trainer_id"}
+	// MemberOfPrimaryKey and MemberOfColumn2 are the table columns denoting the
+	// primary key for the memberOf relation (M2M).
+	MemberOfPrimaryKey = []string{"place_id", "user_id"}
+	// CustomerPrimaryKey and CustomerColumn2 are the table columns denoting the
+	// primary key for the customer relation (M2M).
+	CustomerPrimaryKey = []string{"place_id", "user_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -985,6 +1034,76 @@ func ByUpdatedMenus(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newUpdatedMenusStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlansCount orders the results by plans count.
+func ByPlansCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlansStep(), opts...)
+	}
+}
+
+// ByPlans orders the results by plans terms.
+func ByPlans(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlansStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySubscriptionsCount orders the results by subscriptions count.
+func BySubscriptionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSubscriptionsStep(), opts...)
+	}
+}
+
+// BySubscriptions orders the results by subscriptions terms.
+func BySubscriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscriptionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTrainersCount orders the results by trainers count.
+func ByTrainersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTrainersStep(), opts...)
+	}
+}
+
+// ByTrainers orders the results by trainers terms.
+func ByTrainers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTrainersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByMemberOfCount orders the results by memberOf count.
+func ByMemberOfCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMemberOfStep(), opts...)
+	}
+}
+
+// ByMemberOf orders the results by memberOf terms.
+func ByMemberOf(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMemberOfStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCustomerCount orders the results by customer count.
+func ByCustomerCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCustomerStep(), opts...)
+	}
+}
+
+// ByCustomer orders the results by customer terms.
+func ByCustomer(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCustomerStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -1214,5 +1333,40 @@ func newUpdatedMenusStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UpdatedMenusInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, UpdatedMenusTable, UpdatedMenusPrimaryKey...),
+	)
+}
+func newPlansStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlansInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+	)
+}
+func newSubscriptionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscriptionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionsTable, SubscriptionsColumn),
+	)
+}
+func newTrainersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TrainersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, TrainersTable, TrainersPrimaryKey...),
+	)
+}
+func newMemberOfStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MemberOfInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, MemberOfTable, MemberOfPrimaryKey...),
+	)
+}
+func newCustomerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CustomerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, CustomerTable, CustomerPrimaryKey...),
 	)
 }

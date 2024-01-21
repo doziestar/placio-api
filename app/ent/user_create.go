@@ -20,12 +20,15 @@ import (
 	"placio-app/ent/order"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
 	"placio-app/ent/staff"
+	"placio-app/ent/subscription"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -794,6 +797,81 @@ func (uc *UserCreate) AddUpdatedMenus(m ...*Menu) *UserCreate {
 	return uc.AddUpdatedMenuIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (uc *UserCreate) AddPlanIDs(ids ...string) *UserCreate {
+	uc.mutation.AddPlanIDs(ids...)
+	return uc
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (uc *UserCreate) AddPlans(p ...*Plan) *UserCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uc.AddPlanIDs(ids...)
+}
+
+// AddSubscriptionIDs adds the "subscriptions" edge to the Subscription entity by IDs.
+func (uc *UserCreate) AddSubscriptionIDs(ids ...string) *UserCreate {
+	uc.mutation.AddSubscriptionIDs(ids...)
+	return uc
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the Subscription entity.
+func (uc *UserCreate) AddSubscriptions(s ...*Subscription) *UserCreate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uc.AddSubscriptionIDs(ids...)
+}
+
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (uc *UserCreate) AddTrainerIDs(ids ...string) *UserCreate {
+	uc.mutation.AddTrainerIDs(ids...)
+	return uc
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (uc *UserCreate) AddTrainers(t ...*Trainer) *UserCreate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uc.AddTrainerIDs(ids...)
+}
+
+// AddMemberOfIDs adds the "memberOf" edge to the Place entity by IDs.
+func (uc *UserCreate) AddMemberOfIDs(ids ...string) *UserCreate {
+	uc.mutation.AddMemberOfIDs(ids...)
+	return uc
+}
+
+// AddMemberOf adds the "memberOf" edges to the Place entity.
+func (uc *UserCreate) AddMemberOf(p ...*Place) *UserCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uc.AddMemberOfIDs(ids...)
+}
+
+// AddCustomerIDs adds the "customer" edge to the Place entity by IDs.
+func (uc *UserCreate) AddCustomerIDs(ids ...string) *UserCreate {
+	uc.mutation.AddCustomerIDs(ids...)
+	return uc
+}
+
+// AddCustomer adds the "customer" edges to the Place entity.
+func (uc *UserCreate) AddCustomer(p ...*Place) *UserCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uc.AddCustomerIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -1528,6 +1606,86 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SubscriptionsTable,
+			Columns: []string{user.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.MemberOfIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.MemberOfTable,
+			Columns: user.MemberOfPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.CustomerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.CustomerTable,
+			Columns: user.CustomerPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

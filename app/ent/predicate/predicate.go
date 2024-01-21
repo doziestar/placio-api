@@ -54,6 +54,9 @@ type FAQ func(*sql.Selector)
 // FeatureRelease is the predicate function for featurerelease builders.
 type FeatureRelease func(*sql.Selector)
 
+// Fitness is the predicate function for fitness builders.
+type Fitness func(*sql.Selector)
+
 // Help is the predicate function for help builders.
 type Help func(*sql.Selector)
 
@@ -102,8 +105,14 @@ type PlaceInventoryAttribute func(*sql.Selector)
 // PlaceTable is the predicate function for placetable builders.
 type PlaceTable func(*sql.Selector)
 
+// Plan is the predicate function for plan builders.
+type Plan func(*sql.Selector)
+
 // Post is the predicate function for post builders.
 type Post func(*sql.Selector)
+
+// Price is the predicate function for price builders.
+type Price func(*sql.Selector)
 
 // Rating is the predicate function for rating builders.
 type Rating func(*sql.Selector)
@@ -126,8 +135,14 @@ type Review func(*sql.Selector)
 // Room is the predicate function for room builders.
 type Room func(*sql.Selector)
 
+// RoomCategory is the predicate function for roomcategory builders.
+type RoomCategory func(*sql.Selector)
+
 // Staff is the predicate function for staff builders.
 type Staff func(*sql.Selector)
+
+// Subscription is the predicate function for subscription builders.
+type Subscription func(*sql.Selector)
 
 // Template is the predicate function for template builders.
 type Template func(*sql.Selector)
@@ -137,6 +152,9 @@ type Ticket func(*sql.Selector)
 
 // TicketOption is the predicate function for ticketoption builders.
 type TicketOption func(*sql.Selector)
+
+// Trainer is the predicate function for trainer builders.
+type Trainer func(*sql.Selector)
 
 // TransactionHistory is the predicate function for transactionhistory builders.
 type TransactionHistory func(*sql.Selector)

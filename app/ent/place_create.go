@@ -19,11 +19,14 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
+	"placio-app/ent/trainer"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userlikeplace"
@@ -765,6 +768,81 @@ func (pc *PlaceCreate) AddStaffs(s ...*Staff) *PlaceCreate {
 	return pc.AddStaffIDs(ids...)
 }
 
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by IDs.
+func (pc *PlaceCreate) AddRoomCategoryIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddRoomCategoryIDs(ids...)
+	return pc
+}
+
+// AddRoomCategories adds the "room_categories" edges to the RoomCategory entity.
+func (pc *PlaceCreate) AddRoomCategories(r ...*RoomCategory) *PlaceCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return pc.AddRoomCategoryIDs(ids...)
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (pc *PlaceCreate) AddPlanIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddPlanIDs(ids...)
+	return pc
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (pc *PlaceCreate) AddPlans(p ...*Plan) *PlaceCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddPlanIDs(ids...)
+}
+
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (pc *PlaceCreate) AddTrainerIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddTrainerIDs(ids...)
+	return pc
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (pc *PlaceCreate) AddTrainers(t ...*Trainer) *PlaceCreate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pc.AddTrainerIDs(ids...)
+}
+
+// AddMemberIDs adds the "members" edge to the User entity by IDs.
+func (pc *PlaceCreate) AddMemberIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddMemberIDs(ids...)
+	return pc
+}
+
+// AddMembers adds the "members" edges to the User entity.
+func (pc *PlaceCreate) AddMembers(u ...*User) *PlaceCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pc.AddMemberIDs(ids...)
+}
+
+// AddRegularUserIDs adds the "regularUsers" edge to the User entity by IDs.
+func (pc *PlaceCreate) AddRegularUserIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddRegularUserIDs(ids...)
+	return pc
+}
+
+// AddRegularUsers adds the "regularUsers" edges to the User entity.
+func (pc *PlaceCreate) AddRegularUsers(u ...*User) *PlaceCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pc.AddRegularUserIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pc *PlaceCreate) Mutation() *PlaceMutation {
 	return pc.mutation
@@ -1169,10 +1247,10 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	}
 	if nodes := pc.mutation.RoomsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   place.RoomsTable,
-			Columns: []string{place.RoomsColumn},
+			Columns: place.RoomsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
@@ -1368,6 +1446,86 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.RoomCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RoomCategoriesTable,
+			Columns: place.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.PlansTable,
+			Columns: place.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.TrainersTable,
+			Columns: place.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.MembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MembersTable,
+			Columns: place.MembersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.RegularUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RegularUsersTable,
+			Columns: place.RegularUsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

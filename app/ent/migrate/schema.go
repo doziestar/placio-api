@@ -529,6 +529,17 @@ var (
 		Columns:    FeatureReleasesColumns,
 		PrimaryKey: []*schema.Column{FeatureReleasesColumns[0]},
 	}
+	// FitnessesColumns holds the columns for the "fitnesses" table.
+	FitnessesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString},
+	}
+	// FitnessesTable holds the schema information for the "fitnesses" table.
+	FitnessesTable = &schema.Table{
+		Name:       "fitnesses",
+		Columns:    FitnessesColumns,
+		PrimaryKey: []*schema.Column{FitnessesColumns[0]},
+	}
 	// HelpsColumns holds the columns for the "helps" table.
 	HelpsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
@@ -660,6 +671,7 @@ var (
 		{Name: "like_count", Type: field.TypeInt, Default: 0},
 		{Name: "dislike_count", Type: field.TypeInt, Default: 0},
 		{Name: "menu_item_media", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "plan_media", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "post_medias", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "review_medias", Type: field.TypeString, Nullable: true},
 		{Name: "website_assets", Type: field.TypeString, Nullable: true},
@@ -677,20 +689,26 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "media_posts_medias",
+				Symbol:     "media_plans_media",
 				Columns:    []*schema.Column{MediaColumns[8]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "media_posts_medias",
+				Columns:    []*schema.Column{MediaColumns[9]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "media_reviews_medias",
-				Columns:    []*schema.Column{MediaColumns[9]},
+				Columns:    []*schema.Column{MediaColumns[10]},
 				RefColumns: []*schema.Column{ReviewsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "media_websites_assets",
-				Columns:    []*schema.Column{MediaColumns[10]},
+				Columns:    []*schema.Column{MediaColumns[11]},
 				RefColumns: []*schema.Column{WebsitesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1074,6 +1092,20 @@ var (
 			},
 		},
 	}
+	// PlansColumns holds the columns for the "plans" table.
+	PlansColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "overview", Type: field.TypeString, Nullable: true},
+		{Name: "features", Type: field.TypeJSON, Nullable: true},
+	}
+	// PlansTable holds the schema information for the "plans" table.
+	PlansTable = &schema.Table{
+		Name:       "plans",
+		Columns:    PlansColumns,
+		PrimaryKey: []*schema.Column{PlansColumns[0]},
+	}
 	// PostsColumns holds the columns for the "posts" table.
 	PostsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
@@ -1121,6 +1153,31 @@ var (
 				Symbol:     "posts_users_posts",
 				Columns:    []*schema.Column{PostsColumns[21]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// PricesColumns holds the columns for the "prices" table.
+	PricesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "price", Type: field.TypeFloat64},
+		{Name: "currency", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"session", "day", "week", "month", "year"}},
+		{Name: "duration", Type: field.TypeInt, Nullable: true},
+		{Name: "session", Type: field.TypeInt, Nullable: true},
+		{Name: "plan_prices", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// PricesTable holds the schema information for the "prices" table.
+	PricesTable = &schema.Table{
+		Name:       "prices",
+		Columns:    PricesColumns,
+		PrimaryKey: []*schema.Column{PricesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "prices_plans_prices",
+				Columns:    []*schema.Column{PricesColumns[7]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1202,11 +1259,11 @@ var (
 	// ReservationsColumns holds the columns for the "reservations" table.
 	ReservationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
-		{Name: "date", Type: field.TypeTime},
-		{Name: "time", Type: field.TypeTime},
-		{Name: "number_of_people", Type: field.TypeInt},
+		{Name: "start_date", Type: field.TypeTime},
+		{Name: "end_date", Type: field.TypeTime},
 		{Name: "status", Type: field.TypeString},
 		{Name: "place_reservations", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "room_reservations", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_reservations", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// ReservationsTable holds the schema information for the "reservations" table.
@@ -1217,8 +1274,14 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "reservations_places_reservations",
-				Columns:    []*schema.Column{ReservationsColumns[5]},
+				Columns:    []*schema.Column{ReservationsColumns[4]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "reservations_rooms_reservations",
+				Columns:    []*schema.Column{ReservationsColumns[5]},
+				RefColumns: []*schema.Column{RoomsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -1324,27 +1387,37 @@ var (
 	// RoomsColumns holds the columns for the "rooms" table.
 	RoomsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
-		{Name: "number", Type: field.TypeString},
-		{Name: "type", Type: field.TypeString},
-		{Name: "price", Type: field.TypeFloat64},
+		{Name: "name", Type: field.TypeString, Nullable: true},
+		{Name: "room_number", Type: field.TypeString, Nullable: true},
+		{Name: "room_type", Type: field.TypeString, Nullable: true},
+		{Name: "room_status", Type: field.TypeString, Nullable: true},
+		{Name: "room_rating", Type: field.TypeString, Nullable: true},
+		{Name: "room_price", Type: field.TypeFloat64, Nullable: true},
+		{Name: "qr_code", Type: field.TypeString, Nullable: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"available", "unavailable", "maintenance", "reserved"}, Default: "available"},
+		{Name: "extras", Type: field.TypeJSON, Nullable: true},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "availability", Type: field.TypeBool},
+		{Name: "availability", Type: field.TypeBool, Default: true},
 		{Name: "image", Type: field.TypeString, Nullable: true},
-		{Name: "place_rooms", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// RoomsTable holds the schema information for the "rooms" table.
 	RoomsTable = &schema.Table{
 		Name:       "rooms",
 		Columns:    RoomsColumns,
 		PrimaryKey: []*schema.Column{RoomsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "rooms_places_rooms",
-				Columns:    []*schema.Column{RoomsColumns[7]},
-				RefColumns: []*schema.Column{PlacesColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
+	}
+	// RoomCategoriesColumns holds the columns for the "room_categories" table.
+	RoomCategoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "price", Type: field.TypeString, Nullable: true},
+	}
+	// RoomCategoriesTable holds the schema information for the "room_categories" table.
+	RoomCategoriesTable = &schema.Table{
+		Name:       "room_categories",
+		Columns:    RoomCategoriesColumns,
+		PrimaryKey: []*schema.Column{RoomCategoriesColumns[0]},
 	}
 	// StaffsColumns holds the columns for the "staffs" table.
 	StaffsColumns = []*schema.Column{
@@ -1361,6 +1434,42 @@ var (
 			{
 				Symbol:     "staffs_users_staffs",
 				Columns:    []*schema.Column{StaffsColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// SubscriptionsColumns holds the columns for the "subscriptions" table.
+	SubscriptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "start_date", Type: field.TypeTime},
+		{Name: "end_date", Type: field.TypeTime},
+		{Name: "flutterwave_subscription_id", Type: field.TypeString, Nullable: true},
+		{Name: "plan_subscriptions", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "price_subscriptions", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_subscriptions", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// SubscriptionsTable holds the schema information for the "subscriptions" table.
+	SubscriptionsTable = &schema.Table{
+		Name:       "subscriptions",
+		Columns:    SubscriptionsColumns,
+		PrimaryKey: []*schema.Column{SubscriptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "subscriptions_plans_subscriptions",
+				Columns:    []*schema.Column{SubscriptionsColumns[4]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscriptions_prices_subscriptions",
+				Columns:    []*schema.Column{SubscriptionsColumns[5]},
+				RefColumns: []*schema.Column{PricesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscriptions_users_subscriptions",
+				Columns:    []*schema.Column{SubscriptionsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1427,6 +1536,19 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+	}
+	// TrainersColumns holds the columns for the "trainers" table.
+	TrainersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString},
+		{Name: "phone", Type: field.TypeString},
+	}
+	// TrainersTable holds the schema information for the "trainers" table.
+	TrainersTable = &schema.Table{
+		Name:       "trainers",
+		Columns:    TrainersColumns,
+		PrimaryKey: []*schema.Column{TrainersColumns[0]},
 	}
 	// TransactionHistoriesColumns holds the columns for the "transaction_histories" table.
 	TransactionHistoriesColumns = []*schema.Column{
@@ -2085,6 +2207,31 @@ var (
 			},
 		},
 	}
+	// PlaceRoomsColumns holds the columns for the "place_rooms" table.
+	PlaceRoomsColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "room_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceRoomsTable holds the schema information for the "place_rooms" table.
+	PlaceRoomsTable = &schema.Table{
+		Name:       "place_rooms",
+		Columns:    PlaceRoomsColumns,
+		PrimaryKey: []*schema.Column{PlaceRoomsColumns[0], PlaceRoomsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_rooms_place_id",
+				Columns:    []*schema.Column{PlaceRoomsColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_rooms_room_id",
+				Columns:    []*schema.Column{PlaceRoomsColumns[1]},
+				RefColumns: []*schema.Column{RoomsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PlaceNotificationsColumns holds the columns for the "place_notifications" table.
 	PlaceNotificationsColumns = []*schema.Column{
 		{Name: "place_id", Type: field.TypeString, Size: 36},
@@ -2131,6 +2278,106 @@ var (
 				Symbol:     "place_staffs_staff_id",
 				Columns:    []*schema.Column{PlaceStaffsColumns[1]},
 				RefColumns: []*schema.Column{StaffsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlaceRoomCategoriesColumns holds the columns for the "place_room_categories" table.
+	PlaceRoomCategoriesColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "room_category_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceRoomCategoriesTable holds the schema information for the "place_room_categories" table.
+	PlaceRoomCategoriesTable = &schema.Table{
+		Name:       "place_room_categories",
+		Columns:    PlaceRoomCategoriesColumns,
+		PrimaryKey: []*schema.Column{PlaceRoomCategoriesColumns[0], PlaceRoomCategoriesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_room_categories_place_id",
+				Columns:    []*schema.Column{PlaceRoomCategoriesColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_room_categories_room_category_id",
+				Columns:    []*schema.Column{PlaceRoomCategoriesColumns[1]},
+				RefColumns: []*schema.Column{RoomCategoriesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlaceTrainersColumns holds the columns for the "place_trainers" table.
+	PlaceTrainersColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "trainer_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceTrainersTable holds the schema information for the "place_trainers" table.
+	PlaceTrainersTable = &schema.Table{
+		Name:       "place_trainers",
+		Columns:    PlaceTrainersColumns,
+		PrimaryKey: []*schema.Column{PlaceTrainersColumns[0], PlaceTrainersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_trainers_place_id",
+				Columns:    []*schema.Column{PlaceTrainersColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_trainers_trainer_id",
+				Columns:    []*schema.Column{PlaceTrainersColumns[1]},
+				RefColumns: []*schema.Column{TrainersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlaceMembersColumns holds the columns for the "place_members" table.
+	PlaceMembersColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceMembersTable holds the schema information for the "place_members" table.
+	PlaceMembersTable = &schema.Table{
+		Name:       "place_members",
+		Columns:    PlaceMembersColumns,
+		PrimaryKey: []*schema.Column{PlaceMembersColumns[0], PlaceMembersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_members_place_id",
+				Columns:    []*schema.Column{PlaceMembersColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_members_user_id",
+				Columns:    []*schema.Column{PlaceMembersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlaceRegularUsersColumns holds the columns for the "place_regularUsers" table.
+	PlaceRegularUsersColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceRegularUsersTable holds the schema information for the "place_regularUsers" table.
+	PlaceRegularUsersTable = &schema.Table{
+		Name:       "place_regularUsers",
+		Columns:    PlaceRegularUsersColumns,
+		PrimaryKey: []*schema.Column{PlaceRegularUsersColumns[0], PlaceRegularUsersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_regularUsers_place_id",
+				Columns:    []*schema.Column{PlaceRegularUsersColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_regularUsers_user_id",
+				Columns:    []*schema.Column{PlaceRegularUsersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -2185,6 +2432,81 @@ var (
 			},
 		},
 	}
+	// PlanUsersColumns holds the columns for the "plan_users" table.
+	PlanUsersColumns = []*schema.Column{
+		{Name: "plan_id", Type: field.TypeString, Size: 36},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+	}
+	// PlanUsersTable holds the schema information for the "plan_users" table.
+	PlanUsersTable = &schema.Table{
+		Name:       "plan_users",
+		Columns:    PlanUsersColumns,
+		PrimaryKey: []*schema.Column{PlanUsersColumns[0], PlanUsersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plan_users_plan_id",
+				Columns:    []*schema.Column{PlanUsersColumns[0]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "plan_users_user_id",
+				Columns:    []*schema.Column{PlanUsersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlanBusinessesColumns holds the columns for the "plan_businesses" table.
+	PlanBusinessesColumns = []*schema.Column{
+		{Name: "plan_id", Type: field.TypeString, Size: 36},
+		{Name: "business_id", Type: field.TypeString, Size: 36},
+	}
+	// PlanBusinessesTable holds the schema information for the "plan_businesses" table.
+	PlanBusinessesTable = &schema.Table{
+		Name:       "plan_businesses",
+		Columns:    PlanBusinessesColumns,
+		PrimaryKey: []*schema.Column{PlanBusinessesColumns[0], PlanBusinessesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plan_businesses_plan_id",
+				Columns:    []*schema.Column{PlanBusinessesColumns[0]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "plan_businesses_business_id",
+				Columns:    []*schema.Column{PlanBusinessesColumns[1]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlanPlacesColumns holds the columns for the "plan_places" table.
+	PlanPlacesColumns = []*schema.Column{
+		{Name: "plan_id", Type: field.TypeString, Size: 36},
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+	}
+	// PlanPlacesTable holds the schema information for the "plan_places" table.
+	PlanPlacesTable = &schema.Table{
+		Name:       "plan_places",
+		Columns:    PlanPlacesColumns,
+		PrimaryKey: []*schema.Column{PlanPlacesColumns[0], PlanPlacesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plan_places_plan_id",
+				Columns:    []*schema.Column{PlanPlacesColumns[0]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "plan_places_place_id",
+				Columns:    []*schema.Column{PlanPlacesColumns[1]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PostNotificationsColumns holds the columns for the "post_notifications" table.
 	PostNotificationsColumns = []*schema.Column{
 		{Name: "post_id", Type: field.TypeString, Size: 36},
@@ -2206,6 +2528,131 @@ var (
 				Symbol:     "post_notifications_notification_id",
 				Columns:    []*schema.Column{PostNotificationsColumns[1]},
 				RefColumns: []*schema.Column{NotificationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// RoomAmenitiesColumns holds the columns for the "room_amenities" table.
+	RoomAmenitiesColumns = []*schema.Column{
+		{Name: "room_id", Type: field.TypeString, Size: 36},
+		{Name: "amenity_id", Type: field.TypeString, Size: 36},
+	}
+	// RoomAmenitiesTable holds the schema information for the "room_amenities" table.
+	RoomAmenitiesTable = &schema.Table{
+		Name:       "room_amenities",
+		Columns:    RoomAmenitiesColumns,
+		PrimaryKey: []*schema.Column{RoomAmenitiesColumns[0], RoomAmenitiesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "room_amenities_room_id",
+				Columns:    []*schema.Column{RoomAmenitiesColumns[0]},
+				RefColumns: []*schema.Column{RoomsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "room_amenities_amenity_id",
+				Columns:    []*schema.Column{RoomAmenitiesColumns[1]},
+				RefColumns: []*schema.Column{AmenitiesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// RoomMediaColumns holds the columns for the "room_media" table.
+	RoomMediaColumns = []*schema.Column{
+		{Name: "room_id", Type: field.TypeString, Size: 36},
+		{Name: "media_id", Type: field.TypeString, Size: 36},
+	}
+	// RoomMediaTable holds the schema information for the "room_media" table.
+	RoomMediaTable = &schema.Table{
+		Name:       "room_media",
+		Columns:    RoomMediaColumns,
+		PrimaryKey: []*schema.Column{RoomMediaColumns[0], RoomMediaColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "room_media_room_id",
+				Columns:    []*schema.Column{RoomMediaColumns[0]},
+				RefColumns: []*schema.Column{RoomsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "room_media_media_id",
+				Columns:    []*schema.Column{RoomMediaColumns[1]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// RoomCategoryRoomsColumns holds the columns for the "room_category_rooms" table.
+	RoomCategoryRoomsColumns = []*schema.Column{
+		{Name: "room_category_id", Type: field.TypeString, Size: 36},
+		{Name: "room_id", Type: field.TypeString, Size: 36},
+	}
+	// RoomCategoryRoomsTable holds the schema information for the "room_category_rooms" table.
+	RoomCategoryRoomsTable = &schema.Table{
+		Name:       "room_category_rooms",
+		Columns:    RoomCategoryRoomsColumns,
+		PrimaryKey: []*schema.Column{RoomCategoryRoomsColumns[0], RoomCategoryRoomsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "room_category_rooms_room_category_id",
+				Columns:    []*schema.Column{RoomCategoryRoomsColumns[0]},
+				RefColumns: []*schema.Column{RoomCategoriesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "room_category_rooms_room_id",
+				Columns:    []*schema.Column{RoomCategoryRoomsColumns[1]},
+				RefColumns: []*schema.Column{RoomsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// RoomCategoryMediaColumns holds the columns for the "room_category_media" table.
+	RoomCategoryMediaColumns = []*schema.Column{
+		{Name: "room_category_id", Type: field.TypeString, Size: 36},
+		{Name: "media_id", Type: field.TypeString, Size: 36},
+	}
+	// RoomCategoryMediaTable holds the schema information for the "room_category_media" table.
+	RoomCategoryMediaTable = &schema.Table{
+		Name:       "room_category_media",
+		Columns:    RoomCategoryMediaColumns,
+		PrimaryKey: []*schema.Column{RoomCategoryMediaColumns[0], RoomCategoryMediaColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "room_category_media_room_category_id",
+				Columns:    []*schema.Column{RoomCategoryMediaColumns[0]},
+				RefColumns: []*schema.Column{RoomCategoriesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "room_category_media_media_id",
+				Columns:    []*schema.Column{RoomCategoryMediaColumns[1]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// RoomCategoryAmenitiesColumns holds the columns for the "room_category_amenities" table.
+	RoomCategoryAmenitiesColumns = []*schema.Column{
+		{Name: "room_category_id", Type: field.TypeString, Size: 36},
+		{Name: "amenity_id", Type: field.TypeString, Size: 36},
+	}
+	// RoomCategoryAmenitiesTable holds the schema information for the "room_category_amenities" table.
+	RoomCategoryAmenitiesTable = &schema.Table{
+		Name:       "room_category_amenities",
+		Columns:    RoomCategoryAmenitiesColumns,
+		PrimaryKey: []*schema.Column{RoomCategoryAmenitiesColumns[0], RoomCategoryAmenitiesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "room_category_amenities_room_category_id",
+				Columns:    []*schema.Column{RoomCategoryAmenitiesColumns[0]},
+				RefColumns: []*schema.Column{RoomCategoriesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "room_category_amenities_amenity_id",
+				Columns:    []*schema.Column{RoomCategoryAmenitiesColumns[1]},
+				RefColumns: []*schema.Column{AmenitiesColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -2335,6 +2782,31 @@ var (
 			},
 		},
 	}
+	// UserTrainersColumns holds the columns for the "user_trainers" table.
+	UserTrainersColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "trainer_id", Type: field.TypeString, Size: 36},
+	}
+	// UserTrainersTable holds the schema information for the "user_trainers" table.
+	UserTrainersTable = &schema.Table{
+		Name:       "user_trainers",
+		Columns:    UserTrainersColumns,
+		PrimaryKey: []*schema.Column{UserTrainersColumns[0], UserTrainersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_trainers_user_id",
+				Columns:    []*schema.Column{UserTrainersColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_trainers_trainer_id",
+				Columns:    []*schema.Column{UserTrainersColumns[1]},
+				RefColumns: []*schema.Column{TrainersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountSettingsTable,
@@ -2353,6 +2825,7 @@ var (
 		EventsTable,
 		FaQsTable,
 		FeatureReleasesTable,
+		FitnessesTable,
 		HelpsTable,
 		InventoryAttributesTable,
 		InventoryTypesTable,
@@ -2369,7 +2842,9 @@ var (
 		PlaceInventoriesTable,
 		PlaceInventoryAttributesTable,
 		PlaceTablesTable,
+		PlansTable,
 		PostsTable,
+		PricesTable,
 		RatingsTable,
 		ReactionsTable,
 		ReservationsTable,
@@ -2377,10 +2852,13 @@ var (
 		ResoursesTable,
 		ReviewsTable,
 		RoomsTable,
+		RoomCategoriesTable,
 		StaffsTable,
+		SubscriptionsTable,
 		TemplatesTable,
 		TicketsTable,
 		TicketOptionsTable,
+		TrainersTable,
 		TransactionHistoriesTable,
 		UsersTable,
 		UserBusinessesTable,
@@ -2404,16 +2882,30 @@ var (
 		OrderOrderItemsTable,
 		PlaceMenusTable,
 		PlaceMediasTable,
+		PlaceRoomsTable,
 		PlaceNotificationsTable,
 		PlaceStaffsTable,
+		PlaceRoomCategoriesTable,
+		PlaceTrainersTable,
+		PlaceMembersTable,
+		PlaceRegularUsersTable,
 		PlaceInventoryMediaTable,
 		PlaceTableOrdersTable,
+		PlanUsersTable,
+		PlanBusinessesTable,
+		PlanPlacesTable,
 		PostNotificationsTable,
+		RoomAmenitiesTable,
+		RoomMediaTable,
+		RoomCategoryRoomsTable,
+		RoomCategoryMediaTable,
+		RoomCategoryAmenitiesTable,
 		StaffPermissionsTable,
 		UserPlacesTable,
 		UserNotificationsTable,
 		UserCreatedMenusTable,
 		UserUpdatedMenusTable,
+		UserTrainersTable,
 	}
 )
 
@@ -2458,9 +2950,10 @@ func init() {
 	LikesTable.ForeignKeys[4].RefTable = ReviewsTable
 	LikesTable.ForeignKeys[5].RefTable = UsersTable
 	MediaTable.ForeignKeys[0].RefTable = MenuItemsTable
-	MediaTable.ForeignKeys[1].RefTable = PostsTable
-	MediaTable.ForeignKeys[2].RefTable = ReviewsTable
-	MediaTable.ForeignKeys[3].RefTable = WebsitesTable
+	MediaTable.ForeignKeys[1].RefTable = PlansTable
+	MediaTable.ForeignKeys[2].RefTable = PostsTable
+	MediaTable.ForeignKeys[3].RefTable = ReviewsTable
+	MediaTable.ForeignKeys[4].RefTable = WebsitesTable
 	OrdersTable.ForeignKeys[0].RefTable = UsersTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
@@ -2480,6 +2973,7 @@ func init() {
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = PostsTable
 	PostsTable.ForeignKeys[2].RefTable = UsersTable
+	PricesTable.ForeignKeys[0].RefTable = PlansTable
 	RatingsTable.ForeignKeys[0].RefTable = BusinessesTable
 	RatingsTable.ForeignKeys[1].RefTable = EventsTable
 	RatingsTable.ForeignKeys[2].RefTable = PlacesTable
@@ -2488,7 +2982,8 @@ func init() {
 	RatingsTable.ForeignKeys[5].RefTable = EventsTable
 	RatingsTable.ForeignKeys[6].RefTable = UsersTable
 	ReservationsTable.ForeignKeys[0].RefTable = PlacesTable
-	ReservationsTable.ForeignKeys[1].RefTable = UsersTable
+	ReservationsTable.ForeignKeys[1].RefTable = RoomsTable
+	ReservationsTable.ForeignKeys[2].RefTable = UsersTable
 	ReservationBlocksTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	ReservationBlocksTable.ForeignKeys[1].RefTable = UsersTable
 	ReviewsTable.ForeignKeys[0].RefTable = PlacesTable
@@ -2496,8 +2991,10 @@ func init() {
 	ReviewsTable.ForeignKeys[2].RefTable = PlacesTable
 	ReviewsTable.ForeignKeys[3].RefTable = EventsTable
 	ReviewsTable.ForeignKeys[4].RefTable = UsersTable
-	RoomsTable.ForeignKeys[0].RefTable = PlacesTable
 	StaffsTable.ForeignKeys[0].RefTable = UsersTable
+	SubscriptionsTable.ForeignKeys[0].RefTable = PlansTable
+	SubscriptionsTable.ForeignKeys[1].RefTable = PricesTable
+	SubscriptionsTable.ForeignKeys[2].RefTable = UsersTable
 	TicketsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[1].RefTable = TicketsTable
@@ -2546,16 +3043,42 @@ func init() {
 	PlaceMenusTable.ForeignKeys[1].RefTable = MenusTable
 	PlaceMediasTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceMediasTable.ForeignKeys[1].RefTable = MediaTable
+	PlaceRoomsTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceRoomsTable.ForeignKeys[1].RefTable = RoomsTable
 	PlaceNotificationsTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	PlaceStaffsTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceStaffsTable.ForeignKeys[1].RefTable = StaffsTable
+	PlaceRoomCategoriesTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceRoomCategoriesTable.ForeignKeys[1].RefTable = RoomCategoriesTable
+	PlaceTrainersTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceTrainersTable.ForeignKeys[1].RefTable = TrainersTable
+	PlaceMembersTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceMembersTable.ForeignKeys[1].RefTable = UsersTable
+	PlaceRegularUsersTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceRegularUsersTable.ForeignKeys[1].RefTable = UsersTable
 	PlaceInventoryMediaTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	PlaceInventoryMediaTable.ForeignKeys[1].RefTable = MediaTable
 	PlaceTableOrdersTable.ForeignKeys[0].RefTable = PlaceTablesTable
 	PlaceTableOrdersTable.ForeignKeys[1].RefTable = OrdersTable
+	PlanUsersTable.ForeignKeys[0].RefTable = PlansTable
+	PlanUsersTable.ForeignKeys[1].RefTable = UsersTable
+	PlanBusinessesTable.ForeignKeys[0].RefTable = PlansTable
+	PlanBusinessesTable.ForeignKeys[1].RefTable = BusinessesTable
+	PlanPlacesTable.ForeignKeys[0].RefTable = PlansTable
+	PlanPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	PostNotificationsTable.ForeignKeys[0].RefTable = PostsTable
 	PostNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
+	RoomAmenitiesTable.ForeignKeys[0].RefTable = RoomsTable
+	RoomAmenitiesTable.ForeignKeys[1].RefTable = AmenitiesTable
+	RoomMediaTable.ForeignKeys[0].RefTable = RoomsTable
+	RoomMediaTable.ForeignKeys[1].RefTable = MediaTable
+	RoomCategoryRoomsTable.ForeignKeys[0].RefTable = RoomCategoriesTable
+	RoomCategoryRoomsTable.ForeignKeys[1].RefTable = RoomsTable
+	RoomCategoryMediaTable.ForeignKeys[0].RefTable = RoomCategoriesTable
+	RoomCategoryMediaTable.ForeignKeys[1].RefTable = MediaTable
+	RoomCategoryAmenitiesTable.ForeignKeys[0].RefTable = RoomCategoriesTable
+	RoomCategoryAmenitiesTable.ForeignKeys[1].RefTable = AmenitiesTable
 	StaffPermissionsTable.ForeignKeys[0].RefTable = StaffsTable
 	StaffPermissionsTable.ForeignKeys[1].RefTable = PermissionsTable
 	UserPlacesTable.ForeignKeys[0].RefTable = UsersTable
@@ -2566,4 +3089,6 @@ func init() {
 	UserCreatedMenusTable.ForeignKeys[1].RefTable = MenusTable
 	UserUpdatedMenusTable.ForeignKeys[0].RefTable = UsersTable
 	UserUpdatedMenusTable.ForeignKeys[1].RefTable = MenusTable
+	UserTrainersTable.ForeignKeys[0].RefTable = UsersTable
+	UserTrainersTable.ForeignKeys[1].RefTable = TrainersTable
 }

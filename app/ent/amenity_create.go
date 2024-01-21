@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"placio-app/ent/amenity"
 	"placio-app/ent/place"
+	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -51,6 +53,36 @@ func (ac *AmenityCreate) AddPlaces(p ...*Place) *AmenityCreate {
 		ids[i] = p[i].ID
 	}
 	return ac.AddPlaceIDs(ids...)
+}
+
+// AddRoomIDs adds the "rooms" edge to the Room entity by IDs.
+func (ac *AmenityCreate) AddRoomIDs(ids ...string) *AmenityCreate {
+	ac.mutation.AddRoomIDs(ids...)
+	return ac
+}
+
+// AddRooms adds the "rooms" edges to the Room entity.
+func (ac *AmenityCreate) AddRooms(r ...*Room) *AmenityCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ac.AddRoomIDs(ids...)
+}
+
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by IDs.
+func (ac *AmenityCreate) AddRoomCategoryIDs(ids ...string) *AmenityCreate {
+	ac.mutation.AddRoomCategoryIDs(ids...)
+	return ac
+}
+
+// AddRoomCategories adds the "room_categories" edges to the RoomCategory entity.
+func (ac *AmenityCreate) AddRoomCategories(r ...*RoomCategory) *AmenityCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ac.AddRoomCategoryIDs(ids...)
 }
 
 // Mutation returns the AmenityMutation object of the builder.
@@ -150,6 +182,38 @@ func (ac *AmenityCreate) createSpec() (*Amenity, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RoomsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomsTable,
+			Columns: amenity.RoomsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RoomCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomCategoriesTable,
+			Columns: amenity.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

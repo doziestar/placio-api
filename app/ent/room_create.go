@@ -6,9 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
+	"placio-app/ent/reservation"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -21,21 +25,121 @@ type RoomCreate struct {
 	hooks    []Hook
 }
 
-// SetNumber sets the "number" field.
-func (rc *RoomCreate) SetNumber(s string) *RoomCreate {
-	rc.mutation.SetNumber(s)
+// SetName sets the "name" field.
+func (rc *RoomCreate) SetName(s string) *RoomCreate {
+	rc.mutation.SetName(s)
 	return rc
 }
 
-// SetType sets the "type" field.
-func (rc *RoomCreate) SetType(s string) *RoomCreate {
-	rc.mutation.SetType(s)
+// SetNillableName sets the "name" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableName(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetName(*s)
+	}
 	return rc
 }
 
-// SetPrice sets the "price" field.
-func (rc *RoomCreate) SetPrice(f float64) *RoomCreate {
-	rc.mutation.SetPrice(f)
+// SetRoomNumber sets the "room_number" field.
+func (rc *RoomCreate) SetRoomNumber(s string) *RoomCreate {
+	rc.mutation.SetRoomNumber(s)
+	return rc
+}
+
+// SetNillableRoomNumber sets the "room_number" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomNumber(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetRoomNumber(*s)
+	}
+	return rc
+}
+
+// SetRoomType sets the "room_type" field.
+func (rc *RoomCreate) SetRoomType(s string) *RoomCreate {
+	rc.mutation.SetRoomType(s)
+	return rc
+}
+
+// SetNillableRoomType sets the "room_type" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomType(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetRoomType(*s)
+	}
+	return rc
+}
+
+// SetRoomStatus sets the "room_status" field.
+func (rc *RoomCreate) SetRoomStatus(s string) *RoomCreate {
+	rc.mutation.SetRoomStatus(s)
+	return rc
+}
+
+// SetNillableRoomStatus sets the "room_status" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomStatus(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetRoomStatus(*s)
+	}
+	return rc
+}
+
+// SetRoomRating sets the "room_rating" field.
+func (rc *RoomCreate) SetRoomRating(s string) *RoomCreate {
+	rc.mutation.SetRoomRating(s)
+	return rc
+}
+
+// SetNillableRoomRating sets the "room_rating" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomRating(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetRoomRating(*s)
+	}
+	return rc
+}
+
+// SetRoomPrice sets the "room_price" field.
+func (rc *RoomCreate) SetRoomPrice(f float64) *RoomCreate {
+	rc.mutation.SetRoomPrice(f)
+	return rc
+}
+
+// SetNillableRoomPrice sets the "room_price" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableRoomPrice(f *float64) *RoomCreate {
+	if f != nil {
+		rc.SetRoomPrice(*f)
+	}
+	return rc
+}
+
+// SetQrCode sets the "qr_code" field.
+func (rc *RoomCreate) SetQrCode(s string) *RoomCreate {
+	rc.mutation.SetQrCode(s)
+	return rc
+}
+
+// SetNillableQrCode sets the "qr_code" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableQrCode(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetQrCode(*s)
+	}
+	return rc
+}
+
+// SetStatus sets the "status" field.
+func (rc *RoomCreate) SetStatus(r room.Status) *RoomCreate {
+	rc.mutation.SetStatus(r)
+	return rc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableStatus(r *room.Status) *RoomCreate {
+	if r != nil {
+		rc.SetStatus(*r)
+	}
+	return rc
+}
+
+// SetExtras sets the "extras" field.
+func (rc *RoomCreate) SetExtras(m map[string]interface{}) *RoomCreate {
+	rc.mutation.SetExtras(m)
 	return rc
 }
 
@@ -59,6 +163,14 @@ func (rc *RoomCreate) SetAvailability(b bool) *RoomCreate {
 	return rc
 }
 
+// SetNillableAvailability sets the "availability" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableAvailability(b *bool) *RoomCreate {
+	if b != nil {
+		rc.SetAvailability(*b)
+	}
+	return rc
+}
+
 // SetImage sets the "image" field.
 func (rc *RoomCreate) SetImage(s string) *RoomCreate {
 	rc.mutation.SetImage(s)
@@ -79,23 +191,34 @@ func (rc *RoomCreate) SetID(s string) *RoomCreate {
 	return rc
 }
 
-// SetPlaceID sets the "place" edge to the Place entity by ID.
-func (rc *RoomCreate) SetPlaceID(id string) *RoomCreate {
-	rc.mutation.SetPlaceID(id)
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (rc *RoomCreate) AddPlaceIDs(ids ...string) *RoomCreate {
+	rc.mutation.AddPlaceIDs(ids...)
 	return rc
 }
 
-// SetNillablePlaceID sets the "place" edge to the Place entity by ID if the given value is not nil.
-func (rc *RoomCreate) SetNillablePlaceID(id *string) *RoomCreate {
-	if id != nil {
-		rc = rc.SetPlaceID(*id)
+// AddPlace adds the "place" edges to the Place entity.
+func (rc *RoomCreate) AddPlace(p ...*Place) *RoomCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
+	return rc.AddPlaceIDs(ids...)
+}
+
+// AddRoomCategoryIDs adds the "room_category" edge to the RoomCategory entity by IDs.
+func (rc *RoomCreate) AddRoomCategoryIDs(ids ...string) *RoomCreate {
+	rc.mutation.AddRoomCategoryIDs(ids...)
 	return rc
 }
 
-// SetPlace sets the "place" edge to the Place entity.
-func (rc *RoomCreate) SetPlace(p *Place) *RoomCreate {
-	return rc.SetPlaceID(p.ID)
+// AddRoomCategory adds the "room_category" edges to the RoomCategory entity.
+func (rc *RoomCreate) AddRoomCategory(r ...*RoomCategory) *RoomCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return rc.AddRoomCategoryIDs(ids...)
 }
 
 // AddBookingIDs adds the "bookings" edge to the Booking entity by IDs.
@@ -113,6 +236,51 @@ func (rc *RoomCreate) AddBookings(b ...*Booking) *RoomCreate {
 	return rc.AddBookingIDs(ids...)
 }
 
+// AddAmenityIDs adds the "amenities" edge to the Amenity entity by IDs.
+func (rc *RoomCreate) AddAmenityIDs(ids ...string) *RoomCreate {
+	rc.mutation.AddAmenityIDs(ids...)
+	return rc
+}
+
+// AddAmenities adds the "amenities" edges to the Amenity entity.
+func (rc *RoomCreate) AddAmenities(a ...*Amenity) *RoomCreate {
+	ids := make([]string, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return rc.AddAmenityIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (rc *RoomCreate) AddMediumIDs(ids ...string) *RoomCreate {
+	rc.mutation.AddMediumIDs(ids...)
+	return rc
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (rc *RoomCreate) AddMedia(m ...*Media) *RoomCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return rc.AddMediumIDs(ids...)
+}
+
+// AddReservationIDs adds the "reservations" edge to the Reservation entity by IDs.
+func (rc *RoomCreate) AddReservationIDs(ids ...string) *RoomCreate {
+	rc.mutation.AddReservationIDs(ids...)
+	return rc
+}
+
+// AddReservations adds the "reservations" edges to the Reservation entity.
+func (rc *RoomCreate) AddReservations(r ...*Reservation) *RoomCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return rc.AddReservationIDs(ids...)
+}
+
 // Mutation returns the RoomMutation object of the builder.
 func (rc *RoomCreate) Mutation() *RoomMutation {
 	return rc.mutation
@@ -120,6 +288,7 @@ func (rc *RoomCreate) Mutation() *RoomMutation {
 
 // Save creates the Room in the database.
 func (rc *RoomCreate) Save(ctx context.Context) (*Room, error) {
+	rc.defaults()
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -145,16 +314,27 @@ func (rc *RoomCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (rc *RoomCreate) defaults() {
+	if _, ok := rc.mutation.Status(); !ok {
+		v := room.DefaultStatus
+		rc.mutation.SetStatus(v)
+	}
+	if _, ok := rc.mutation.Availability(); !ok {
+		v := room.DefaultAvailability
+		rc.mutation.SetAvailability(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (rc *RoomCreate) check() error {
-	if _, ok := rc.mutation.Number(); !ok {
-		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "Room.number"`)}
+	if _, ok := rc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Room.status"`)}
 	}
-	if _, ok := rc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Room.type"`)}
-	}
-	if _, ok := rc.mutation.Price(); !ok {
-		return &ValidationError{Name: "price", err: errors.New(`ent: missing required field "Room.price"`)}
+	if v, ok := rc.mutation.Status(); ok {
+		if err := room.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Room.status": %w`, err)}
+		}
 	}
 	if _, ok := rc.mutation.Availability(); !ok {
 		return &ValidationError{Name: "availability", err: errors.New(`ent: missing required field "Room.availability"`)}
@@ -199,17 +379,41 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := rc.mutation.Number(); ok {
-		_spec.SetField(room.FieldNumber, field.TypeString, value)
-		_node.Number = value
+	if value, ok := rc.mutation.Name(); ok {
+		_spec.SetField(room.FieldName, field.TypeString, value)
+		_node.Name = value
 	}
-	if value, ok := rc.mutation.GetType(); ok {
-		_spec.SetField(room.FieldType, field.TypeString, value)
-		_node.Type = value
+	if value, ok := rc.mutation.RoomNumber(); ok {
+		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
+		_node.RoomNumber = value
 	}
-	if value, ok := rc.mutation.Price(); ok {
-		_spec.SetField(room.FieldPrice, field.TypeFloat64, value)
-		_node.Price = value
+	if value, ok := rc.mutation.RoomType(); ok {
+		_spec.SetField(room.FieldRoomType, field.TypeString, value)
+		_node.RoomType = value
+	}
+	if value, ok := rc.mutation.RoomStatus(); ok {
+		_spec.SetField(room.FieldRoomStatus, field.TypeString, value)
+		_node.RoomStatus = value
+	}
+	if value, ok := rc.mutation.RoomRating(); ok {
+		_spec.SetField(room.FieldRoomRating, field.TypeString, value)
+		_node.RoomRating = value
+	}
+	if value, ok := rc.mutation.RoomPrice(); ok {
+		_spec.SetField(room.FieldRoomPrice, field.TypeFloat64, value)
+		_node.RoomPrice = value
+	}
+	if value, ok := rc.mutation.QrCode(); ok {
+		_spec.SetField(room.FieldQrCode, field.TypeString, value)
+		_node.QrCode = value
+	}
+	if value, ok := rc.mutation.Status(); ok {
+		_spec.SetField(room.FieldStatus, field.TypeEnum, value)
+		_node.Status = value
+	}
+	if value, ok := rc.mutation.Extras(); ok {
+		_spec.SetField(room.FieldExtras, field.TypeJSON, value)
+		_node.Extras = value
 	}
 	if value, ok := rc.mutation.Description(); ok {
 		_spec.SetField(room.FieldDescription, field.TypeString, value)
@@ -225,10 +429,10 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 	}
 	if nodes := rc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   room.PlaceTable,
-			Columns: []string{room.PlaceColumn},
+			Columns: room.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
@@ -237,7 +441,22 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.place_rooms = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.RoomCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.RoomCategoryTable,
+			Columns: room.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := rc.mutation.BookingsIDs(); len(nodes) > 0 {
@@ -249,6 +468,54 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.AmenitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.AmenitiesTable,
+			Columns: room.AmenitiesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(amenity.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.MediaTable,
+			Columns: room.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.ReservationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   room.ReservationsTable,
+			Columns: []string{room.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -277,6 +544,7 @@ func (rcb *RoomCreateBulk) Save(ctx context.Context) ([]*Room, error) {
 	for i := range rcb.builders {
 		func(i int, root context.Context) {
 			builder := rcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*RoomMutation)
 				if !ok {

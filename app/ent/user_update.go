@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/order"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
@@ -26,6 +27,8 @@ import (
 	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
 	"placio-app/ent/staff"
+	"placio-app/ent/subscription"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -914,6 +917,81 @@ func (uu *UserUpdate) AddUpdatedMenus(m ...*Menu) *UserUpdate {
 	return uu.AddUpdatedMenuIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (uu *UserUpdate) AddPlanIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddPlanIDs(ids...)
+	return uu
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (uu *UserUpdate) AddPlans(p ...*Plan) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddPlanIDs(ids...)
+}
+
+// AddSubscriptionIDs adds the "subscriptions" edge to the Subscription entity by IDs.
+func (uu *UserUpdate) AddSubscriptionIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddSubscriptionIDs(ids...)
+	return uu
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the Subscription entity.
+func (uu *UserUpdate) AddSubscriptions(s ...*Subscription) *UserUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.AddSubscriptionIDs(ids...)
+}
+
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (uu *UserUpdate) AddTrainerIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddTrainerIDs(ids...)
+	return uu
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (uu *UserUpdate) AddTrainers(t ...*Trainer) *UserUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.AddTrainerIDs(ids...)
+}
+
+// AddMemberOfIDs adds the "memberOf" edge to the Place entity by IDs.
+func (uu *UserUpdate) AddMemberOfIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddMemberOfIDs(ids...)
+	return uu
+}
+
+// AddMemberOf adds the "memberOf" edges to the Place entity.
+func (uu *UserUpdate) AddMemberOf(p ...*Place) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddMemberOfIDs(ids...)
+}
+
+// AddCustomerIDs adds the "customer" edge to the Place entity by IDs.
+func (uu *UserUpdate) AddCustomerIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddCustomerIDs(ids...)
+	return uu
+}
+
+// AddCustomer adds the "customer" edges to the Place entity.
+func (uu *UserUpdate) AddCustomer(p ...*Place) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddCustomerIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1559,6 +1637,111 @@ func (uu *UserUpdate) RemoveUpdatedMenus(m ...*Menu) *UserUpdate {
 		ids[i] = m[i].ID
 	}
 	return uu.RemoveUpdatedMenuIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (uu *UserUpdate) ClearPlans() *UserUpdate {
+	uu.mutation.ClearPlans()
+	return uu
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (uu *UserUpdate) RemovePlanIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemovePlanIDs(ids...)
+	return uu
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (uu *UserUpdate) RemovePlans(p ...*Plan) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemovePlanIDs(ids...)
+}
+
+// ClearSubscriptions clears all "subscriptions" edges to the Subscription entity.
+func (uu *UserUpdate) ClearSubscriptions() *UserUpdate {
+	uu.mutation.ClearSubscriptions()
+	return uu
+}
+
+// RemoveSubscriptionIDs removes the "subscriptions" edge to Subscription entities by IDs.
+func (uu *UserUpdate) RemoveSubscriptionIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveSubscriptionIDs(ids...)
+	return uu
+}
+
+// RemoveSubscriptions removes "subscriptions" edges to Subscription entities.
+func (uu *UserUpdate) RemoveSubscriptions(s ...*Subscription) *UserUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.RemoveSubscriptionIDs(ids...)
+}
+
+// ClearTrainers clears all "trainers" edges to the Trainer entity.
+func (uu *UserUpdate) ClearTrainers() *UserUpdate {
+	uu.mutation.ClearTrainers()
+	return uu
+}
+
+// RemoveTrainerIDs removes the "trainers" edge to Trainer entities by IDs.
+func (uu *UserUpdate) RemoveTrainerIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveTrainerIDs(ids...)
+	return uu
+}
+
+// RemoveTrainers removes "trainers" edges to Trainer entities.
+func (uu *UserUpdate) RemoveTrainers(t ...*Trainer) *UserUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.RemoveTrainerIDs(ids...)
+}
+
+// ClearMemberOf clears all "memberOf" edges to the Place entity.
+func (uu *UserUpdate) ClearMemberOf() *UserUpdate {
+	uu.mutation.ClearMemberOf()
+	return uu
+}
+
+// RemoveMemberOfIDs removes the "memberOf" edge to Place entities by IDs.
+func (uu *UserUpdate) RemoveMemberOfIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveMemberOfIDs(ids...)
+	return uu
+}
+
+// RemoveMemberOf removes "memberOf" edges to Place entities.
+func (uu *UserUpdate) RemoveMemberOf(p ...*Place) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemoveMemberOfIDs(ids...)
+}
+
+// ClearCustomer clears all "customer" edges to the Place entity.
+func (uu *UserUpdate) ClearCustomer() *UserUpdate {
+	uu.mutation.ClearCustomer()
+	return uu
+}
+
+// RemoveCustomerIDs removes the "customer" edge to Place entities by IDs.
+func (uu *UserUpdate) RemoveCustomerIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveCustomerIDs(ids...)
+	return uu
+}
+
+// RemoveCustomer removes "customer" edges to Place entities.
+func (uu *UserUpdate) RemoveCustomer(p ...*Place) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemoveCustomerIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -3140,6 +3323,231 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedPlansIDs(); len(nodes) > 0 && !uu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SubscriptionsTable,
+			Columns: []string{user.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedSubscriptionsIDs(); len(nodes) > 0 && !uu.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SubscriptionsTable,
+			Columns: []string{user.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SubscriptionsTable,
+			Columns: []string{user.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTrainersIDs(); len(nodes) > 0 && !uu.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.MemberOfCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.MemberOfTable,
+			Columns: user.MemberOfPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedMemberOfIDs(); len(nodes) > 0 && !uu.mutation.MemberOfCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.MemberOfTable,
+			Columns: user.MemberOfPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.MemberOfIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.MemberOfTable,
+			Columns: user.MemberOfPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.CustomerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.CustomerTable,
+			Columns: user.CustomerPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedCustomerIDs(); len(nodes) > 0 && !uu.mutation.CustomerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.CustomerTable,
+			Columns: user.CustomerPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.CustomerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.CustomerTable,
+			Columns: user.CustomerPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -4019,6 +4427,81 @@ func (uuo *UserUpdateOne) AddUpdatedMenus(m ...*Menu) *UserUpdateOne {
 	return uuo.AddUpdatedMenuIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (uuo *UserUpdateOne) AddPlanIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddPlanIDs(ids...)
+	return uuo
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (uuo *UserUpdateOne) AddPlans(p ...*Plan) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddPlanIDs(ids...)
+}
+
+// AddSubscriptionIDs adds the "subscriptions" edge to the Subscription entity by IDs.
+func (uuo *UserUpdateOne) AddSubscriptionIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddSubscriptionIDs(ids...)
+	return uuo
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the Subscription entity.
+func (uuo *UserUpdateOne) AddSubscriptions(s ...*Subscription) *UserUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.AddSubscriptionIDs(ids...)
+}
+
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (uuo *UserUpdateOne) AddTrainerIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddTrainerIDs(ids...)
+	return uuo
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (uuo *UserUpdateOne) AddTrainers(t ...*Trainer) *UserUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.AddTrainerIDs(ids...)
+}
+
+// AddMemberOfIDs adds the "memberOf" edge to the Place entity by IDs.
+func (uuo *UserUpdateOne) AddMemberOfIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddMemberOfIDs(ids...)
+	return uuo
+}
+
+// AddMemberOf adds the "memberOf" edges to the Place entity.
+func (uuo *UserUpdateOne) AddMemberOf(p ...*Place) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddMemberOfIDs(ids...)
+}
+
+// AddCustomerIDs adds the "customer" edge to the Place entity by IDs.
+func (uuo *UserUpdateOne) AddCustomerIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddCustomerIDs(ids...)
+	return uuo
+}
+
+// AddCustomer adds the "customer" edges to the Place entity.
+func (uuo *UserUpdateOne) AddCustomer(p ...*Place) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddCustomerIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -4664,6 +5147,111 @@ func (uuo *UserUpdateOne) RemoveUpdatedMenus(m ...*Menu) *UserUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return uuo.RemoveUpdatedMenuIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (uuo *UserUpdateOne) ClearPlans() *UserUpdateOne {
+	uuo.mutation.ClearPlans()
+	return uuo
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (uuo *UserUpdateOne) RemovePlanIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemovePlanIDs(ids...)
+	return uuo
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (uuo *UserUpdateOne) RemovePlans(p ...*Plan) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemovePlanIDs(ids...)
+}
+
+// ClearSubscriptions clears all "subscriptions" edges to the Subscription entity.
+func (uuo *UserUpdateOne) ClearSubscriptions() *UserUpdateOne {
+	uuo.mutation.ClearSubscriptions()
+	return uuo
+}
+
+// RemoveSubscriptionIDs removes the "subscriptions" edge to Subscription entities by IDs.
+func (uuo *UserUpdateOne) RemoveSubscriptionIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveSubscriptionIDs(ids...)
+	return uuo
+}
+
+// RemoveSubscriptions removes "subscriptions" edges to Subscription entities.
+func (uuo *UserUpdateOne) RemoveSubscriptions(s ...*Subscription) *UserUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.RemoveSubscriptionIDs(ids...)
+}
+
+// ClearTrainers clears all "trainers" edges to the Trainer entity.
+func (uuo *UserUpdateOne) ClearTrainers() *UserUpdateOne {
+	uuo.mutation.ClearTrainers()
+	return uuo
+}
+
+// RemoveTrainerIDs removes the "trainers" edge to Trainer entities by IDs.
+func (uuo *UserUpdateOne) RemoveTrainerIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveTrainerIDs(ids...)
+	return uuo
+}
+
+// RemoveTrainers removes "trainers" edges to Trainer entities.
+func (uuo *UserUpdateOne) RemoveTrainers(t ...*Trainer) *UserUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.RemoveTrainerIDs(ids...)
+}
+
+// ClearMemberOf clears all "memberOf" edges to the Place entity.
+func (uuo *UserUpdateOne) ClearMemberOf() *UserUpdateOne {
+	uuo.mutation.ClearMemberOf()
+	return uuo
+}
+
+// RemoveMemberOfIDs removes the "memberOf" edge to Place entities by IDs.
+func (uuo *UserUpdateOne) RemoveMemberOfIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveMemberOfIDs(ids...)
+	return uuo
+}
+
+// RemoveMemberOf removes "memberOf" edges to Place entities.
+func (uuo *UserUpdateOne) RemoveMemberOf(p ...*Place) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemoveMemberOfIDs(ids...)
+}
+
+// ClearCustomer clears all "customer" edges to the Place entity.
+func (uuo *UserUpdateOne) ClearCustomer() *UserUpdateOne {
+	uuo.mutation.ClearCustomer()
+	return uuo
+}
+
+// RemoveCustomerIDs removes the "customer" edge to Place entities by IDs.
+func (uuo *UserUpdateOne) RemoveCustomerIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveCustomerIDs(ids...)
+	return uuo
+}
+
+// RemoveCustomer removes "customer" edges to Place entities.
+func (uuo *UserUpdateOne) RemoveCustomer(p ...*Place) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemoveCustomerIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -6268,6 +6856,231 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedPlansIDs(); len(nodes) > 0 && !uuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PlansTable,
+			Columns: user.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SubscriptionsTable,
+			Columns: []string{user.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedSubscriptionsIDs(); len(nodes) > 0 && !uuo.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SubscriptionsTable,
+			Columns: []string{user.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SubscriptionsTable,
+			Columns: []string{user.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTrainersIDs(); len(nodes) > 0 && !uuo.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.TrainersTable,
+			Columns: user.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.MemberOfCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.MemberOfTable,
+			Columns: user.MemberOfPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedMemberOfIDs(); len(nodes) > 0 && !uuo.mutation.MemberOfCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.MemberOfTable,
+			Columns: user.MemberOfPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.MemberOfIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.MemberOfTable,
+			Columns: user.MemberOfPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.CustomerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.CustomerTable,
+			Columns: user.CustomerPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedCustomerIDs(); len(nodes) > 0 && !uuo.mutation.CustomerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.CustomerTable,
+			Columns: user.CustomerPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.CustomerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.CustomerTable,
+			Columns: user.CustomerPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

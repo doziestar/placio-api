@@ -227,6 +227,52 @@ func HasPlacesWith(preds ...predicate.Place) predicate.Amenity {
 	})
 }
 
+// HasRooms applies the HasEdge predicate on the "rooms" edge.
+func HasRooms() predicate.Amenity {
+	return predicate.Amenity(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, RoomsTable, RoomsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRoomsWith applies the HasEdge predicate on the "rooms" edge with a given conditions (other predicates).
+func HasRoomsWith(preds ...predicate.Room) predicate.Amenity {
+	return predicate.Amenity(func(s *sql.Selector) {
+		step := newRoomsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRoomCategories applies the HasEdge predicate on the "room_categories" edge.
+func HasRoomCategories() predicate.Amenity {
+	return predicate.Amenity(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, RoomCategoriesTable, RoomCategoriesPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRoomCategoriesWith applies the HasEdge predicate on the "room_categories" edge with a given conditions (other predicates).
+func HasRoomCategoriesWith(preds ...predicate.RoomCategory) predicate.Amenity {
+	return predicate.Amenity(func(s *sql.Selector) {
+		step := newRoomCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Amenity) predicate.Amenity {
 	return predicate.Amenity(sql.AndPredicates(predicates...))

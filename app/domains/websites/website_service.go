@@ -2,7 +2,6 @@ package websites
 
 import (
 	"context"
-	"github.com/google/uuid"
 	"log"
 	businessService "placio-app/domains/business"
 	"placio-app/domains/media"
@@ -11,6 +10,8 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/website"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type IWebsite interface {
@@ -54,7 +55,23 @@ func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID, dom
 			Where(website.DomainName(domainName)).
 			WithCustomBlocks().
 			WithAssets().
-			WithBusiness().
+			WithBusiness(func(bq *ent.BusinessQuery) {
+				bq.WithPlaces(func(pq *ent.PlaceQuery) {
+					pq.WithMenus(func(mq *ent.MenuQuery) {
+						mq.WithMenuItems(func(miq *ent.MenuItemQuery) {
+							miq.WithMedia()
+						})
+
+						mq.WithMedia()
+					})
+
+					pq.WithMedias()
+				})
+
+				bq.WithEvents(func(eq *ent.EventQuery) {
+					// eq.WithEventItems()
+				})
+			}).
 			First(ctx)
 		if err != nil {
 			return nil, err

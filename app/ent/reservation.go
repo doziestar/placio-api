@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"placio-app/ent/place"
 	"placio-app/ent/reservation"
+	"placio-app/ent/room"
 	"placio-app/ent/user"
 	"strings"
 	"time"
@@ -19,18 +20,17 @@ type Reservation struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
-	// Date holds the value of the "date" field.
-	Date time.Time `json:"date,omitempty"`
-	// Time holds the value of the "time" field.
-	Time time.Time `json:"time,omitempty"`
-	// NumberOfPeople holds the value of the "numberOfPeople" field.
-	NumberOfPeople int `json:"numberOfPeople,omitempty"`
+	// StartDate holds the value of the "startDate" field.
+	StartDate time.Time `json:"startDate,omitempty"`
+	// EndDate holds the value of the "endDate" field.
+	EndDate time.Time `json:"endDate,omitempty"`
 	// Status holds the value of the "status" field.
 	Status string `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ReservationQuery when eager-loading is set.
 	Edges              ReservationEdges `json:"edges"`
 	place_reservations *string
+	room_reservations  *string
 	user_reservations  *string
 	selectValues       sql.SelectValues
 }
@@ -39,11 +39,13 @@ type Reservation struct {
 type ReservationEdges struct {
 	// Place holds the value of the place edge.
 	Place *Place `json:"place,omitempty"`
+	// Room holds the value of the room edge.
+	Room *Room `json:"room,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -59,10 +61,23 @@ func (e ReservationEdges) PlaceOrErr() (*Place, error) {
 	return nil, &NotLoadedError{edge: "place"}
 }
 
+// RoomOrErr returns the Room value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ReservationEdges) RoomOrErr() (*Room, error) {
+	if e.loadedTypes[1] {
+		if e.Room == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: room.Label}
+		}
+		return e.Room, nil
+	}
+	return nil, &NotLoadedError{edge: "room"}
+}
+
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ReservationEdges) UserOrErr() (*User, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.User == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: user.Label}
@@ -77,15 +92,15 @@ func (*Reservation) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case reservation.FieldNumberOfPeople:
-			values[i] = new(sql.NullInt64)
 		case reservation.FieldID, reservation.FieldStatus:
 			values[i] = new(sql.NullString)
-		case reservation.FieldDate, reservation.FieldTime:
+		case reservation.FieldStartDate, reservation.FieldEndDate:
 			values[i] = new(sql.NullTime)
 		case reservation.ForeignKeys[0]: // place_reservations
 			values[i] = new(sql.NullString)
-		case reservation.ForeignKeys[1]: // user_reservations
+		case reservation.ForeignKeys[1]: // room_reservations
+			values[i] = new(sql.NullString)
+		case reservation.ForeignKeys[2]: // user_reservations
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -108,23 +123,17 @@ func (r *Reservation) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.ID = value.String
 			}
-		case reservation.FieldDate:
+		case reservation.FieldStartDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field date", values[i])
+				return fmt.Errorf("unexpected type %T for field startDate", values[i])
 			} else if value.Valid {
-				r.Date = value.Time
+				r.StartDate = value.Time
 			}
-		case reservation.FieldTime:
+		case reservation.FieldEndDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field time", values[i])
+				return fmt.Errorf("unexpected type %T for field endDate", values[i])
 			} else if value.Valid {
-				r.Time = value.Time
-			}
-		case reservation.FieldNumberOfPeople:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field numberOfPeople", values[i])
-			} else if value.Valid {
-				r.NumberOfPeople = int(value.Int64)
+				r.EndDate = value.Time
 			}
 		case reservation.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -140,6 +149,13 @@ func (r *Reservation) assignValues(columns []string, values []any) error {
 				*r.place_reservations = value.String
 			}
 		case reservation.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field room_reservations", values[i])
+			} else if value.Valid {
+				r.room_reservations = new(string)
+				*r.room_reservations = value.String
+			}
+		case reservation.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_reservations", values[i])
 			} else if value.Valid {
@@ -162,6 +178,11 @@ func (r *Reservation) Value(name string) (ent.Value, error) {
 // QueryPlace queries the "place" edge of the Reservation entity.
 func (r *Reservation) QueryPlace() *PlaceQuery {
 	return NewReservationClient(r.config).QueryPlace(r)
+}
+
+// QueryRoom queries the "room" edge of the Reservation entity.
+func (r *Reservation) QueryRoom() *RoomQuery {
+	return NewReservationClient(r.config).QueryRoom(r)
 }
 
 // QueryUser queries the "user" edge of the Reservation entity.
@@ -192,14 +213,11 @@ func (r *Reservation) String() string {
 	var builder strings.Builder
 	builder.WriteString("Reservation(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", r.ID))
-	builder.WriteString("date=")
-	builder.WriteString(r.Date.Format(time.ANSIC))
+	builder.WriteString("startDate=")
+	builder.WriteString(r.StartDate.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("time=")
-	builder.WriteString(r.Time.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("numberOfPeople=")
-	builder.WriteString(fmt.Sprintf("%v", r.NumberOfPeople))
+	builder.WriteString("endDate=")
+	builder.WriteString(r.EndDate.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(r.Status)

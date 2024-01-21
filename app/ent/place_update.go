@@ -19,12 +19,15 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
+	"placio-app/ent/trainer"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userlikeplace"
@@ -998,6 +1001,81 @@ func (pu *PlaceUpdate) AddStaffs(s ...*Staff) *PlaceUpdate {
 	return pu.AddStaffIDs(ids...)
 }
 
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by IDs.
+func (pu *PlaceUpdate) AddRoomCategoryIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddRoomCategoryIDs(ids...)
+	return pu
+}
+
+// AddRoomCategories adds the "room_categories" edges to the RoomCategory entity.
+func (pu *PlaceUpdate) AddRoomCategories(r ...*RoomCategory) *PlaceUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return pu.AddRoomCategoryIDs(ids...)
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (pu *PlaceUpdate) AddPlanIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddPlanIDs(ids...)
+	return pu
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (pu *PlaceUpdate) AddPlans(p ...*Plan) *PlaceUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddPlanIDs(ids...)
+}
+
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (pu *PlaceUpdate) AddTrainerIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddTrainerIDs(ids...)
+	return pu
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (pu *PlaceUpdate) AddTrainers(t ...*Trainer) *PlaceUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pu.AddTrainerIDs(ids...)
+}
+
+// AddMemberIDs adds the "members" edge to the User entity by IDs.
+func (pu *PlaceUpdate) AddMemberIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddMemberIDs(ids...)
+	return pu
+}
+
+// AddMembers adds the "members" edges to the User entity.
+func (pu *PlaceUpdate) AddMembers(u ...*User) *PlaceUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pu.AddMemberIDs(ids...)
+}
+
+// AddRegularUserIDs adds the "regularUsers" edge to the User entity by IDs.
+func (pu *PlaceUpdate) AddRegularUserIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddRegularUserIDs(ids...)
+	return pu
+}
+
+// AddRegularUsers adds the "regularUsers" edges to the User entity.
+func (pu *PlaceUpdate) AddRegularUsers(u ...*User) *PlaceUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pu.AddRegularUserIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pu *PlaceUpdate) Mutation() *PlaceMutation {
 	return pu.mutation
@@ -1406,6 +1484,111 @@ func (pu *PlaceUpdate) RemoveStaffs(s ...*Staff) *PlaceUpdate {
 		ids[i] = s[i].ID
 	}
 	return pu.RemoveStaffIDs(ids...)
+}
+
+// ClearRoomCategories clears all "room_categories" edges to the RoomCategory entity.
+func (pu *PlaceUpdate) ClearRoomCategories() *PlaceUpdate {
+	pu.mutation.ClearRoomCategories()
+	return pu
+}
+
+// RemoveRoomCategoryIDs removes the "room_categories" edge to RoomCategory entities by IDs.
+func (pu *PlaceUpdate) RemoveRoomCategoryIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveRoomCategoryIDs(ids...)
+	return pu
+}
+
+// RemoveRoomCategories removes "room_categories" edges to RoomCategory entities.
+func (pu *PlaceUpdate) RemoveRoomCategories(r ...*RoomCategory) *PlaceUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return pu.RemoveRoomCategoryIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (pu *PlaceUpdate) ClearPlans() *PlaceUpdate {
+	pu.mutation.ClearPlans()
+	return pu
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (pu *PlaceUpdate) RemovePlanIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemovePlanIDs(ids...)
+	return pu
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (pu *PlaceUpdate) RemovePlans(p ...*Plan) *PlaceUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemovePlanIDs(ids...)
+}
+
+// ClearTrainers clears all "trainers" edges to the Trainer entity.
+func (pu *PlaceUpdate) ClearTrainers() *PlaceUpdate {
+	pu.mutation.ClearTrainers()
+	return pu
+}
+
+// RemoveTrainerIDs removes the "trainers" edge to Trainer entities by IDs.
+func (pu *PlaceUpdate) RemoveTrainerIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveTrainerIDs(ids...)
+	return pu
+}
+
+// RemoveTrainers removes "trainers" edges to Trainer entities.
+func (pu *PlaceUpdate) RemoveTrainers(t ...*Trainer) *PlaceUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pu.RemoveTrainerIDs(ids...)
+}
+
+// ClearMembers clears all "members" edges to the User entity.
+func (pu *PlaceUpdate) ClearMembers() *PlaceUpdate {
+	pu.mutation.ClearMembers()
+	return pu
+}
+
+// RemoveMemberIDs removes the "members" edge to User entities by IDs.
+func (pu *PlaceUpdate) RemoveMemberIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveMemberIDs(ids...)
+	return pu
+}
+
+// RemoveMembers removes "members" edges to User entities.
+func (pu *PlaceUpdate) RemoveMembers(u ...*User) *PlaceUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pu.RemoveMemberIDs(ids...)
+}
+
+// ClearRegularUsers clears all "regularUsers" edges to the User entity.
+func (pu *PlaceUpdate) ClearRegularUsers() *PlaceUpdate {
+	pu.mutation.ClearRegularUsers()
+	return pu
+}
+
+// RemoveRegularUserIDs removes the "regularUsers" edge to User entities by IDs.
+func (pu *PlaceUpdate) RemoveRegularUserIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveRegularUserIDs(ids...)
+	return pu
+}
+
+// RemoveRegularUsers removes "regularUsers" edges to User entities.
+func (pu *PlaceUpdate) RemoveRegularUsers(u ...*User) *PlaceUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pu.RemoveRegularUserIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1967,10 +2150,10 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.RoomsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   place.RoomsTable,
-			Columns: []string{place.RoomsColumn},
+			Columns: place.RoomsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
@@ -1980,10 +2163,10 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := pu.mutation.RemovedRoomsIDs(); len(nodes) > 0 && !pu.mutation.RoomsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   place.RoomsTable,
-			Columns: []string{place.RoomsColumn},
+			Columns: place.RoomsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
@@ -1996,10 +2179,10 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := pu.mutation.RoomsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   place.RoomsTable,
-			Columns: []string{place.RoomsColumn},
+			Columns: place.RoomsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
@@ -2543,6 +2726,231 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.RoomCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RoomCategoriesTable,
+			Columns: place.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedRoomCategoriesIDs(); len(nodes) > 0 && !pu.mutation.RoomCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RoomCategoriesTable,
+			Columns: place.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RoomCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RoomCategoriesTable,
+			Columns: place.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.PlansTable,
+			Columns: place.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedPlansIDs(); len(nodes) > 0 && !pu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.PlansTable,
+			Columns: place.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.PlansTable,
+			Columns: place.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.TrainersTable,
+			Columns: place.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedTrainersIDs(); len(nodes) > 0 && !pu.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.TrainersTable,
+			Columns: place.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.TrainersTable,
+			Columns: place.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.MembersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MembersTable,
+			Columns: place.MembersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedMembersIDs(); len(nodes) > 0 && !pu.mutation.MembersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MembersTable,
+			Columns: place.MembersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.MembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MembersTable,
+			Columns: place.MembersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.RegularUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RegularUsersTable,
+			Columns: place.RegularUsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedRegularUsersIDs(); len(nodes) > 0 && !pu.mutation.RegularUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RegularUsersTable,
+			Columns: place.RegularUsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RegularUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RegularUsersTable,
+			Columns: place.RegularUsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -3520,6 +3928,81 @@ func (puo *PlaceUpdateOne) AddStaffs(s ...*Staff) *PlaceUpdateOne {
 	return puo.AddStaffIDs(ids...)
 }
 
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by IDs.
+func (puo *PlaceUpdateOne) AddRoomCategoryIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddRoomCategoryIDs(ids...)
+	return puo
+}
+
+// AddRoomCategories adds the "room_categories" edges to the RoomCategory entity.
+func (puo *PlaceUpdateOne) AddRoomCategories(r ...*RoomCategory) *PlaceUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return puo.AddRoomCategoryIDs(ids...)
+}
+
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (puo *PlaceUpdateOne) AddPlanIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddPlanIDs(ids...)
+	return puo
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (puo *PlaceUpdateOne) AddPlans(p ...*Plan) *PlaceUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddPlanIDs(ids...)
+}
+
+// AddTrainerIDs adds the "trainers" edge to the Trainer entity by IDs.
+func (puo *PlaceUpdateOne) AddTrainerIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddTrainerIDs(ids...)
+	return puo
+}
+
+// AddTrainers adds the "trainers" edges to the Trainer entity.
+func (puo *PlaceUpdateOne) AddTrainers(t ...*Trainer) *PlaceUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return puo.AddTrainerIDs(ids...)
+}
+
+// AddMemberIDs adds the "members" edge to the User entity by IDs.
+func (puo *PlaceUpdateOne) AddMemberIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddMemberIDs(ids...)
+	return puo
+}
+
+// AddMembers adds the "members" edges to the User entity.
+func (puo *PlaceUpdateOne) AddMembers(u ...*User) *PlaceUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return puo.AddMemberIDs(ids...)
+}
+
+// AddRegularUserIDs adds the "regularUsers" edge to the User entity by IDs.
+func (puo *PlaceUpdateOne) AddRegularUserIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddRegularUserIDs(ids...)
+	return puo
+}
+
+// AddRegularUsers adds the "regularUsers" edges to the User entity.
+func (puo *PlaceUpdateOne) AddRegularUsers(u ...*User) *PlaceUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return puo.AddRegularUserIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (puo *PlaceUpdateOne) Mutation() *PlaceMutation {
 	return puo.mutation
@@ -3928,6 +4411,111 @@ func (puo *PlaceUpdateOne) RemoveStaffs(s ...*Staff) *PlaceUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return puo.RemoveStaffIDs(ids...)
+}
+
+// ClearRoomCategories clears all "room_categories" edges to the RoomCategory entity.
+func (puo *PlaceUpdateOne) ClearRoomCategories() *PlaceUpdateOne {
+	puo.mutation.ClearRoomCategories()
+	return puo
+}
+
+// RemoveRoomCategoryIDs removes the "room_categories" edge to RoomCategory entities by IDs.
+func (puo *PlaceUpdateOne) RemoveRoomCategoryIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveRoomCategoryIDs(ids...)
+	return puo
+}
+
+// RemoveRoomCategories removes "room_categories" edges to RoomCategory entities.
+func (puo *PlaceUpdateOne) RemoveRoomCategories(r ...*RoomCategory) *PlaceUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return puo.RemoveRoomCategoryIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (puo *PlaceUpdateOne) ClearPlans() *PlaceUpdateOne {
+	puo.mutation.ClearPlans()
+	return puo
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (puo *PlaceUpdateOne) RemovePlanIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemovePlanIDs(ids...)
+	return puo
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (puo *PlaceUpdateOne) RemovePlans(p ...*Plan) *PlaceUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemovePlanIDs(ids...)
+}
+
+// ClearTrainers clears all "trainers" edges to the Trainer entity.
+func (puo *PlaceUpdateOne) ClearTrainers() *PlaceUpdateOne {
+	puo.mutation.ClearTrainers()
+	return puo
+}
+
+// RemoveTrainerIDs removes the "trainers" edge to Trainer entities by IDs.
+func (puo *PlaceUpdateOne) RemoveTrainerIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveTrainerIDs(ids...)
+	return puo
+}
+
+// RemoveTrainers removes "trainers" edges to Trainer entities.
+func (puo *PlaceUpdateOne) RemoveTrainers(t ...*Trainer) *PlaceUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return puo.RemoveTrainerIDs(ids...)
+}
+
+// ClearMembers clears all "members" edges to the User entity.
+func (puo *PlaceUpdateOne) ClearMembers() *PlaceUpdateOne {
+	puo.mutation.ClearMembers()
+	return puo
+}
+
+// RemoveMemberIDs removes the "members" edge to User entities by IDs.
+func (puo *PlaceUpdateOne) RemoveMemberIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveMemberIDs(ids...)
+	return puo
+}
+
+// RemoveMembers removes "members" edges to User entities.
+func (puo *PlaceUpdateOne) RemoveMembers(u ...*User) *PlaceUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return puo.RemoveMemberIDs(ids...)
+}
+
+// ClearRegularUsers clears all "regularUsers" edges to the User entity.
+func (puo *PlaceUpdateOne) ClearRegularUsers() *PlaceUpdateOne {
+	puo.mutation.ClearRegularUsers()
+	return puo
+}
+
+// RemoveRegularUserIDs removes the "regularUsers" edge to User entities by IDs.
+func (puo *PlaceUpdateOne) RemoveRegularUserIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveRegularUserIDs(ids...)
+	return puo
+}
+
+// RemoveRegularUsers removes "regularUsers" edges to User entities.
+func (puo *PlaceUpdateOne) RemoveRegularUsers(u ...*User) *PlaceUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return puo.RemoveRegularUserIDs(ids...)
 }
 
 // Where appends a list predicates to the PlaceUpdate builder.
@@ -4519,10 +5107,10 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if puo.mutation.RoomsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   place.RoomsTable,
-			Columns: []string{place.RoomsColumn},
+			Columns: place.RoomsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
@@ -4532,10 +5120,10 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if nodes := puo.mutation.RemovedRoomsIDs(); len(nodes) > 0 && !puo.mutation.RoomsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   place.RoomsTable,
-			Columns: []string{place.RoomsColumn},
+			Columns: place.RoomsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
@@ -4548,10 +5136,10 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if nodes := puo.mutation.RoomsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   place.RoomsTable,
-			Columns: []string{place.RoomsColumn},
+			Columns: place.RoomsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
@@ -5095,6 +5683,231 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.RoomCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RoomCategoriesTable,
+			Columns: place.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedRoomCategoriesIDs(); len(nodes) > 0 && !puo.mutation.RoomCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RoomCategoriesTable,
+			Columns: place.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RoomCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RoomCategoriesTable,
+			Columns: place.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.PlansTable,
+			Columns: place.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedPlansIDs(); len(nodes) > 0 && !puo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.PlansTable,
+			Columns: place.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.PlansTable,
+			Columns: place.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.TrainersTable,
+			Columns: place.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedTrainersIDs(); len(nodes) > 0 && !puo.mutation.TrainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.TrainersTable,
+			Columns: place.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.TrainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.TrainersTable,
+			Columns: place.TrainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trainer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.MembersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MembersTable,
+			Columns: place.MembersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedMembersIDs(); len(nodes) > 0 && !puo.mutation.MembersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MembersTable,
+			Columns: place.MembersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.MembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MembersTable,
+			Columns: place.MembersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.RegularUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RegularUsersTable,
+			Columns: place.RegularUsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedRegularUsersIDs(); len(nodes) > 0 && !puo.mutation.RegularUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RegularUsersTable,
+			Columns: place.RegularUsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RegularUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.RegularUsersTable,
+			Columns: place.RegularUsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

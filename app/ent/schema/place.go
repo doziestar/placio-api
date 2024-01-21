@@ -89,6 +89,11 @@ func (Place) Edges() []ent.Edge {
 		edge.To("notifications", Notification.Type),
 		edge.To("tables", PlaceTable.Type),
 		edge.To("staffs", Staff.Type),
+		edge.To("room_categories", RoomCategory.Type),
+		edge.From("plans", Plan.Type).Ref("places"),
+		edge.To("trainers", Trainer.Type),
+		edge.To("members", User.Type),
+		edge.To("regularUsers", User.Type),
 	}
 }
 

@@ -1,0 +1,13 @@
+[package]
+name = "external"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.7.1"
+reqwest = "0.11.22"
+serde = "1.0.193"
+tokio = {version = "1.34.0", features = ["full"] }
+tower-http = "0.5.0"

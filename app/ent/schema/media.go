@@ -48,5 +48,12 @@ func (Media) Edges() []ent.Edge {
 			Ref("media"),
 		edge.From("menu", Menu.Type).
 			Ref("media"),
+		edge.From("room_category", RoomCategory.Type).
+			Ref("media"),
+		edge.From("room", Room.Type).
+			Ref("media"),
+		edge.From("plan", Plan.Type).
+			Ref("media").
+			Unique(),
 	}
 }

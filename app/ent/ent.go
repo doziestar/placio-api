@@ -22,6 +22,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/featurerelease"
+	"placio-app/ent/fitness"
 	"placio-app/ent/help"
 	"placio-app/ent/inventoryattribute"
 	"placio-app/ent/inventorytype"
@@ -38,7 +39,9 @@ import (
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
+	"placio-app/ent/price"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
 	"placio-app/ent/reservation"
@@ -46,10 +49,13 @@ import (
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/staff"
+	"placio-app/ent/subscription"
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -141,6 +147,7 @@ func checkColumn(table, column string) error {
 			event.Table:                   event.ValidColumn,
 			faq.Table:                     faq.ValidColumn,
 			featurerelease.Table:          featurerelease.ValidColumn,
+			fitness.Table:                 fitness.ValidColumn,
 			help.Table:                    help.ValidColumn,
 			inventoryattribute.Table:      inventoryattribute.ValidColumn,
 			inventorytype.Table:           inventorytype.ValidColumn,
@@ -157,7 +164,9 @@ func checkColumn(table, column string) error {
 			placeinventory.Table:          placeinventory.ValidColumn,
 			placeinventoryattribute.Table: placeinventoryattribute.ValidColumn,
 			placetable.Table:              placetable.ValidColumn,
+			plan.Table:                    plan.ValidColumn,
 			post.Table:                    post.ValidColumn,
+			price.Table:                   price.ValidColumn,
 			rating.Table:                  rating.ValidColumn,
 			reaction.Table:                reaction.ValidColumn,
 			reservation.Table:             reservation.ValidColumn,
@@ -165,10 +174,13 @@ func checkColumn(table, column string) error {
 			resourse.Table:                resourse.ValidColumn,
 			review.Table:                  review.ValidColumn,
 			room.Table:                    room.ValidColumn,
+			roomcategory.Table:            roomcategory.ValidColumn,
 			staff.Table:                   staff.ValidColumn,
+			subscription.Table:            subscription.ValidColumn,
 			template.Table:                template.ValidColumn,
 			ticket.Table:                  ticket.ValidColumn,
 			ticketoption.Table:            ticketoption.ValidColumn,
+			trainer.Table:                 trainer.ValidColumn,
 			transactionhistory.Table:      transactionhistory.ValidColumn,
 			user.Table:                    user.ValidColumn,
 			userbusiness.Table:            userbusiness.ValidColumn,

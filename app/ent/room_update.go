@@ -6,10 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/reservation"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -29,52 +33,176 @@ func (ru *RoomUpdate) Where(ps ...predicate.Room) *RoomUpdate {
 	return ru
 }
 
-// SetNumber sets the "number" field.
-func (ru *RoomUpdate) SetNumber(s string) *RoomUpdate {
-	ru.mutation.SetNumber(s)
+// SetName sets the "name" field.
+func (ru *RoomUpdate) SetName(s string) *RoomUpdate {
+	ru.mutation.SetName(s)
 	return ru
 }
 
-// SetNillableNumber sets the "number" field if the given value is not nil.
-func (ru *RoomUpdate) SetNillableNumber(s *string) *RoomUpdate {
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableName(s *string) *RoomUpdate {
 	if s != nil {
-		ru.SetNumber(*s)
+		ru.SetName(*s)
 	}
 	return ru
 }
 
-// SetType sets the "type" field.
-func (ru *RoomUpdate) SetType(s string) *RoomUpdate {
-	ru.mutation.SetType(s)
+// ClearName clears the value of the "name" field.
+func (ru *RoomUpdate) ClearName() *RoomUpdate {
+	ru.mutation.ClearName()
 	return ru
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (ru *RoomUpdate) SetNillableType(s *string) *RoomUpdate {
+// SetRoomNumber sets the "room_number" field.
+func (ru *RoomUpdate) SetRoomNumber(s string) *RoomUpdate {
+	ru.mutation.SetRoomNumber(s)
+	return ru
+}
+
+// SetNillableRoomNumber sets the "room_number" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableRoomNumber(s *string) *RoomUpdate {
 	if s != nil {
-		ru.SetType(*s)
+		ru.SetRoomNumber(*s)
 	}
 	return ru
 }
 
-// SetPrice sets the "price" field.
-func (ru *RoomUpdate) SetPrice(f float64) *RoomUpdate {
-	ru.mutation.ResetPrice()
-	ru.mutation.SetPrice(f)
+// ClearRoomNumber clears the value of the "room_number" field.
+func (ru *RoomUpdate) ClearRoomNumber() *RoomUpdate {
+	ru.mutation.ClearRoomNumber()
 	return ru
 }
 
-// SetNillablePrice sets the "price" field if the given value is not nil.
-func (ru *RoomUpdate) SetNillablePrice(f *float64) *RoomUpdate {
+// SetRoomType sets the "room_type" field.
+func (ru *RoomUpdate) SetRoomType(s string) *RoomUpdate {
+	ru.mutation.SetRoomType(s)
+	return ru
+}
+
+// SetNillableRoomType sets the "room_type" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableRoomType(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetRoomType(*s)
+	}
+	return ru
+}
+
+// ClearRoomType clears the value of the "room_type" field.
+func (ru *RoomUpdate) ClearRoomType() *RoomUpdate {
+	ru.mutation.ClearRoomType()
+	return ru
+}
+
+// SetRoomStatus sets the "room_status" field.
+func (ru *RoomUpdate) SetRoomStatus(s string) *RoomUpdate {
+	ru.mutation.SetRoomStatus(s)
+	return ru
+}
+
+// SetNillableRoomStatus sets the "room_status" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableRoomStatus(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetRoomStatus(*s)
+	}
+	return ru
+}
+
+// ClearRoomStatus clears the value of the "room_status" field.
+func (ru *RoomUpdate) ClearRoomStatus() *RoomUpdate {
+	ru.mutation.ClearRoomStatus()
+	return ru
+}
+
+// SetRoomRating sets the "room_rating" field.
+func (ru *RoomUpdate) SetRoomRating(s string) *RoomUpdate {
+	ru.mutation.SetRoomRating(s)
+	return ru
+}
+
+// SetNillableRoomRating sets the "room_rating" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableRoomRating(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetRoomRating(*s)
+	}
+	return ru
+}
+
+// ClearRoomRating clears the value of the "room_rating" field.
+func (ru *RoomUpdate) ClearRoomRating() *RoomUpdate {
+	ru.mutation.ClearRoomRating()
+	return ru
+}
+
+// SetRoomPrice sets the "room_price" field.
+func (ru *RoomUpdate) SetRoomPrice(f float64) *RoomUpdate {
+	ru.mutation.ResetRoomPrice()
+	ru.mutation.SetRoomPrice(f)
+	return ru
+}
+
+// SetNillableRoomPrice sets the "room_price" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableRoomPrice(f *float64) *RoomUpdate {
 	if f != nil {
-		ru.SetPrice(*f)
+		ru.SetRoomPrice(*f)
 	}
 	return ru
 }
 
-// AddPrice adds f to the "price" field.
-func (ru *RoomUpdate) AddPrice(f float64) *RoomUpdate {
-	ru.mutation.AddPrice(f)
+// AddRoomPrice adds f to the "room_price" field.
+func (ru *RoomUpdate) AddRoomPrice(f float64) *RoomUpdate {
+	ru.mutation.AddRoomPrice(f)
+	return ru
+}
+
+// ClearRoomPrice clears the value of the "room_price" field.
+func (ru *RoomUpdate) ClearRoomPrice() *RoomUpdate {
+	ru.mutation.ClearRoomPrice()
+	return ru
+}
+
+// SetQrCode sets the "qr_code" field.
+func (ru *RoomUpdate) SetQrCode(s string) *RoomUpdate {
+	ru.mutation.SetQrCode(s)
+	return ru
+}
+
+// SetNillableQrCode sets the "qr_code" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableQrCode(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetQrCode(*s)
+	}
+	return ru
+}
+
+// ClearQrCode clears the value of the "qr_code" field.
+func (ru *RoomUpdate) ClearQrCode() *RoomUpdate {
+	ru.mutation.ClearQrCode()
+	return ru
+}
+
+// SetStatus sets the "status" field.
+func (ru *RoomUpdate) SetStatus(r room.Status) *RoomUpdate {
+	ru.mutation.SetStatus(r)
+	return ru
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableStatus(r *room.Status) *RoomUpdate {
+	if r != nil {
+		ru.SetStatus(*r)
+	}
+	return ru
+}
+
+// SetExtras sets the "extras" field.
+func (ru *RoomUpdate) SetExtras(m map[string]interface{}) *RoomUpdate {
+	ru.mutation.SetExtras(m)
+	return ru
+}
+
+// ClearExtras clears the value of the "extras" field.
+func (ru *RoomUpdate) ClearExtras() *RoomUpdate {
+	ru.mutation.ClearExtras()
 	return ru
 }
 
@@ -132,23 +260,34 @@ func (ru *RoomUpdate) ClearImage() *RoomUpdate {
 	return ru
 }
 
-// SetPlaceID sets the "place" edge to the Place entity by ID.
-func (ru *RoomUpdate) SetPlaceID(id string) *RoomUpdate {
-	ru.mutation.SetPlaceID(id)
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (ru *RoomUpdate) AddPlaceIDs(ids ...string) *RoomUpdate {
+	ru.mutation.AddPlaceIDs(ids...)
 	return ru
 }
 
-// SetNillablePlaceID sets the "place" edge to the Place entity by ID if the given value is not nil.
-func (ru *RoomUpdate) SetNillablePlaceID(id *string) *RoomUpdate {
-	if id != nil {
-		ru = ru.SetPlaceID(*id)
+// AddPlace adds the "place" edges to the Place entity.
+func (ru *RoomUpdate) AddPlace(p ...*Place) *RoomUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
+	return ru.AddPlaceIDs(ids...)
+}
+
+// AddRoomCategoryIDs adds the "room_category" edge to the RoomCategory entity by IDs.
+func (ru *RoomUpdate) AddRoomCategoryIDs(ids ...string) *RoomUpdate {
+	ru.mutation.AddRoomCategoryIDs(ids...)
 	return ru
 }
 
-// SetPlace sets the "place" edge to the Place entity.
-func (ru *RoomUpdate) SetPlace(p *Place) *RoomUpdate {
-	return ru.SetPlaceID(p.ID)
+// AddRoomCategory adds the "room_category" edges to the RoomCategory entity.
+func (ru *RoomUpdate) AddRoomCategory(r ...*RoomCategory) *RoomUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ru.AddRoomCategoryIDs(ids...)
 }
 
 // AddBookingIDs adds the "bookings" edge to the Booking entity by IDs.
@@ -166,15 +305,96 @@ func (ru *RoomUpdate) AddBookings(b ...*Booking) *RoomUpdate {
 	return ru.AddBookingIDs(ids...)
 }
 
+// AddAmenityIDs adds the "amenities" edge to the Amenity entity by IDs.
+func (ru *RoomUpdate) AddAmenityIDs(ids ...string) *RoomUpdate {
+	ru.mutation.AddAmenityIDs(ids...)
+	return ru
+}
+
+// AddAmenities adds the "amenities" edges to the Amenity entity.
+func (ru *RoomUpdate) AddAmenities(a ...*Amenity) *RoomUpdate {
+	ids := make([]string, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ru.AddAmenityIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (ru *RoomUpdate) AddMediumIDs(ids ...string) *RoomUpdate {
+	ru.mutation.AddMediumIDs(ids...)
+	return ru
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (ru *RoomUpdate) AddMedia(m ...*Media) *RoomUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ru.AddMediumIDs(ids...)
+}
+
+// AddReservationIDs adds the "reservations" edge to the Reservation entity by IDs.
+func (ru *RoomUpdate) AddReservationIDs(ids ...string) *RoomUpdate {
+	ru.mutation.AddReservationIDs(ids...)
+	return ru
+}
+
+// AddReservations adds the "reservations" edges to the Reservation entity.
+func (ru *RoomUpdate) AddReservations(r ...*Reservation) *RoomUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ru.AddReservationIDs(ids...)
+}
+
 // Mutation returns the RoomMutation object of the builder.
 func (ru *RoomUpdate) Mutation() *RoomMutation {
 	return ru.mutation
 }
 
-// ClearPlace clears the "place" edge to the Place entity.
+// ClearPlace clears all "place" edges to the Place entity.
 func (ru *RoomUpdate) ClearPlace() *RoomUpdate {
 	ru.mutation.ClearPlace()
 	return ru
+}
+
+// RemovePlaceIDs removes the "place" edge to Place entities by IDs.
+func (ru *RoomUpdate) RemovePlaceIDs(ids ...string) *RoomUpdate {
+	ru.mutation.RemovePlaceIDs(ids...)
+	return ru
+}
+
+// RemovePlace removes "place" edges to Place entities.
+func (ru *RoomUpdate) RemovePlace(p ...*Place) *RoomUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ru.RemovePlaceIDs(ids...)
+}
+
+// ClearRoomCategory clears all "room_category" edges to the RoomCategory entity.
+func (ru *RoomUpdate) ClearRoomCategory() *RoomUpdate {
+	ru.mutation.ClearRoomCategory()
+	return ru
+}
+
+// RemoveRoomCategoryIDs removes the "room_category" edge to RoomCategory entities by IDs.
+func (ru *RoomUpdate) RemoveRoomCategoryIDs(ids ...string) *RoomUpdate {
+	ru.mutation.RemoveRoomCategoryIDs(ids...)
+	return ru
+}
+
+// RemoveRoomCategory removes "room_category" edges to RoomCategory entities.
+func (ru *RoomUpdate) RemoveRoomCategory(r ...*RoomCategory) *RoomUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ru.RemoveRoomCategoryIDs(ids...)
 }
 
 // ClearBookings clears all "bookings" edges to the Booking entity.
@@ -196,6 +416,69 @@ func (ru *RoomUpdate) RemoveBookings(b ...*Booking) *RoomUpdate {
 		ids[i] = b[i].ID
 	}
 	return ru.RemoveBookingIDs(ids...)
+}
+
+// ClearAmenities clears all "amenities" edges to the Amenity entity.
+func (ru *RoomUpdate) ClearAmenities() *RoomUpdate {
+	ru.mutation.ClearAmenities()
+	return ru
+}
+
+// RemoveAmenityIDs removes the "amenities" edge to Amenity entities by IDs.
+func (ru *RoomUpdate) RemoveAmenityIDs(ids ...string) *RoomUpdate {
+	ru.mutation.RemoveAmenityIDs(ids...)
+	return ru
+}
+
+// RemoveAmenities removes "amenities" edges to Amenity entities.
+func (ru *RoomUpdate) RemoveAmenities(a ...*Amenity) *RoomUpdate {
+	ids := make([]string, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ru.RemoveAmenityIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (ru *RoomUpdate) ClearMedia() *RoomUpdate {
+	ru.mutation.ClearMedia()
+	return ru
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (ru *RoomUpdate) RemoveMediumIDs(ids ...string) *RoomUpdate {
+	ru.mutation.RemoveMediumIDs(ids...)
+	return ru
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (ru *RoomUpdate) RemoveMedia(m ...*Media) *RoomUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ru.RemoveMediumIDs(ids...)
+}
+
+// ClearReservations clears all "reservations" edges to the Reservation entity.
+func (ru *RoomUpdate) ClearReservations() *RoomUpdate {
+	ru.mutation.ClearReservations()
+	return ru
+}
+
+// RemoveReservationIDs removes the "reservations" edge to Reservation entities by IDs.
+func (ru *RoomUpdate) RemoveReservationIDs(ids ...string) *RoomUpdate {
+	ru.mutation.RemoveReservationIDs(ids...)
+	return ru
+}
+
+// RemoveReservations removes "reservations" edges to Reservation entities.
+func (ru *RoomUpdate) RemoveReservations(r ...*Reservation) *RoomUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ru.RemoveReservationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -225,7 +508,20 @@ func (ru *RoomUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ru *RoomUpdate) check() error {
+	if v, ok := ru.mutation.Status(); ok {
+		if err := room.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Room.status": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ru.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(room.Table, room.Columns, sqlgraph.NewFieldSpec(room.FieldID, field.TypeString))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -234,17 +530,59 @@ func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := ru.mutation.Number(); ok {
-		_spec.SetField(room.FieldNumber, field.TypeString, value)
+	if value, ok := ru.mutation.Name(); ok {
+		_spec.SetField(room.FieldName, field.TypeString, value)
 	}
-	if value, ok := ru.mutation.GetType(); ok {
-		_spec.SetField(room.FieldType, field.TypeString, value)
+	if ru.mutation.NameCleared() {
+		_spec.ClearField(room.FieldName, field.TypeString)
 	}
-	if value, ok := ru.mutation.Price(); ok {
-		_spec.SetField(room.FieldPrice, field.TypeFloat64, value)
+	if value, ok := ru.mutation.RoomNumber(); ok {
+		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
 	}
-	if value, ok := ru.mutation.AddedPrice(); ok {
-		_spec.AddField(room.FieldPrice, field.TypeFloat64, value)
+	if ru.mutation.RoomNumberCleared() {
+		_spec.ClearField(room.FieldRoomNumber, field.TypeString)
+	}
+	if value, ok := ru.mutation.RoomType(); ok {
+		_spec.SetField(room.FieldRoomType, field.TypeString, value)
+	}
+	if ru.mutation.RoomTypeCleared() {
+		_spec.ClearField(room.FieldRoomType, field.TypeString)
+	}
+	if value, ok := ru.mutation.RoomStatus(); ok {
+		_spec.SetField(room.FieldRoomStatus, field.TypeString, value)
+	}
+	if ru.mutation.RoomStatusCleared() {
+		_spec.ClearField(room.FieldRoomStatus, field.TypeString)
+	}
+	if value, ok := ru.mutation.RoomRating(); ok {
+		_spec.SetField(room.FieldRoomRating, field.TypeString, value)
+	}
+	if ru.mutation.RoomRatingCleared() {
+		_spec.ClearField(room.FieldRoomRating, field.TypeString)
+	}
+	if value, ok := ru.mutation.RoomPrice(); ok {
+		_spec.SetField(room.FieldRoomPrice, field.TypeFloat64, value)
+	}
+	if value, ok := ru.mutation.AddedRoomPrice(); ok {
+		_spec.AddField(room.FieldRoomPrice, field.TypeFloat64, value)
+	}
+	if ru.mutation.RoomPriceCleared() {
+		_spec.ClearField(room.FieldRoomPrice, field.TypeFloat64)
+	}
+	if value, ok := ru.mutation.QrCode(); ok {
+		_spec.SetField(room.FieldQrCode, field.TypeString, value)
+	}
+	if ru.mutation.QrCodeCleared() {
+		_spec.ClearField(room.FieldQrCode, field.TypeString)
+	}
+	if value, ok := ru.mutation.Status(); ok {
+		_spec.SetField(room.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := ru.mutation.Extras(); ok {
+		_spec.SetField(room.FieldExtras, field.TypeJSON, value)
+	}
+	if ru.mutation.ExtrasCleared() {
+		_spec.ClearField(room.FieldExtras, field.TypeJSON)
 	}
 	if value, ok := ru.mutation.Description(); ok {
 		_spec.SetField(room.FieldDescription, field.TypeString, value)
@@ -263,10 +601,10 @@ func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if ru.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   room.PlaceTable,
-			Columns: []string{room.PlaceColumn},
+			Columns: room.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
@@ -274,15 +612,76 @@ func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.PlaceIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.RemovedPlaceIDs(); len(nodes) > 0 && !ru.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   room.PlaceTable,
-			Columns: []string{room.PlaceColumn},
+			Columns: room.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.PlaceTable,
+			Columns: room.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.RoomCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.RoomCategoryTable,
+			Columns: room.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedRoomCategoryIDs(); len(nodes) > 0 && !ru.mutation.RoomCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.RoomCategoryTable,
+			Columns: room.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RoomCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.RoomCategoryTable,
+			Columns: room.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -335,6 +734,141 @@ func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.AmenitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.AmenitiesTable,
+			Columns: room.AmenitiesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(amenity.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedAmenitiesIDs(); len(nodes) > 0 && !ru.mutation.AmenitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.AmenitiesTable,
+			Columns: room.AmenitiesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(amenity.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.AmenitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.AmenitiesTable,
+			Columns: room.AmenitiesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(amenity.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.MediaTable,
+			Columns: room.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedMediaIDs(); len(nodes) > 0 && !ru.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.MediaTable,
+			Columns: room.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.MediaTable,
+			Columns: room.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.ReservationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   room.ReservationsTable,
+			Columns: []string{room.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedReservationsIDs(); len(nodes) > 0 && !ru.mutation.ReservationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   room.ReservationsTable,
+			Columns: []string{room.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.ReservationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   room.ReservationsTable,
+			Columns: []string{room.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{room.Label}
@@ -355,52 +889,176 @@ type RoomUpdateOne struct {
 	mutation *RoomMutation
 }
 
-// SetNumber sets the "number" field.
-func (ruo *RoomUpdateOne) SetNumber(s string) *RoomUpdateOne {
-	ruo.mutation.SetNumber(s)
+// SetName sets the "name" field.
+func (ruo *RoomUpdateOne) SetName(s string) *RoomUpdateOne {
+	ruo.mutation.SetName(s)
 	return ruo
 }
 
-// SetNillableNumber sets the "number" field if the given value is not nil.
-func (ruo *RoomUpdateOne) SetNillableNumber(s *string) *RoomUpdateOne {
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableName(s *string) *RoomUpdateOne {
 	if s != nil {
-		ruo.SetNumber(*s)
+		ruo.SetName(*s)
 	}
 	return ruo
 }
 
-// SetType sets the "type" field.
-func (ruo *RoomUpdateOne) SetType(s string) *RoomUpdateOne {
-	ruo.mutation.SetType(s)
+// ClearName clears the value of the "name" field.
+func (ruo *RoomUpdateOne) ClearName() *RoomUpdateOne {
+	ruo.mutation.ClearName()
 	return ruo
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (ruo *RoomUpdateOne) SetNillableType(s *string) *RoomUpdateOne {
+// SetRoomNumber sets the "room_number" field.
+func (ruo *RoomUpdateOne) SetRoomNumber(s string) *RoomUpdateOne {
+	ruo.mutation.SetRoomNumber(s)
+	return ruo
+}
+
+// SetNillableRoomNumber sets the "room_number" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableRoomNumber(s *string) *RoomUpdateOne {
 	if s != nil {
-		ruo.SetType(*s)
+		ruo.SetRoomNumber(*s)
 	}
 	return ruo
 }
 
-// SetPrice sets the "price" field.
-func (ruo *RoomUpdateOne) SetPrice(f float64) *RoomUpdateOne {
-	ruo.mutation.ResetPrice()
-	ruo.mutation.SetPrice(f)
+// ClearRoomNumber clears the value of the "room_number" field.
+func (ruo *RoomUpdateOne) ClearRoomNumber() *RoomUpdateOne {
+	ruo.mutation.ClearRoomNumber()
 	return ruo
 }
 
-// SetNillablePrice sets the "price" field if the given value is not nil.
-func (ruo *RoomUpdateOne) SetNillablePrice(f *float64) *RoomUpdateOne {
+// SetRoomType sets the "room_type" field.
+func (ruo *RoomUpdateOne) SetRoomType(s string) *RoomUpdateOne {
+	ruo.mutation.SetRoomType(s)
+	return ruo
+}
+
+// SetNillableRoomType sets the "room_type" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableRoomType(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetRoomType(*s)
+	}
+	return ruo
+}
+
+// ClearRoomType clears the value of the "room_type" field.
+func (ruo *RoomUpdateOne) ClearRoomType() *RoomUpdateOne {
+	ruo.mutation.ClearRoomType()
+	return ruo
+}
+
+// SetRoomStatus sets the "room_status" field.
+func (ruo *RoomUpdateOne) SetRoomStatus(s string) *RoomUpdateOne {
+	ruo.mutation.SetRoomStatus(s)
+	return ruo
+}
+
+// SetNillableRoomStatus sets the "room_status" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableRoomStatus(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetRoomStatus(*s)
+	}
+	return ruo
+}
+
+// ClearRoomStatus clears the value of the "room_status" field.
+func (ruo *RoomUpdateOne) ClearRoomStatus() *RoomUpdateOne {
+	ruo.mutation.ClearRoomStatus()
+	return ruo
+}
+
+// SetRoomRating sets the "room_rating" field.
+func (ruo *RoomUpdateOne) SetRoomRating(s string) *RoomUpdateOne {
+	ruo.mutation.SetRoomRating(s)
+	return ruo
+}
+
+// SetNillableRoomRating sets the "room_rating" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableRoomRating(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetRoomRating(*s)
+	}
+	return ruo
+}
+
+// ClearRoomRating clears the value of the "room_rating" field.
+func (ruo *RoomUpdateOne) ClearRoomRating() *RoomUpdateOne {
+	ruo.mutation.ClearRoomRating()
+	return ruo
+}
+
+// SetRoomPrice sets the "room_price" field.
+func (ruo *RoomUpdateOne) SetRoomPrice(f float64) *RoomUpdateOne {
+	ruo.mutation.ResetRoomPrice()
+	ruo.mutation.SetRoomPrice(f)
+	return ruo
+}
+
+// SetNillableRoomPrice sets the "room_price" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableRoomPrice(f *float64) *RoomUpdateOne {
 	if f != nil {
-		ruo.SetPrice(*f)
+		ruo.SetRoomPrice(*f)
 	}
 	return ruo
 }
 
-// AddPrice adds f to the "price" field.
-func (ruo *RoomUpdateOne) AddPrice(f float64) *RoomUpdateOne {
-	ruo.mutation.AddPrice(f)
+// AddRoomPrice adds f to the "room_price" field.
+func (ruo *RoomUpdateOne) AddRoomPrice(f float64) *RoomUpdateOne {
+	ruo.mutation.AddRoomPrice(f)
+	return ruo
+}
+
+// ClearRoomPrice clears the value of the "room_price" field.
+func (ruo *RoomUpdateOne) ClearRoomPrice() *RoomUpdateOne {
+	ruo.mutation.ClearRoomPrice()
+	return ruo
+}
+
+// SetQrCode sets the "qr_code" field.
+func (ruo *RoomUpdateOne) SetQrCode(s string) *RoomUpdateOne {
+	ruo.mutation.SetQrCode(s)
+	return ruo
+}
+
+// SetNillableQrCode sets the "qr_code" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableQrCode(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetQrCode(*s)
+	}
+	return ruo
+}
+
+// ClearQrCode clears the value of the "qr_code" field.
+func (ruo *RoomUpdateOne) ClearQrCode() *RoomUpdateOne {
+	ruo.mutation.ClearQrCode()
+	return ruo
+}
+
+// SetStatus sets the "status" field.
+func (ruo *RoomUpdateOne) SetStatus(r room.Status) *RoomUpdateOne {
+	ruo.mutation.SetStatus(r)
+	return ruo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableStatus(r *room.Status) *RoomUpdateOne {
+	if r != nil {
+		ruo.SetStatus(*r)
+	}
+	return ruo
+}
+
+// SetExtras sets the "extras" field.
+func (ruo *RoomUpdateOne) SetExtras(m map[string]interface{}) *RoomUpdateOne {
+	ruo.mutation.SetExtras(m)
+	return ruo
+}
+
+// ClearExtras clears the value of the "extras" field.
+func (ruo *RoomUpdateOne) ClearExtras() *RoomUpdateOne {
+	ruo.mutation.ClearExtras()
 	return ruo
 }
 
@@ -458,23 +1116,34 @@ func (ruo *RoomUpdateOne) ClearImage() *RoomUpdateOne {
 	return ruo
 }
 
-// SetPlaceID sets the "place" edge to the Place entity by ID.
-func (ruo *RoomUpdateOne) SetPlaceID(id string) *RoomUpdateOne {
-	ruo.mutation.SetPlaceID(id)
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (ruo *RoomUpdateOne) AddPlaceIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.AddPlaceIDs(ids...)
 	return ruo
 }
 
-// SetNillablePlaceID sets the "place" edge to the Place entity by ID if the given value is not nil.
-func (ruo *RoomUpdateOne) SetNillablePlaceID(id *string) *RoomUpdateOne {
-	if id != nil {
-		ruo = ruo.SetPlaceID(*id)
+// AddPlace adds the "place" edges to the Place entity.
+func (ruo *RoomUpdateOne) AddPlace(p ...*Place) *RoomUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
+	return ruo.AddPlaceIDs(ids...)
+}
+
+// AddRoomCategoryIDs adds the "room_category" edge to the RoomCategory entity by IDs.
+func (ruo *RoomUpdateOne) AddRoomCategoryIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.AddRoomCategoryIDs(ids...)
 	return ruo
 }
 
-// SetPlace sets the "place" edge to the Place entity.
-func (ruo *RoomUpdateOne) SetPlace(p *Place) *RoomUpdateOne {
-	return ruo.SetPlaceID(p.ID)
+// AddRoomCategory adds the "room_category" edges to the RoomCategory entity.
+func (ruo *RoomUpdateOne) AddRoomCategory(r ...*RoomCategory) *RoomUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ruo.AddRoomCategoryIDs(ids...)
 }
 
 // AddBookingIDs adds the "bookings" edge to the Booking entity by IDs.
@@ -492,15 +1161,96 @@ func (ruo *RoomUpdateOne) AddBookings(b ...*Booking) *RoomUpdateOne {
 	return ruo.AddBookingIDs(ids...)
 }
 
+// AddAmenityIDs adds the "amenities" edge to the Amenity entity by IDs.
+func (ruo *RoomUpdateOne) AddAmenityIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.AddAmenityIDs(ids...)
+	return ruo
+}
+
+// AddAmenities adds the "amenities" edges to the Amenity entity.
+func (ruo *RoomUpdateOne) AddAmenities(a ...*Amenity) *RoomUpdateOne {
+	ids := make([]string, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ruo.AddAmenityIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (ruo *RoomUpdateOne) AddMediumIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.AddMediumIDs(ids...)
+	return ruo
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (ruo *RoomUpdateOne) AddMedia(m ...*Media) *RoomUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ruo.AddMediumIDs(ids...)
+}
+
+// AddReservationIDs adds the "reservations" edge to the Reservation entity by IDs.
+func (ruo *RoomUpdateOne) AddReservationIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.AddReservationIDs(ids...)
+	return ruo
+}
+
+// AddReservations adds the "reservations" edges to the Reservation entity.
+func (ruo *RoomUpdateOne) AddReservations(r ...*Reservation) *RoomUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ruo.AddReservationIDs(ids...)
+}
+
 // Mutation returns the RoomMutation object of the builder.
 func (ruo *RoomUpdateOne) Mutation() *RoomMutation {
 	return ruo.mutation
 }
 
-// ClearPlace clears the "place" edge to the Place entity.
+// ClearPlace clears all "place" edges to the Place entity.
 func (ruo *RoomUpdateOne) ClearPlace() *RoomUpdateOne {
 	ruo.mutation.ClearPlace()
 	return ruo
+}
+
+// RemovePlaceIDs removes the "place" edge to Place entities by IDs.
+func (ruo *RoomUpdateOne) RemovePlaceIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.RemovePlaceIDs(ids...)
+	return ruo
+}
+
+// RemovePlace removes "place" edges to Place entities.
+func (ruo *RoomUpdateOne) RemovePlace(p ...*Place) *RoomUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ruo.RemovePlaceIDs(ids...)
+}
+
+// ClearRoomCategory clears all "room_category" edges to the RoomCategory entity.
+func (ruo *RoomUpdateOne) ClearRoomCategory() *RoomUpdateOne {
+	ruo.mutation.ClearRoomCategory()
+	return ruo
+}
+
+// RemoveRoomCategoryIDs removes the "room_category" edge to RoomCategory entities by IDs.
+func (ruo *RoomUpdateOne) RemoveRoomCategoryIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.RemoveRoomCategoryIDs(ids...)
+	return ruo
+}
+
+// RemoveRoomCategory removes "room_category" edges to RoomCategory entities.
+func (ruo *RoomUpdateOne) RemoveRoomCategory(r ...*RoomCategory) *RoomUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ruo.RemoveRoomCategoryIDs(ids...)
 }
 
 // ClearBookings clears all "bookings" edges to the Booking entity.
@@ -522,6 +1272,69 @@ func (ruo *RoomUpdateOne) RemoveBookings(b ...*Booking) *RoomUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return ruo.RemoveBookingIDs(ids...)
+}
+
+// ClearAmenities clears all "amenities" edges to the Amenity entity.
+func (ruo *RoomUpdateOne) ClearAmenities() *RoomUpdateOne {
+	ruo.mutation.ClearAmenities()
+	return ruo
+}
+
+// RemoveAmenityIDs removes the "amenities" edge to Amenity entities by IDs.
+func (ruo *RoomUpdateOne) RemoveAmenityIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.RemoveAmenityIDs(ids...)
+	return ruo
+}
+
+// RemoveAmenities removes "amenities" edges to Amenity entities.
+func (ruo *RoomUpdateOne) RemoveAmenities(a ...*Amenity) *RoomUpdateOne {
+	ids := make([]string, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ruo.RemoveAmenityIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (ruo *RoomUpdateOne) ClearMedia() *RoomUpdateOne {
+	ruo.mutation.ClearMedia()
+	return ruo
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (ruo *RoomUpdateOne) RemoveMediumIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.RemoveMediumIDs(ids...)
+	return ruo
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (ruo *RoomUpdateOne) RemoveMedia(m ...*Media) *RoomUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ruo.RemoveMediumIDs(ids...)
+}
+
+// ClearReservations clears all "reservations" edges to the Reservation entity.
+func (ruo *RoomUpdateOne) ClearReservations() *RoomUpdateOne {
+	ruo.mutation.ClearReservations()
+	return ruo
+}
+
+// RemoveReservationIDs removes the "reservations" edge to Reservation entities by IDs.
+func (ruo *RoomUpdateOne) RemoveReservationIDs(ids ...string) *RoomUpdateOne {
+	ruo.mutation.RemoveReservationIDs(ids...)
+	return ruo
+}
+
+// RemoveReservations removes "reservations" edges to Reservation entities.
+func (ruo *RoomUpdateOne) RemoveReservations(r ...*Reservation) *RoomUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ruo.RemoveReservationIDs(ids...)
 }
 
 // Where appends a list predicates to the RoomUpdate builder.
@@ -564,7 +1377,20 @@ func (ruo *RoomUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ruo *RoomUpdateOne) check() error {
+	if v, ok := ruo.mutation.Status(); ok {
+		if err := room.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Room.status": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) {
+	if err := ruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(room.Table, room.Columns, sqlgraph.NewFieldSpec(room.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
@@ -590,17 +1416,59 @@ func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) 
 			}
 		}
 	}
-	if value, ok := ruo.mutation.Number(); ok {
-		_spec.SetField(room.FieldNumber, field.TypeString, value)
+	if value, ok := ruo.mutation.Name(); ok {
+		_spec.SetField(room.FieldName, field.TypeString, value)
 	}
-	if value, ok := ruo.mutation.GetType(); ok {
-		_spec.SetField(room.FieldType, field.TypeString, value)
+	if ruo.mutation.NameCleared() {
+		_spec.ClearField(room.FieldName, field.TypeString)
 	}
-	if value, ok := ruo.mutation.Price(); ok {
-		_spec.SetField(room.FieldPrice, field.TypeFloat64, value)
+	if value, ok := ruo.mutation.RoomNumber(); ok {
+		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
 	}
-	if value, ok := ruo.mutation.AddedPrice(); ok {
-		_spec.AddField(room.FieldPrice, field.TypeFloat64, value)
+	if ruo.mutation.RoomNumberCleared() {
+		_spec.ClearField(room.FieldRoomNumber, field.TypeString)
+	}
+	if value, ok := ruo.mutation.RoomType(); ok {
+		_spec.SetField(room.FieldRoomType, field.TypeString, value)
+	}
+	if ruo.mutation.RoomTypeCleared() {
+		_spec.ClearField(room.FieldRoomType, field.TypeString)
+	}
+	if value, ok := ruo.mutation.RoomStatus(); ok {
+		_spec.SetField(room.FieldRoomStatus, field.TypeString, value)
+	}
+	if ruo.mutation.RoomStatusCleared() {
+		_spec.ClearField(room.FieldRoomStatus, field.TypeString)
+	}
+	if value, ok := ruo.mutation.RoomRating(); ok {
+		_spec.SetField(room.FieldRoomRating, field.TypeString, value)
+	}
+	if ruo.mutation.RoomRatingCleared() {
+		_spec.ClearField(room.FieldRoomRating, field.TypeString)
+	}
+	if value, ok := ruo.mutation.RoomPrice(); ok {
+		_spec.SetField(room.FieldRoomPrice, field.TypeFloat64, value)
+	}
+	if value, ok := ruo.mutation.AddedRoomPrice(); ok {
+		_spec.AddField(room.FieldRoomPrice, field.TypeFloat64, value)
+	}
+	if ruo.mutation.RoomPriceCleared() {
+		_spec.ClearField(room.FieldRoomPrice, field.TypeFloat64)
+	}
+	if value, ok := ruo.mutation.QrCode(); ok {
+		_spec.SetField(room.FieldQrCode, field.TypeString, value)
+	}
+	if ruo.mutation.QrCodeCleared() {
+		_spec.ClearField(room.FieldQrCode, field.TypeString)
+	}
+	if value, ok := ruo.mutation.Status(); ok {
+		_spec.SetField(room.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := ruo.mutation.Extras(); ok {
+		_spec.SetField(room.FieldExtras, field.TypeJSON, value)
+	}
+	if ruo.mutation.ExtrasCleared() {
+		_spec.ClearField(room.FieldExtras, field.TypeJSON)
 	}
 	if value, ok := ruo.mutation.Description(); ok {
 		_spec.SetField(room.FieldDescription, field.TypeString, value)
@@ -619,10 +1487,10 @@ func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) 
 	}
 	if ruo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   room.PlaceTable,
-			Columns: []string{room.PlaceColumn},
+			Columns: room.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
@@ -630,15 +1498,76 @@ func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.PlaceIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.RemovedPlaceIDs(); len(nodes) > 0 && !ruo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   room.PlaceTable,
-			Columns: []string{room.PlaceColumn},
+			Columns: room.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.PlaceTable,
+			Columns: room.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.RoomCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.RoomCategoryTable,
+			Columns: room.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedRoomCategoryIDs(); len(nodes) > 0 && !ruo.mutation.RoomCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.RoomCategoryTable,
+			Columns: room.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RoomCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   room.RoomCategoryTable,
+			Columns: room.RoomCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -684,6 +1613,141 @@ func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.AmenitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.AmenitiesTable,
+			Columns: room.AmenitiesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(amenity.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedAmenitiesIDs(); len(nodes) > 0 && !ruo.mutation.AmenitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.AmenitiesTable,
+			Columns: room.AmenitiesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(amenity.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.AmenitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.AmenitiesTable,
+			Columns: room.AmenitiesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(amenity.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.MediaTable,
+			Columns: room.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedMediaIDs(); len(nodes) > 0 && !ruo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.MediaTable,
+			Columns: room.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   room.MediaTable,
+			Columns: room.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.ReservationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   room.ReservationsTable,
+			Columns: []string{room.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedReservationsIDs(); len(nodes) > 0 && !ruo.mutation.ReservationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   room.ReservationsTable,
+			Columns: []string{room.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.ReservationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   room.ReservationsTable,
+			Columns: []string{room.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

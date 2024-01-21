@@ -14,7 +14,9 @@ import (
 	"placio-app/ent/amenity"
 	"placio-app/ent/business"
 	"placio-app/ent/category"
+	"placio-app/ent/menu"
 	"placio-app/ent/place"
+	"placio-app/ent/placetable"
 	"placio-app/utility"
 	"placio-pkg/errors"
 	"strings"
@@ -100,6 +102,28 @@ func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Cont
 	places, err := s.client.Place.
 		Query().
 		Where(place.HasBusinessWith(business.ID(businessId))).
+		WithMedias().
+		WithTables(func(query *ent.PlaceTableQuery) {
+			query.Where(placetable.DeletedAtIsNil())
+			query.WithOrders(func(query *ent.OrderQuery) {
+				query.WithUser()
+			})
+			query.WithWaiter(func(query *ent.UserQuery) {
+				query.WithPlaces()
+			})
+			query.WithReservedBy(func(query *ent.UserQuery) {
+				query.WithPlaces()
+			})
+		}).
+		WithBusiness().
+		WithUsers().
+		WithMenus(func(query *ent.MenuQuery) {
+			query.Where(menu.DeletedAtIsNil())
+			query.WithMenuItems(func(query *ent.MenuItemQuery) {
+				query.WithMedia(func(query *ent.MediaQuery) {
+				})
+			})
+		}).
 		All(c)
 	if err != nil {
 		sentry.CaptureException(err)
@@ -123,7 +147,14 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		WithCategoryAssignments().
 		WithEvents().
 		WithAmenities().
-		WithMenus().
+		WithMenus(func(query *ent.MenuQuery) {
+			query.Where(menu.DeletedAtIsNil())
+			query.WithMenuItems(func(query *ent.MenuItemQuery) {
+				query.WithMedia(func(query *ent.MediaQuery) {
+				})
+			})
+
+		}).
 		WithFaqs().
 		WithMedias().
 		First(ctx)
@@ -589,33 +620,37 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 
 func (s *PlaceServiceImpl) RemoveMediaToPlace(ctx context.Context, placeID string, mediaIDs []string) error {
 	// Fetch place
-	place, err := s.client.Place.Get(ctx, placeID)
-	if err != nil {
-		sentry.CaptureException(err)
-		return err
-	}
+	//place, err := s.client.Place.Get(ctx, placeID)
+	//if err != nil {
+	//	sentry.CaptureException(err)
+	//	return err
+	//}
 
 	// Create a map to quickly lookup media IDs
-	mediaLookup := make(map[string]bool)
-	for _, mID := range mediaIDs {
-		mediaLookup[mID] = true
-	}
+	//mediaLookup := make(map[string]bool)
+	//for _, mID := range mediaIDs {
+	//	mediaLookup[mID] = true
+	//}
 
 	// Check if the mediaIDs are associated with the place
-	var associatedMediaIDs []string
-	for _, associatedMedia := range place.Edges.Medias {
-		if mediaLookup[associatedMedia.ID] {
-			associatedMediaIDs = append(associatedMediaIDs, associatedMedia.ID)
-		}
-	}
+	//var associatedMediaIDs []string
+	//for _, associatedMedia := range place.Edges.Medias {
+	//	if mediaLookup[associatedMedia.ID] {
+	//		associatedMediaIDs = append(associatedMediaIDs, associatedMedia.ID)
+	//	}
+	//}
 
-	if len(associatedMediaIDs) == 0 {
-		// None of the provided media IDs are associated with the place
+	//if len(associatedMediaIDs) == 0 {
+	//	// None of the provided media IDs are associated with the place
+	//	return errors.IDMissing
+	//}
+
+	if len(mediaIDs) == 0 {
 		return errors.IDMissing
 	}
 
 	// Remove media from the place
-	_, err = s.client.Place.UpdateOneID(placeID).RemoveMediaIDs(associatedMediaIDs...).Save(ctx)
+	_, err := s.client.Place.UpdateOneID(placeID).RemoveMediaIDs(mediaIDs...).Save(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
 		return err
@@ -724,7 +759,7 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 		WithInventories().
 		WithAmenities().
 		WithUsers()
-		// Limit(limit + 1)
+	// Limit(limit + 1)
 
 	// Apply filters
 	if filter.Name != "" {

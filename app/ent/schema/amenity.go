@@ -27,5 +27,9 @@ func (Amenity) Fields() []ent.Field {
 func (Amenity) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("places", Place.Type),
+		edge.From("rooms", Room.Type).
+			Ref("amenities"),
+		edge.From("room_categories", RoomCategory.Type).
+			Ref("amenities"),
 	}
 }

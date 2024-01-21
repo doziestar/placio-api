@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"placio-app/ent"
 	"placio-app/ent/order"
+	"placio-app/ent/place"
 	"placio-app/ent/placetable"
 	"placio-app/ent/user"
 
@@ -16,11 +17,11 @@ type OrderServicesImpl struct {
 }
 
 type OrderServices interface {
-	CreateOrder(ctx context.Context, orderDto *ent.Order, tableID, userid string, orderItems OrderWithItemsDTO) (*ent.Order, error)
+	CreateOrder(ctx context.Context, tableID, userid string, orderItems OrderWithItemsDTO) (*ent.Order, error)
 	UpdateOrder(ctx context.Context, orderID string, orderDto OrderWithItemsDTO) (*ent.Order, error)
 	DeleteOrder(ctx context.Context, orderID string) error
 	GetOrder(ctx context.Context, orderID string) (*ent.Order, error)
-	GetOrders(ctx context.Context, limit, offset int) ([]*ent.Order, error)
+	GetOrders(ctx context.Context, placeId string, limit, offset int) ([]*ent.Order, error)
 	GetOrdersByUserID(ctx context.Context, userID string, limit, offset int) ([]*ent.Order, error)
 	GetOrdersByTableID(ctx context.Context, tableID string, limit, offset int) ([]*ent.Order, error)
 	//GetOrdersByStatus(ctx context.Context, status string, limit, offset int) ([]*ent.Order, error)
@@ -34,16 +35,16 @@ func NewOrderServices(client *ent.Client) OrderServices {
 	}
 }
 
-func (o *OrderServicesImpl) CreateOrder(ctx context.Context, orderDto *ent.Order, tableID, userid string, orderItems OrderWithItemsDTO ) (*ent.Order, error) {
+func (o *OrderServicesImpl) CreateOrder(ctx context.Context, tableID, userid string, orderItems OrderWithItemsDTO) (*ent.Order, error) {
 	// Initialize totalAmount
 	var totalAmount float64
 
 	// Create a new order with the calculated total amount
 	orderQuery := o.client.Order.Create().
 		SetID(uuid.New().String()).
-		SetStatus(orderDto.Status).
-		SetTotalAmount(totalAmount). // Set the calculated total amount
-		SetAdditionalInfo(orderDto.AdditionalInfo)
+		SetStatus("pending").
+		SetTotalAmount(totalAmount) // Set the calculated total amount
+	// SetAdditionalInfo(OrderWithItemsDTO.order.AdditionalInfo)
 
 	if tableID != "" {
 		orderQuery.AddTableIDs(tableID)
@@ -60,23 +61,25 @@ func (o *OrderServicesImpl) CreateOrder(ctx context.Context, orderDto *ent.Order
 
 	// Add order items
 	for menuItemID, quantity := range orderItems.Items {
-    menuItem, err := o.client.MenuItem.Get(ctx, menuItemID)
-    if err != nil {
-        return nil, fmt.Errorf("failed to fetch menu item with ID %s: %v", menuItemID, err)
-    }
-    totalAmount += menuItem.Price * float64(quantity)
+		menuItem, err := o.client.MenuItem.Get(ctx, menuItemID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch menu item with ID %s: %v", menuItemID, err)
+		}
+		totalAmount += menuItem.Price * float64(quantity)
 
-    // Create order item
-    _, err = o.client.OrderItem.Create().
-        SetID(uuid.New().String()).
-        SetQuantity(quantity).
-        AddOrder(newOrder).
-        AddMenuItemIDs(menuItemID).
-        Save(ctx)
-    if err != nil {
-        return nil, fmt.Errorf("failed to create order item for menu item %s: %v", menuItemID, err)
-    }
-}
+		// Create order item
+		_, err = o.client.OrderItem.Create().
+			SetID(uuid.New().String()).
+			SetQuantity(quantity).
+			SetPricePerItem(menuItem.Price).
+			SetTotalPrice(menuItem.Price * float64(quantity)).
+			AddOrder(newOrder).
+			AddMenuItemIDs(menuItemID).
+			Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create order item for menu item %s: %v", menuItemID, err)
+		}
+	}
 
 	return newOrder, nil
 }
@@ -157,15 +160,21 @@ func (o *OrderServicesImpl) GetOrder(ctx context.Context, orderID string) (*ent.
 	return order, nil
 }
 
-func (o *OrderServicesImpl) GetOrders(ctx context.Context, limit, offset int) ([]*ent.Order, error) {
-	orders, err := o.client.Order.
+// GetOrders fetches all orders for a place
+// We fetched a places and join the tables and orders
+func (o *OrderServicesImpl) GetOrders(ctx context.Context, placeId string, limit, offset int) ([]*ent.Order, error) {
+	orders, err := o.client.Place.
 		Query().
+		Where(place.ID(placeId)).
+		QueryTables().
+		QueryOrders().
 		Limit(limit).
 		Offset(offset).
 		WithOrderItems().
 		WithTable().
 		WithUser().
 		All(ctx)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch orders: %v", err)
 	}

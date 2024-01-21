@@ -64,19 +64,39 @@ func IDContainsFold(id string) predicate.Room {
 	return predicate.Room(sql.FieldContainsFold(FieldID, id))
 }
 
-// Number applies equality check predicate on the "number" field. It's identical to NumberEQ.
-func Number(v string) predicate.Room {
-	return predicate.Room(sql.FieldEQ(FieldNumber, v))
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldName, v))
 }
 
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v string) predicate.Room {
-	return predicate.Room(sql.FieldEQ(FieldType, v))
+// RoomNumber applies equality check predicate on the "room_number" field. It's identical to RoomNumberEQ.
+func RoomNumber(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomNumber, v))
 }
 
-// Price applies equality check predicate on the "price" field. It's identical to PriceEQ.
-func Price(v float64) predicate.Room {
-	return predicate.Room(sql.FieldEQ(FieldPrice, v))
+// RoomType applies equality check predicate on the "room_type" field. It's identical to RoomTypeEQ.
+func RoomType(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomType, v))
+}
+
+// RoomStatus applies equality check predicate on the "room_status" field. It's identical to RoomStatusEQ.
+func RoomStatus(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomStatus, v))
+}
+
+// RoomRating applies equality check predicate on the "room_rating" field. It's identical to RoomRatingEQ.
+func RoomRating(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomRating, v))
+}
+
+// RoomPrice applies equality check predicate on the "room_price" field. It's identical to RoomPriceEQ.
+func RoomPrice(v float64) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomPrice, v))
+}
+
+// QrCode applies equality check predicate on the "qr_code" field. It's identical to QrCodeEQ.
+func QrCode(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldQrCode, v))
 }
 
 // Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
@@ -94,174 +114,534 @@ func Image(v string) predicate.Room {
 	return predicate.Room(sql.FieldEQ(FieldImage, v))
 }
 
-// NumberEQ applies the EQ predicate on the "number" field.
-func NumberEQ(v string) predicate.Room {
-	return predicate.Room(sql.FieldEQ(FieldNumber, v))
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldName, v))
 }
 
-// NumberNEQ applies the NEQ predicate on the "number" field.
-func NumberNEQ(v string) predicate.Room {
-	return predicate.Room(sql.FieldNEQ(FieldNumber, v))
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldName, v))
 }
 
-// NumberIn applies the In predicate on the "number" field.
-func NumberIn(vs ...string) predicate.Room {
-	return predicate.Room(sql.FieldIn(FieldNumber, vs...))
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldName, vs...))
 }
 
-// NumberNotIn applies the NotIn predicate on the "number" field.
-func NumberNotIn(vs ...string) predicate.Room {
-	return predicate.Room(sql.FieldNotIn(FieldNumber, vs...))
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldName, vs...))
 }
 
-// NumberGT applies the GT predicate on the "number" field.
-func NumberGT(v string) predicate.Room {
-	return predicate.Room(sql.FieldGT(FieldNumber, v))
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldName, v))
 }
 
-// NumberGTE applies the GTE predicate on the "number" field.
-func NumberGTE(v string) predicate.Room {
-	return predicate.Room(sql.FieldGTE(FieldNumber, v))
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldName, v))
 }
 
-// NumberLT applies the LT predicate on the "number" field.
-func NumberLT(v string) predicate.Room {
-	return predicate.Room(sql.FieldLT(FieldNumber, v))
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldName, v))
 }
 
-// NumberLTE applies the LTE predicate on the "number" field.
-func NumberLTE(v string) predicate.Room {
-	return predicate.Room(sql.FieldLTE(FieldNumber, v))
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldName, v))
 }
 
-// NumberContains applies the Contains predicate on the "number" field.
-func NumberContains(v string) predicate.Room {
-	return predicate.Room(sql.FieldContains(FieldNumber, v))
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.Room {
+	return predicate.Room(sql.FieldContains(FieldName, v))
 }
 
-// NumberHasPrefix applies the HasPrefix predicate on the "number" field.
-func NumberHasPrefix(v string) predicate.Room {
-	return predicate.Room(sql.FieldHasPrefix(FieldNumber, v))
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasPrefix(FieldName, v))
 }
 
-// NumberHasSuffix applies the HasSuffix predicate on the "number" field.
-func NumberHasSuffix(v string) predicate.Room {
-	return predicate.Room(sql.FieldHasSuffix(FieldNumber, v))
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasSuffix(FieldName, v))
 }
 
-// NumberEqualFold applies the EqualFold predicate on the "number" field.
-func NumberEqualFold(v string) predicate.Room {
-	return predicate.Room(sql.FieldEqualFold(FieldNumber, v))
+// NameIsNil applies the IsNil predicate on the "name" field.
+func NameIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldName))
 }
 
-// NumberContainsFold applies the ContainsFold predicate on the "number" field.
-func NumberContainsFold(v string) predicate.Room {
-	return predicate.Room(sql.FieldContainsFold(FieldNumber, v))
+// NameNotNil applies the NotNil predicate on the "name" field.
+func NameNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldName))
 }
 
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v string) predicate.Room {
-	return predicate.Room(sql.FieldEQ(FieldType, v))
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldEqualFold(FieldName, v))
 }
 
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v string) predicate.Room {
-	return predicate.Room(sql.FieldNEQ(FieldType, v))
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldContainsFold(FieldName, v))
 }
 
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...string) predicate.Room {
-	return predicate.Room(sql.FieldIn(FieldType, vs...))
+// RoomNumberEQ applies the EQ predicate on the "room_number" field.
+func RoomNumberEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomNumber, v))
 }
 
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...string) predicate.Room {
-	return predicate.Room(sql.FieldNotIn(FieldType, vs...))
+// RoomNumberNEQ applies the NEQ predicate on the "room_number" field.
+func RoomNumberNEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldRoomNumber, v))
 }
 
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v string) predicate.Room {
-	return predicate.Room(sql.FieldGT(FieldType, v))
+// RoomNumberIn applies the In predicate on the "room_number" field.
+func RoomNumberIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldRoomNumber, vs...))
 }
 
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v string) predicate.Room {
-	return predicate.Room(sql.FieldGTE(FieldType, v))
+// RoomNumberNotIn applies the NotIn predicate on the "room_number" field.
+func RoomNumberNotIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldRoomNumber, vs...))
 }
 
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v string) predicate.Room {
-	return predicate.Room(sql.FieldLT(FieldType, v))
+// RoomNumberGT applies the GT predicate on the "room_number" field.
+func RoomNumberGT(v string) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldRoomNumber, v))
 }
 
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v string) predicate.Room {
-	return predicate.Room(sql.FieldLTE(FieldType, v))
+// RoomNumberGTE applies the GTE predicate on the "room_number" field.
+func RoomNumberGTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldRoomNumber, v))
 }
 
-// TypeContains applies the Contains predicate on the "type" field.
-func TypeContains(v string) predicate.Room {
-	return predicate.Room(sql.FieldContains(FieldType, v))
+// RoomNumberLT applies the LT predicate on the "room_number" field.
+func RoomNumberLT(v string) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldRoomNumber, v))
 }
 
-// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
-func TypeHasPrefix(v string) predicate.Room {
-	return predicate.Room(sql.FieldHasPrefix(FieldType, v))
+// RoomNumberLTE applies the LTE predicate on the "room_number" field.
+func RoomNumberLTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldRoomNumber, v))
 }
 
-// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
-func TypeHasSuffix(v string) predicate.Room {
-	return predicate.Room(sql.FieldHasSuffix(FieldType, v))
+// RoomNumberContains applies the Contains predicate on the "room_number" field.
+func RoomNumberContains(v string) predicate.Room {
+	return predicate.Room(sql.FieldContains(FieldRoomNumber, v))
 }
 
-// TypeEqualFold applies the EqualFold predicate on the "type" field.
-func TypeEqualFold(v string) predicate.Room {
-	return predicate.Room(sql.FieldEqualFold(FieldType, v))
+// RoomNumberHasPrefix applies the HasPrefix predicate on the "room_number" field.
+func RoomNumberHasPrefix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasPrefix(FieldRoomNumber, v))
 }
 
-// TypeContainsFold applies the ContainsFold predicate on the "type" field.
-func TypeContainsFold(v string) predicate.Room {
-	return predicate.Room(sql.FieldContainsFold(FieldType, v))
+// RoomNumberHasSuffix applies the HasSuffix predicate on the "room_number" field.
+func RoomNumberHasSuffix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasSuffix(FieldRoomNumber, v))
 }
 
-// PriceEQ applies the EQ predicate on the "price" field.
-func PriceEQ(v float64) predicate.Room {
-	return predicate.Room(sql.FieldEQ(FieldPrice, v))
+// RoomNumberIsNil applies the IsNil predicate on the "room_number" field.
+func RoomNumberIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomNumber))
 }
 
-// PriceNEQ applies the NEQ predicate on the "price" field.
-func PriceNEQ(v float64) predicate.Room {
-	return predicate.Room(sql.FieldNEQ(FieldPrice, v))
+// RoomNumberNotNil applies the NotNil predicate on the "room_number" field.
+func RoomNumberNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomNumber))
 }
 
-// PriceIn applies the In predicate on the "price" field.
-func PriceIn(vs ...float64) predicate.Room {
-	return predicate.Room(sql.FieldIn(FieldPrice, vs...))
+// RoomNumberEqualFold applies the EqualFold predicate on the "room_number" field.
+func RoomNumberEqualFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldEqualFold(FieldRoomNumber, v))
 }
 
-// PriceNotIn applies the NotIn predicate on the "price" field.
-func PriceNotIn(vs ...float64) predicate.Room {
-	return predicate.Room(sql.FieldNotIn(FieldPrice, vs...))
+// RoomNumberContainsFold applies the ContainsFold predicate on the "room_number" field.
+func RoomNumberContainsFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldContainsFold(FieldRoomNumber, v))
 }
 
-// PriceGT applies the GT predicate on the "price" field.
-func PriceGT(v float64) predicate.Room {
-	return predicate.Room(sql.FieldGT(FieldPrice, v))
+// RoomTypeEQ applies the EQ predicate on the "room_type" field.
+func RoomTypeEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomType, v))
 }
 
-// PriceGTE applies the GTE predicate on the "price" field.
-func PriceGTE(v float64) predicate.Room {
-	return predicate.Room(sql.FieldGTE(FieldPrice, v))
+// RoomTypeNEQ applies the NEQ predicate on the "room_type" field.
+func RoomTypeNEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldRoomType, v))
 }
 
-// PriceLT applies the LT predicate on the "price" field.
-func PriceLT(v float64) predicate.Room {
-	return predicate.Room(sql.FieldLT(FieldPrice, v))
+// RoomTypeIn applies the In predicate on the "room_type" field.
+func RoomTypeIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldRoomType, vs...))
 }
 
-// PriceLTE applies the LTE predicate on the "price" field.
-func PriceLTE(v float64) predicate.Room {
-	return predicate.Room(sql.FieldLTE(FieldPrice, v))
+// RoomTypeNotIn applies the NotIn predicate on the "room_type" field.
+func RoomTypeNotIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldRoomType, vs...))
+}
+
+// RoomTypeGT applies the GT predicate on the "room_type" field.
+func RoomTypeGT(v string) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldRoomType, v))
+}
+
+// RoomTypeGTE applies the GTE predicate on the "room_type" field.
+func RoomTypeGTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldRoomType, v))
+}
+
+// RoomTypeLT applies the LT predicate on the "room_type" field.
+func RoomTypeLT(v string) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldRoomType, v))
+}
+
+// RoomTypeLTE applies the LTE predicate on the "room_type" field.
+func RoomTypeLTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldRoomType, v))
+}
+
+// RoomTypeContains applies the Contains predicate on the "room_type" field.
+func RoomTypeContains(v string) predicate.Room {
+	return predicate.Room(sql.FieldContains(FieldRoomType, v))
+}
+
+// RoomTypeHasPrefix applies the HasPrefix predicate on the "room_type" field.
+func RoomTypeHasPrefix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasPrefix(FieldRoomType, v))
+}
+
+// RoomTypeHasSuffix applies the HasSuffix predicate on the "room_type" field.
+func RoomTypeHasSuffix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasSuffix(FieldRoomType, v))
+}
+
+// RoomTypeIsNil applies the IsNil predicate on the "room_type" field.
+func RoomTypeIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomType))
+}
+
+// RoomTypeNotNil applies the NotNil predicate on the "room_type" field.
+func RoomTypeNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomType))
+}
+
+// RoomTypeEqualFold applies the EqualFold predicate on the "room_type" field.
+func RoomTypeEqualFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldEqualFold(FieldRoomType, v))
+}
+
+// RoomTypeContainsFold applies the ContainsFold predicate on the "room_type" field.
+func RoomTypeContainsFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldContainsFold(FieldRoomType, v))
+}
+
+// RoomStatusEQ applies the EQ predicate on the "room_status" field.
+func RoomStatusEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomStatus, v))
+}
+
+// RoomStatusNEQ applies the NEQ predicate on the "room_status" field.
+func RoomStatusNEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldRoomStatus, v))
+}
+
+// RoomStatusIn applies the In predicate on the "room_status" field.
+func RoomStatusIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldRoomStatus, vs...))
+}
+
+// RoomStatusNotIn applies the NotIn predicate on the "room_status" field.
+func RoomStatusNotIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldRoomStatus, vs...))
+}
+
+// RoomStatusGT applies the GT predicate on the "room_status" field.
+func RoomStatusGT(v string) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldRoomStatus, v))
+}
+
+// RoomStatusGTE applies the GTE predicate on the "room_status" field.
+func RoomStatusGTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldRoomStatus, v))
+}
+
+// RoomStatusLT applies the LT predicate on the "room_status" field.
+func RoomStatusLT(v string) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldRoomStatus, v))
+}
+
+// RoomStatusLTE applies the LTE predicate on the "room_status" field.
+func RoomStatusLTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldRoomStatus, v))
+}
+
+// RoomStatusContains applies the Contains predicate on the "room_status" field.
+func RoomStatusContains(v string) predicate.Room {
+	return predicate.Room(sql.FieldContains(FieldRoomStatus, v))
+}
+
+// RoomStatusHasPrefix applies the HasPrefix predicate on the "room_status" field.
+func RoomStatusHasPrefix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasPrefix(FieldRoomStatus, v))
+}
+
+// RoomStatusHasSuffix applies the HasSuffix predicate on the "room_status" field.
+func RoomStatusHasSuffix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasSuffix(FieldRoomStatus, v))
+}
+
+// RoomStatusIsNil applies the IsNil predicate on the "room_status" field.
+func RoomStatusIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomStatus))
+}
+
+// RoomStatusNotNil applies the NotNil predicate on the "room_status" field.
+func RoomStatusNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomStatus))
+}
+
+// RoomStatusEqualFold applies the EqualFold predicate on the "room_status" field.
+func RoomStatusEqualFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldEqualFold(FieldRoomStatus, v))
+}
+
+// RoomStatusContainsFold applies the ContainsFold predicate on the "room_status" field.
+func RoomStatusContainsFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldContainsFold(FieldRoomStatus, v))
+}
+
+// RoomRatingEQ applies the EQ predicate on the "room_rating" field.
+func RoomRatingEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomRating, v))
+}
+
+// RoomRatingNEQ applies the NEQ predicate on the "room_rating" field.
+func RoomRatingNEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldRoomRating, v))
+}
+
+// RoomRatingIn applies the In predicate on the "room_rating" field.
+func RoomRatingIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldRoomRating, vs...))
+}
+
+// RoomRatingNotIn applies the NotIn predicate on the "room_rating" field.
+func RoomRatingNotIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldRoomRating, vs...))
+}
+
+// RoomRatingGT applies the GT predicate on the "room_rating" field.
+func RoomRatingGT(v string) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldRoomRating, v))
+}
+
+// RoomRatingGTE applies the GTE predicate on the "room_rating" field.
+func RoomRatingGTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldRoomRating, v))
+}
+
+// RoomRatingLT applies the LT predicate on the "room_rating" field.
+func RoomRatingLT(v string) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldRoomRating, v))
+}
+
+// RoomRatingLTE applies the LTE predicate on the "room_rating" field.
+func RoomRatingLTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldRoomRating, v))
+}
+
+// RoomRatingContains applies the Contains predicate on the "room_rating" field.
+func RoomRatingContains(v string) predicate.Room {
+	return predicate.Room(sql.FieldContains(FieldRoomRating, v))
+}
+
+// RoomRatingHasPrefix applies the HasPrefix predicate on the "room_rating" field.
+func RoomRatingHasPrefix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasPrefix(FieldRoomRating, v))
+}
+
+// RoomRatingHasSuffix applies the HasSuffix predicate on the "room_rating" field.
+func RoomRatingHasSuffix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasSuffix(FieldRoomRating, v))
+}
+
+// RoomRatingIsNil applies the IsNil predicate on the "room_rating" field.
+func RoomRatingIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomRating))
+}
+
+// RoomRatingNotNil applies the NotNil predicate on the "room_rating" field.
+func RoomRatingNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomRating))
+}
+
+// RoomRatingEqualFold applies the EqualFold predicate on the "room_rating" field.
+func RoomRatingEqualFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldEqualFold(FieldRoomRating, v))
+}
+
+// RoomRatingContainsFold applies the ContainsFold predicate on the "room_rating" field.
+func RoomRatingContainsFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldContainsFold(FieldRoomRating, v))
+}
+
+// RoomPriceEQ applies the EQ predicate on the "room_price" field.
+func RoomPriceEQ(v float64) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldRoomPrice, v))
+}
+
+// RoomPriceNEQ applies the NEQ predicate on the "room_price" field.
+func RoomPriceNEQ(v float64) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldRoomPrice, v))
+}
+
+// RoomPriceIn applies the In predicate on the "room_price" field.
+func RoomPriceIn(vs ...float64) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldRoomPrice, vs...))
+}
+
+// RoomPriceNotIn applies the NotIn predicate on the "room_price" field.
+func RoomPriceNotIn(vs ...float64) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldRoomPrice, vs...))
+}
+
+// RoomPriceGT applies the GT predicate on the "room_price" field.
+func RoomPriceGT(v float64) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldRoomPrice, v))
+}
+
+// RoomPriceGTE applies the GTE predicate on the "room_price" field.
+func RoomPriceGTE(v float64) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldRoomPrice, v))
+}
+
+// RoomPriceLT applies the LT predicate on the "room_price" field.
+func RoomPriceLT(v float64) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldRoomPrice, v))
+}
+
+// RoomPriceLTE applies the LTE predicate on the "room_price" field.
+func RoomPriceLTE(v float64) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldRoomPrice, v))
+}
+
+// RoomPriceIsNil applies the IsNil predicate on the "room_price" field.
+func RoomPriceIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldRoomPrice))
+}
+
+// RoomPriceNotNil applies the NotNil predicate on the "room_price" field.
+func RoomPriceNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldRoomPrice))
+}
+
+// QrCodeEQ applies the EQ predicate on the "qr_code" field.
+func QrCodeEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldQrCode, v))
+}
+
+// QrCodeNEQ applies the NEQ predicate on the "qr_code" field.
+func QrCodeNEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldQrCode, v))
+}
+
+// QrCodeIn applies the In predicate on the "qr_code" field.
+func QrCodeIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldQrCode, vs...))
+}
+
+// QrCodeNotIn applies the NotIn predicate on the "qr_code" field.
+func QrCodeNotIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldQrCode, vs...))
+}
+
+// QrCodeGT applies the GT predicate on the "qr_code" field.
+func QrCodeGT(v string) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldQrCode, v))
+}
+
+// QrCodeGTE applies the GTE predicate on the "qr_code" field.
+func QrCodeGTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldQrCode, v))
+}
+
+// QrCodeLT applies the LT predicate on the "qr_code" field.
+func QrCodeLT(v string) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldQrCode, v))
+}
+
+// QrCodeLTE applies the LTE predicate on the "qr_code" field.
+func QrCodeLTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldQrCode, v))
+}
+
+// QrCodeContains applies the Contains predicate on the "qr_code" field.
+func QrCodeContains(v string) predicate.Room {
+	return predicate.Room(sql.FieldContains(FieldQrCode, v))
+}
+
+// QrCodeHasPrefix applies the HasPrefix predicate on the "qr_code" field.
+func QrCodeHasPrefix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasPrefix(FieldQrCode, v))
+}
+
+// QrCodeHasSuffix applies the HasSuffix predicate on the "qr_code" field.
+func QrCodeHasSuffix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasSuffix(FieldQrCode, v))
+}
+
+// QrCodeIsNil applies the IsNil predicate on the "qr_code" field.
+func QrCodeIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldQrCode))
+}
+
+// QrCodeNotNil applies the NotNil predicate on the "qr_code" field.
+func QrCodeNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldQrCode))
+}
+
+// QrCodeEqualFold applies the EqualFold predicate on the "qr_code" field.
+func QrCodeEqualFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldEqualFold(FieldQrCode, v))
+}
+
+// QrCodeContainsFold applies the ContainsFold predicate on the "qr_code" field.
+func QrCodeContainsFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldContainsFold(FieldQrCode, v))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// ExtrasIsNil applies the IsNil predicate on the "extras" field.
+func ExtrasIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldExtras))
+}
+
+// ExtrasNotNil applies the NotNil predicate on the "extras" field.
+func ExtrasNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldExtras))
 }
 
 // DescriptionEQ applies the EQ predicate on the "description" field.
@@ -429,7 +809,7 @@ func HasPlace() predicate.Room {
 	return predicate.Room(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PlaceTable, PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlaceTable, PlacePrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -439,6 +819,29 @@ func HasPlace() predicate.Room {
 func HasPlaceWith(preds ...predicate.Place) predicate.Room {
 	return predicate.Room(func(s *sql.Selector) {
 		step := newPlaceStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRoomCategory applies the HasEdge predicate on the "room_category" edge.
+func HasRoomCategory() predicate.Room {
+	return predicate.Room(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, RoomCategoryTable, RoomCategoryPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRoomCategoryWith applies the HasEdge predicate on the "room_category" edge with a given conditions (other predicates).
+func HasRoomCategoryWith(preds ...predicate.RoomCategory) predicate.Room {
+	return predicate.Room(func(s *sql.Selector) {
+		step := newRoomCategoryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -462,6 +865,75 @@ func HasBookings() predicate.Room {
 func HasBookingsWith(preds ...predicate.Booking) predicate.Room {
 	return predicate.Room(func(s *sql.Selector) {
 		step := newBookingsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAmenities applies the HasEdge predicate on the "amenities" edge.
+func HasAmenities() predicate.Room {
+	return predicate.Room(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, AmenitiesTable, AmenitiesPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAmenitiesWith applies the HasEdge predicate on the "amenities" edge with a given conditions (other predicates).
+func HasAmenitiesWith(preds ...predicate.Amenity) predicate.Room {
+	return predicate.Room(func(s *sql.Selector) {
+		step := newAmenitiesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMedia applies the HasEdge predicate on the "media" edge.
+func HasMedia() predicate.Room {
+	return predicate.Room(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, MediaTable, MediaPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMediaWith applies the HasEdge predicate on the "media" edge with a given conditions (other predicates).
+func HasMediaWith(preds ...predicate.Media) predicate.Room {
+	return predicate.Room(func(s *sql.Selector) {
+		step := newMediaStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReservations applies the HasEdge predicate on the "reservations" edge.
+func HasReservations() predicate.Room {
+	return predicate.Room(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReservationsTable, ReservationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReservationsWith applies the HasEdge predicate on the "reservations" edge with a given conditions (other predicates).
+func HasReservationsWith(preds ...predicate.Reservation) predicate.Room {
+	return predicate.Room(func(s *sql.Selector) {
+		step := newReservationsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

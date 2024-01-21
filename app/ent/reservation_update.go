@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 	"placio-app/ent/reservation"
+	"placio-app/ent/room"
 	"placio-app/ent/user"
 	"time"
 
@@ -30,52 +31,31 @@ func (ru *ReservationUpdate) Where(ps ...predicate.Reservation) *ReservationUpda
 	return ru
 }
 
-// SetDate sets the "date" field.
-func (ru *ReservationUpdate) SetDate(t time.Time) *ReservationUpdate {
-	ru.mutation.SetDate(t)
+// SetStartDate sets the "startDate" field.
+func (ru *ReservationUpdate) SetStartDate(t time.Time) *ReservationUpdate {
+	ru.mutation.SetStartDate(t)
 	return ru
 }
 
-// SetNillableDate sets the "date" field if the given value is not nil.
-func (ru *ReservationUpdate) SetNillableDate(t *time.Time) *ReservationUpdate {
+// SetNillableStartDate sets the "startDate" field if the given value is not nil.
+func (ru *ReservationUpdate) SetNillableStartDate(t *time.Time) *ReservationUpdate {
 	if t != nil {
-		ru.SetDate(*t)
+		ru.SetStartDate(*t)
 	}
 	return ru
 }
 
-// SetTime sets the "time" field.
-func (ru *ReservationUpdate) SetTime(t time.Time) *ReservationUpdate {
-	ru.mutation.SetTime(t)
+// SetEndDate sets the "endDate" field.
+func (ru *ReservationUpdate) SetEndDate(t time.Time) *ReservationUpdate {
+	ru.mutation.SetEndDate(t)
 	return ru
 }
 
-// SetNillableTime sets the "time" field if the given value is not nil.
-func (ru *ReservationUpdate) SetNillableTime(t *time.Time) *ReservationUpdate {
+// SetNillableEndDate sets the "endDate" field if the given value is not nil.
+func (ru *ReservationUpdate) SetNillableEndDate(t *time.Time) *ReservationUpdate {
 	if t != nil {
-		ru.SetTime(*t)
+		ru.SetEndDate(*t)
 	}
-	return ru
-}
-
-// SetNumberOfPeople sets the "numberOfPeople" field.
-func (ru *ReservationUpdate) SetNumberOfPeople(i int) *ReservationUpdate {
-	ru.mutation.ResetNumberOfPeople()
-	ru.mutation.SetNumberOfPeople(i)
-	return ru
-}
-
-// SetNillableNumberOfPeople sets the "numberOfPeople" field if the given value is not nil.
-func (ru *ReservationUpdate) SetNillableNumberOfPeople(i *int) *ReservationUpdate {
-	if i != nil {
-		ru.SetNumberOfPeople(*i)
-	}
-	return ru
-}
-
-// AddNumberOfPeople adds i to the "numberOfPeople" field.
-func (ru *ReservationUpdate) AddNumberOfPeople(i int) *ReservationUpdate {
-	ru.mutation.AddNumberOfPeople(i)
 	return ru
 }
 
@@ -112,6 +92,25 @@ func (ru *ReservationUpdate) SetPlace(p *Place) *ReservationUpdate {
 	return ru.SetPlaceID(p.ID)
 }
 
+// SetRoomID sets the "room" edge to the Room entity by ID.
+func (ru *ReservationUpdate) SetRoomID(id string) *ReservationUpdate {
+	ru.mutation.SetRoomID(id)
+	return ru
+}
+
+// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
+func (ru *ReservationUpdate) SetNillableRoomID(id *string) *ReservationUpdate {
+	if id != nil {
+		ru = ru.SetRoomID(*id)
+	}
+	return ru
+}
+
+// SetRoom sets the "room" edge to the Room entity.
+func (ru *ReservationUpdate) SetRoom(r *Room) *ReservationUpdate {
+	return ru.SetRoomID(r.ID)
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (ru *ReservationUpdate) SetUserID(id string) *ReservationUpdate {
 	ru.mutation.SetUserID(id)
@@ -139,6 +138,12 @@ func (ru *ReservationUpdate) Mutation() *ReservationMutation {
 // ClearPlace clears the "place" edge to the Place entity.
 func (ru *ReservationUpdate) ClearPlace() *ReservationUpdate {
 	ru.mutation.ClearPlace()
+	return ru
+}
+
+// ClearRoom clears the "room" edge to the Room entity.
+func (ru *ReservationUpdate) ClearRoom() *ReservationUpdate {
+	ru.mutation.ClearRoom()
 	return ru
 }
 
@@ -184,17 +189,11 @@ func (ru *ReservationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := ru.mutation.Date(); ok {
-		_spec.SetField(reservation.FieldDate, field.TypeTime, value)
+	if value, ok := ru.mutation.StartDate(); ok {
+		_spec.SetField(reservation.FieldStartDate, field.TypeTime, value)
 	}
-	if value, ok := ru.mutation.Time(); ok {
-		_spec.SetField(reservation.FieldTime, field.TypeTime, value)
-	}
-	if value, ok := ru.mutation.NumberOfPeople(); ok {
-		_spec.SetField(reservation.FieldNumberOfPeople, field.TypeInt, value)
-	}
-	if value, ok := ru.mutation.AddedNumberOfPeople(); ok {
-		_spec.AddField(reservation.FieldNumberOfPeople, field.TypeInt, value)
+	if value, ok := ru.mutation.EndDate(); ok {
+		_spec.SetField(reservation.FieldEndDate, field.TypeTime, value)
 	}
 	if value, ok := ru.mutation.Status(); ok {
 		_spec.SetField(reservation.FieldStatus, field.TypeString, value)
@@ -221,6 +220,35 @@ func (ru *ReservationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.RoomCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   reservation.RoomTable,
+			Columns: []string{reservation.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   reservation.RoomTable,
+			Columns: []string{reservation.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -277,52 +305,31 @@ type ReservationUpdateOne struct {
 	mutation *ReservationMutation
 }
 
-// SetDate sets the "date" field.
-func (ruo *ReservationUpdateOne) SetDate(t time.Time) *ReservationUpdateOne {
-	ruo.mutation.SetDate(t)
+// SetStartDate sets the "startDate" field.
+func (ruo *ReservationUpdateOne) SetStartDate(t time.Time) *ReservationUpdateOne {
+	ruo.mutation.SetStartDate(t)
 	return ruo
 }
 
-// SetNillableDate sets the "date" field if the given value is not nil.
-func (ruo *ReservationUpdateOne) SetNillableDate(t *time.Time) *ReservationUpdateOne {
+// SetNillableStartDate sets the "startDate" field if the given value is not nil.
+func (ruo *ReservationUpdateOne) SetNillableStartDate(t *time.Time) *ReservationUpdateOne {
 	if t != nil {
-		ruo.SetDate(*t)
+		ruo.SetStartDate(*t)
 	}
 	return ruo
 }
 
-// SetTime sets the "time" field.
-func (ruo *ReservationUpdateOne) SetTime(t time.Time) *ReservationUpdateOne {
-	ruo.mutation.SetTime(t)
+// SetEndDate sets the "endDate" field.
+func (ruo *ReservationUpdateOne) SetEndDate(t time.Time) *ReservationUpdateOne {
+	ruo.mutation.SetEndDate(t)
 	return ruo
 }
 
-// SetNillableTime sets the "time" field if the given value is not nil.
-func (ruo *ReservationUpdateOne) SetNillableTime(t *time.Time) *ReservationUpdateOne {
+// SetNillableEndDate sets the "endDate" field if the given value is not nil.
+func (ruo *ReservationUpdateOne) SetNillableEndDate(t *time.Time) *ReservationUpdateOne {
 	if t != nil {
-		ruo.SetTime(*t)
+		ruo.SetEndDate(*t)
 	}
-	return ruo
-}
-
-// SetNumberOfPeople sets the "numberOfPeople" field.
-func (ruo *ReservationUpdateOne) SetNumberOfPeople(i int) *ReservationUpdateOne {
-	ruo.mutation.ResetNumberOfPeople()
-	ruo.mutation.SetNumberOfPeople(i)
-	return ruo
-}
-
-// SetNillableNumberOfPeople sets the "numberOfPeople" field if the given value is not nil.
-func (ruo *ReservationUpdateOne) SetNillableNumberOfPeople(i *int) *ReservationUpdateOne {
-	if i != nil {
-		ruo.SetNumberOfPeople(*i)
-	}
-	return ruo
-}
-
-// AddNumberOfPeople adds i to the "numberOfPeople" field.
-func (ruo *ReservationUpdateOne) AddNumberOfPeople(i int) *ReservationUpdateOne {
-	ruo.mutation.AddNumberOfPeople(i)
 	return ruo
 }
 
@@ -359,6 +366,25 @@ func (ruo *ReservationUpdateOne) SetPlace(p *Place) *ReservationUpdateOne {
 	return ruo.SetPlaceID(p.ID)
 }
 
+// SetRoomID sets the "room" edge to the Room entity by ID.
+func (ruo *ReservationUpdateOne) SetRoomID(id string) *ReservationUpdateOne {
+	ruo.mutation.SetRoomID(id)
+	return ruo
+}
+
+// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
+func (ruo *ReservationUpdateOne) SetNillableRoomID(id *string) *ReservationUpdateOne {
+	if id != nil {
+		ruo = ruo.SetRoomID(*id)
+	}
+	return ruo
+}
+
+// SetRoom sets the "room" edge to the Room entity.
+func (ruo *ReservationUpdateOne) SetRoom(r *Room) *ReservationUpdateOne {
+	return ruo.SetRoomID(r.ID)
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (ruo *ReservationUpdateOne) SetUserID(id string) *ReservationUpdateOne {
 	ruo.mutation.SetUserID(id)
@@ -386,6 +412,12 @@ func (ruo *ReservationUpdateOne) Mutation() *ReservationMutation {
 // ClearPlace clears the "place" edge to the Place entity.
 func (ruo *ReservationUpdateOne) ClearPlace() *ReservationUpdateOne {
 	ruo.mutation.ClearPlace()
+	return ruo
+}
+
+// ClearRoom clears the "room" edge to the Room entity.
+func (ruo *ReservationUpdateOne) ClearRoom() *ReservationUpdateOne {
+	ruo.mutation.ClearRoom()
 	return ruo
 }
 
@@ -461,17 +493,11 @@ func (ruo *ReservationUpdateOne) sqlSave(ctx context.Context) (_node *Reservatio
 			}
 		}
 	}
-	if value, ok := ruo.mutation.Date(); ok {
-		_spec.SetField(reservation.FieldDate, field.TypeTime, value)
+	if value, ok := ruo.mutation.StartDate(); ok {
+		_spec.SetField(reservation.FieldStartDate, field.TypeTime, value)
 	}
-	if value, ok := ruo.mutation.Time(); ok {
-		_spec.SetField(reservation.FieldTime, field.TypeTime, value)
-	}
-	if value, ok := ruo.mutation.NumberOfPeople(); ok {
-		_spec.SetField(reservation.FieldNumberOfPeople, field.TypeInt, value)
-	}
-	if value, ok := ruo.mutation.AddedNumberOfPeople(); ok {
-		_spec.AddField(reservation.FieldNumberOfPeople, field.TypeInt, value)
+	if value, ok := ruo.mutation.EndDate(); ok {
+		_spec.SetField(reservation.FieldEndDate, field.TypeTime, value)
 	}
 	if value, ok := ruo.mutation.Status(); ok {
 		_spec.SetField(reservation.FieldStatus, field.TypeString, value)
@@ -498,6 +524,35 @@ func (ruo *ReservationUpdateOne) sqlSave(ctx context.Context) (_node *Reservatio
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.RoomCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   reservation.RoomTable,
+			Columns: []string{reservation.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   reservation.RoomTable,
+			Columns: []string{reservation.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

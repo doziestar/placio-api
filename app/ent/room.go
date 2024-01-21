@@ -3,8 +3,8 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
-	"placio-app/ent/place"
 	"placio-app/ent/room"
 	"strings"
 
@@ -17,12 +17,24 @@ type Room struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
-	// Number holds the value of the "number" field.
-	Number string `json:"number,omitempty"`
-	// Type holds the value of the "type" field.
-	Type string `json:"type,omitempty"`
-	// Price holds the value of the "price" field.
-	Price float64 `json:"price,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// RoomNumber holds the value of the "room_number" field.
+	RoomNumber string `json:"room_number,omitempty"`
+	// RoomType holds the value of the "room_type" field.
+	RoomType string `json:"room_type,omitempty"`
+	// RoomStatus holds the value of the "room_status" field.
+	RoomStatus string `json:"room_status,omitempty"`
+	// RoomRating holds the value of the "room_rating" field.
+	RoomRating string `json:"room_rating,omitempty"`
+	// RoomPrice holds the value of the "room_price" field.
+	RoomPrice float64 `json:"room_price,omitempty"`
+	// QrCode holds the value of the "qr_code" field.
+	QrCode string `json:"qr_code,omitempty"`
+	// Status holds the value of the "status" field.
+	Status room.Status `json:"status,omitempty"`
+	// Extras holds the value of the "extras" field.
+	Extras map[string]interface{} `json:"extras,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
 	// Availability holds the value of the "availability" field.
@@ -32,41 +44,80 @@ type Room struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RoomQuery when eager-loading is set.
 	Edges        RoomEdges `json:"edges"`
-	place_rooms  *string
 	selectValues sql.SelectValues
 }
 
 // RoomEdges holds the relations/edges for other nodes in the graph.
 type RoomEdges struct {
 	// Place holds the value of the place edge.
-	Place *Place `json:"place,omitempty"`
+	Place []*Place `json:"place,omitempty"`
+	// RoomCategory holds the value of the room_category edge.
+	RoomCategory []*RoomCategory `json:"room_category,omitempty"`
 	// Bookings holds the value of the bookings edge.
 	Bookings []*Booking `json:"bookings,omitempty"`
+	// Amenities holds the value of the amenities edge.
+	Amenities []*Amenity `json:"amenities,omitempty"`
+	// Media holds the value of the media edge.
+	Media []*Media `json:"media,omitempty"`
+	// Reservations holds the value of the reservations edge.
+	Reservations []*Reservation `json:"reservations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [6]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e RoomEdges) PlaceOrErr() (*Place, error) {
+// was not loaded in eager-loading.
+func (e RoomEdges) PlaceOrErr() ([]*Place, error) {
 	if e.loadedTypes[0] {
-		if e.Place == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: place.Label}
-		}
 		return e.Place, nil
 	}
 	return nil, &NotLoadedError{edge: "place"}
 }
 
+// RoomCategoryOrErr returns the RoomCategory value or an error if the edge
+// was not loaded in eager-loading.
+func (e RoomEdges) RoomCategoryOrErr() ([]*RoomCategory, error) {
+	if e.loadedTypes[1] {
+		return e.RoomCategory, nil
+	}
+	return nil, &NotLoadedError{edge: "room_category"}
+}
+
 // BookingsOrErr returns the Bookings value or an error if the edge
 // was not loaded in eager-loading.
 func (e RoomEdges) BookingsOrErr() ([]*Booking, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Bookings, nil
 	}
 	return nil, &NotLoadedError{edge: "bookings"}
+}
+
+// AmenitiesOrErr returns the Amenities value or an error if the edge
+// was not loaded in eager-loading.
+func (e RoomEdges) AmenitiesOrErr() ([]*Amenity, error) {
+	if e.loadedTypes[3] {
+		return e.Amenities, nil
+	}
+	return nil, &NotLoadedError{edge: "amenities"}
+}
+
+// MediaOrErr returns the Media value or an error if the edge
+// was not loaded in eager-loading.
+func (e RoomEdges) MediaOrErr() ([]*Media, error) {
+	if e.loadedTypes[4] {
+		return e.Media, nil
+	}
+	return nil, &NotLoadedError{edge: "media"}
+}
+
+// ReservationsOrErr returns the Reservations value or an error if the edge
+// was not loaded in eager-loading.
+func (e RoomEdges) ReservationsOrErr() ([]*Reservation, error) {
+	if e.loadedTypes[5] {
+		return e.Reservations, nil
+	}
+	return nil, &NotLoadedError{edge: "reservations"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -74,13 +125,13 @@ func (*Room) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case room.FieldExtras:
+			values[i] = new([]byte)
 		case room.FieldAvailability:
 			values[i] = new(sql.NullBool)
-		case room.FieldPrice:
+		case room.FieldRoomPrice:
 			values[i] = new(sql.NullFloat64)
-		case room.FieldID, room.FieldNumber, room.FieldType, room.FieldDescription, room.FieldImage:
-			values[i] = new(sql.NullString)
-		case room.ForeignKeys[0]: // place_rooms
+		case room.FieldID, room.FieldName, room.FieldRoomNumber, room.FieldRoomType, room.FieldRoomStatus, room.FieldRoomRating, room.FieldQrCode, room.FieldStatus, room.FieldDescription, room.FieldImage:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -103,23 +154,61 @@ func (r *Room) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.ID = value.String
 			}
-		case room.FieldNumber:
+		case room.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field number", values[i])
+				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				r.Number = value.String
+				r.Name = value.String
 			}
-		case room.FieldType:
+		case room.FieldRoomNumber:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
+				return fmt.Errorf("unexpected type %T for field room_number", values[i])
 			} else if value.Valid {
-				r.Type = value.String
+				r.RoomNumber = value.String
 			}
-		case room.FieldPrice:
+		case room.FieldRoomType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field room_type", values[i])
+			} else if value.Valid {
+				r.RoomType = value.String
+			}
+		case room.FieldRoomStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field room_status", values[i])
+			} else if value.Valid {
+				r.RoomStatus = value.String
+			}
+		case room.FieldRoomRating:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field room_rating", values[i])
+			} else if value.Valid {
+				r.RoomRating = value.String
+			}
+		case room.FieldRoomPrice:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field price", values[i])
+				return fmt.Errorf("unexpected type %T for field room_price", values[i])
 			} else if value.Valid {
-				r.Price = value.Float64
+				r.RoomPrice = value.Float64
+			}
+		case room.FieldQrCode:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field qr_code", values[i])
+			} else if value.Valid {
+				r.QrCode = value.String
+			}
+		case room.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				r.Status = room.Status(value.String)
+			}
+		case room.FieldExtras:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field extras", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &r.Extras); err != nil {
+					return fmt.Errorf("unmarshal field extras: %w", err)
+				}
 			}
 		case room.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -139,13 +228,6 @@ func (r *Room) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.Image = value.String
 			}
-		case room.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field place_rooms", values[i])
-			} else if value.Valid {
-				r.place_rooms = new(string)
-				*r.place_rooms = value.String
-			}
 		default:
 			r.selectValues.Set(columns[i], values[i])
 		}
@@ -164,9 +246,29 @@ func (r *Room) QueryPlace() *PlaceQuery {
 	return NewRoomClient(r.config).QueryPlace(r)
 }
 
+// QueryRoomCategory queries the "room_category" edge of the Room entity.
+func (r *Room) QueryRoomCategory() *RoomCategoryQuery {
+	return NewRoomClient(r.config).QueryRoomCategory(r)
+}
+
 // QueryBookings queries the "bookings" edge of the Room entity.
 func (r *Room) QueryBookings() *BookingQuery {
 	return NewRoomClient(r.config).QueryBookings(r)
+}
+
+// QueryAmenities queries the "amenities" edge of the Room entity.
+func (r *Room) QueryAmenities() *AmenityQuery {
+	return NewRoomClient(r.config).QueryAmenities(r)
+}
+
+// QueryMedia queries the "media" edge of the Room entity.
+func (r *Room) QueryMedia() *MediaQuery {
+	return NewRoomClient(r.config).QueryMedia(r)
+}
+
+// QueryReservations queries the "reservations" edge of the Room entity.
+func (r *Room) QueryReservations() *ReservationQuery {
+	return NewRoomClient(r.config).QueryReservations(r)
 }
 
 // Update returns a builder for updating this Room.
@@ -192,14 +294,32 @@ func (r *Room) String() string {
 	var builder strings.Builder
 	builder.WriteString("Room(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", r.ID))
-	builder.WriteString("number=")
-	builder.WriteString(r.Number)
+	builder.WriteString("name=")
+	builder.WriteString(r.Name)
 	builder.WriteString(", ")
-	builder.WriteString("type=")
-	builder.WriteString(r.Type)
+	builder.WriteString("room_number=")
+	builder.WriteString(r.RoomNumber)
 	builder.WriteString(", ")
-	builder.WriteString("price=")
-	builder.WriteString(fmt.Sprintf("%v", r.Price))
+	builder.WriteString("room_type=")
+	builder.WriteString(r.RoomType)
+	builder.WriteString(", ")
+	builder.WriteString("room_status=")
+	builder.WriteString(r.RoomStatus)
+	builder.WriteString(", ")
+	builder.WriteString("room_rating=")
+	builder.WriteString(r.RoomRating)
+	builder.WriteString(", ")
+	builder.WriteString("room_price=")
+	builder.WriteString(fmt.Sprintf("%v", r.RoomPrice))
+	builder.WriteString(", ")
+	builder.WriteString("qr_code=")
+	builder.WriteString(r.QrCode)
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", r.Status))
+	builder.WriteString(", ")
+	builder.WriteString("extras=")
+	builder.WriteString(fmt.Sprintf("%v", r.Extras))
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(r.Description)

@@ -7,10 +7,14 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/reservation"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -20,13 +24,16 @@ import (
 // RoomQuery is the builder for querying Room entities.
 type RoomQuery struct {
 	config
-	ctx          *QueryContext
-	order        []room.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.Room
-	withPlace    *PlaceQuery
-	withBookings *BookingQuery
-	withFKs      bool
+	ctx              *QueryContext
+	order            []room.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.Room
+	withPlace        *PlaceQuery
+	withRoomCategory *RoomCategoryQuery
+	withBookings     *BookingQuery
+	withAmenities    *AmenityQuery
+	withMedia        *MediaQuery
+	withReservations *ReservationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,7 +84,29 @@ func (rq *RoomQuery) QueryPlace() *PlaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(room.Table, room.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, room.PlaceTable, room.PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, room.PlaceTable, room.PlacePrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRoomCategory chains the current query on the "room_category" edge.
+func (rq *RoomQuery) QueryRoomCategory() *RoomCategoryQuery {
+	query := (&RoomCategoryClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(room.Table, room.FieldID, selector),
+			sqlgraph.To(roomcategory.Table, roomcategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, room.RoomCategoryTable, room.RoomCategoryPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -100,6 +129,72 @@ func (rq *RoomQuery) QueryBookings() *BookingQuery {
 			sqlgraph.From(room.Table, room.FieldID, selector),
 			sqlgraph.To(booking.Table, booking.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, room.BookingsTable, room.BookingsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAmenities chains the current query on the "amenities" edge.
+func (rq *RoomQuery) QueryAmenities() *AmenityQuery {
+	query := (&AmenityClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(room.Table, room.FieldID, selector),
+			sqlgraph.To(amenity.Table, amenity.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, room.AmenitiesTable, room.AmenitiesPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMedia chains the current query on the "media" edge.
+func (rq *RoomQuery) QueryMedia() *MediaQuery {
+	query := (&MediaClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(room.Table, room.FieldID, selector),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, room.MediaTable, room.MediaPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReservations chains the current query on the "reservations" edge.
+func (rq *RoomQuery) QueryReservations() *ReservationQuery {
+	query := (&ReservationClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(room.Table, room.FieldID, selector),
+			sqlgraph.To(reservation.Table, reservation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, room.ReservationsTable, room.ReservationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,13 +389,17 @@ func (rq *RoomQuery) Clone() *RoomQuery {
 		return nil
 	}
 	return &RoomQuery{
-		config:       rq.config,
-		ctx:          rq.ctx.Clone(),
-		order:        append([]room.OrderOption{}, rq.order...),
-		inters:       append([]Interceptor{}, rq.inters...),
-		predicates:   append([]predicate.Room{}, rq.predicates...),
-		withPlace:    rq.withPlace.Clone(),
-		withBookings: rq.withBookings.Clone(),
+		config:           rq.config,
+		ctx:              rq.ctx.Clone(),
+		order:            append([]room.OrderOption{}, rq.order...),
+		inters:           append([]Interceptor{}, rq.inters...),
+		predicates:       append([]predicate.Room{}, rq.predicates...),
+		withPlace:        rq.withPlace.Clone(),
+		withRoomCategory: rq.withRoomCategory.Clone(),
+		withBookings:     rq.withBookings.Clone(),
+		withAmenities:    rq.withAmenities.Clone(),
+		withMedia:        rq.withMedia.Clone(),
+		withReservations: rq.withReservations.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
@@ -318,6 +417,17 @@ func (rq *RoomQuery) WithPlace(opts ...func(*PlaceQuery)) *RoomQuery {
 	return rq
 }
 
+// WithRoomCategory tells the query-builder to eager-load the nodes that are connected to
+// the "room_category" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoomQuery) WithRoomCategory(opts ...func(*RoomCategoryQuery)) *RoomQuery {
+	query := (&RoomCategoryClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withRoomCategory = query
+	return rq
+}
+
 // WithBookings tells the query-builder to eager-load the nodes that are connected to
 // the "bookings" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *RoomQuery) WithBookings(opts ...func(*BookingQuery)) *RoomQuery {
@@ -329,18 +439,51 @@ func (rq *RoomQuery) WithBookings(opts ...func(*BookingQuery)) *RoomQuery {
 	return rq
 }
 
+// WithAmenities tells the query-builder to eager-load the nodes that are connected to
+// the "amenities" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoomQuery) WithAmenities(opts ...func(*AmenityQuery)) *RoomQuery {
+	query := (&AmenityClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withAmenities = query
+	return rq
+}
+
+// WithMedia tells the query-builder to eager-load the nodes that are connected to
+// the "media" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoomQuery) WithMedia(opts ...func(*MediaQuery)) *RoomQuery {
+	query := (&MediaClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withMedia = query
+	return rq
+}
+
+// WithReservations tells the query-builder to eager-load the nodes that are connected to
+// the "reservations" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoomQuery) WithReservations(opts ...func(*ReservationQuery)) *RoomQuery {
+	query := (&ReservationClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withReservations = query
+	return rq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
 // Example:
 //
 //	var v []struct {
-//		Number string `json:"number,omitempty"`
+//		Name string `json:"name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Room.Query().
-//		GroupBy(room.FieldNumber).
+//		GroupBy(room.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rq *RoomQuery) GroupBy(field string, fields ...string) *RoomGroupBy {
@@ -358,11 +501,11 @@ func (rq *RoomQuery) GroupBy(field string, fields ...string) *RoomGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Number string `json:"number,omitempty"`
+//		Name string `json:"name,omitempty"`
 //	}
 //
 //	client.Room.Query().
-//		Select(room.FieldNumber).
+//		Select(room.FieldName).
 //		Scan(ctx, &v)
 func (rq *RoomQuery) Select(fields ...string) *RoomSelect {
 	rq.ctx.Fields = append(rq.ctx.Fields, fields...)
@@ -406,19 +549,16 @@ func (rq *RoomQuery) prepareQuery(ctx context.Context) error {
 func (rq *RoomQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Room, error) {
 	var (
 		nodes       = []*Room{}
-		withFKs     = rq.withFKs
 		_spec       = rq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [6]bool{
 			rq.withPlace != nil,
+			rq.withRoomCategory != nil,
 			rq.withBookings != nil,
+			rq.withAmenities != nil,
+			rq.withMedia != nil,
+			rq.withReservations != nil,
 		}
 	)
-	if rq.withPlace != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, room.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Room).scanValues(nil, columns)
 	}
@@ -438,8 +578,16 @@ func (rq *RoomQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Room, e
 		return nodes, nil
 	}
 	if query := rq.withPlace; query != nil {
-		if err := rq.loadPlace(ctx, query, nodes, nil,
-			func(n *Room, e *Place) { n.Edges.Place = e }); err != nil {
+		if err := rq.loadPlace(ctx, query, nodes,
+			func(n *Room) { n.Edges.Place = []*Place{} },
+			func(n *Room, e *Place) { n.Edges.Place = append(n.Edges.Place, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withRoomCategory; query != nil {
+		if err := rq.loadRoomCategory(ctx, query, nodes,
+			func(n *Room) { n.Edges.RoomCategory = []*RoomCategory{} },
+			func(n *Room, e *RoomCategory) { n.Edges.RoomCategory = append(n.Edges.RoomCategory, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -450,37 +598,148 @@ func (rq *RoomQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Room, e
 			return nil, err
 		}
 	}
+	if query := rq.withAmenities; query != nil {
+		if err := rq.loadAmenities(ctx, query, nodes,
+			func(n *Room) { n.Edges.Amenities = []*Amenity{} },
+			func(n *Room, e *Amenity) { n.Edges.Amenities = append(n.Edges.Amenities, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withMedia; query != nil {
+		if err := rq.loadMedia(ctx, query, nodes,
+			func(n *Room) { n.Edges.Media = []*Media{} },
+			func(n *Room, e *Media) { n.Edges.Media = append(n.Edges.Media, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withReservations; query != nil {
+		if err := rq.loadReservations(ctx, query, nodes,
+			func(n *Room) { n.Edges.Reservations = []*Reservation{} },
+			func(n *Room, e *Reservation) { n.Edges.Reservations = append(n.Edges.Reservations, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
 func (rq *RoomQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []*Room, init func(*Room), assign func(*Room, *Place)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*Room)
-	for i := range nodes {
-		if nodes[i].place_rooms == nil {
-			continue
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Room)
+	nids := make(map[string]map[*Room]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
 		}
-		fk := *nodes[i].place_rooms
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	if len(ids) == 0 {
-		return nil
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(room.PlaceTable)
+		s.Join(joinT).On(s.C(place.FieldID), joinT.C(room.PlacePrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(room.PlacePrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(room.PlacePrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
 	}
-	query.Where(place.IDIn(ids...))
-	neighbors, err := query.All(ctx)
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Room]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Place](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
+		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "place_rooms" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "place" node returned %v`, n.ID)
 		}
-		for i := range nodes {
-			assign(nodes[i], n)
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (rq *RoomQuery) loadRoomCategory(ctx context.Context, query *RoomCategoryQuery, nodes []*Room, init func(*Room), assign func(*Room, *RoomCategory)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Room)
+	nids := make(map[string]map[*Room]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(room.RoomCategoryTable)
+		s.Join(joinT).On(s.C(roomcategory.FieldID), joinT.C(room.RoomCategoryPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(room.RoomCategoryPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(room.RoomCategoryPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Room]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*RoomCategory](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "room_category" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
 		}
 	}
 	return nil
@@ -511,6 +770,159 @@ func (rq *RoomQuery) loadBookings(ctx context.Context, query *BookingQuery, node
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "room_bookings" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (rq *RoomQuery) loadAmenities(ctx context.Context, query *AmenityQuery, nodes []*Room, init func(*Room), assign func(*Room, *Amenity)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Room)
+	nids := make(map[string]map[*Room]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(room.AmenitiesTable)
+		s.Join(joinT).On(s.C(amenity.FieldID), joinT.C(room.AmenitiesPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(room.AmenitiesPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(room.AmenitiesPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Room]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Amenity](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "amenities" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (rq *RoomQuery) loadMedia(ctx context.Context, query *MediaQuery, nodes []*Room, init func(*Room), assign func(*Room, *Media)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Room)
+	nids := make(map[string]map[*Room]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(room.MediaTable)
+		s.Join(joinT).On(s.C(media.FieldID), joinT.C(room.MediaPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(room.MediaPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(room.MediaPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Room]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Media](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "media" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (rq *RoomQuery) loadReservations(ctx context.Context, query *ReservationQuery, nodes []*Room, init func(*Room), assign func(*Room, *Reservation)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Room)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Reservation(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(room.ReservationsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.room_reservations
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "room_reservations" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "room_reservations" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

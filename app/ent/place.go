@@ -140,9 +140,19 @@ type PlaceEdges struct {
 	Tables []*PlaceTable `json:"tables,omitempty"`
 	// Staffs holds the value of the staffs edge.
 	Staffs []*Staff `json:"staffs,omitempty"`
+	// RoomCategories holds the value of the room_categories edge.
+	RoomCategories []*RoomCategory `json:"room_categories,omitempty"`
+	// Plans holds the value of the plans edge.
+	Plans []*Plan `json:"plans,omitempty"`
+	// Trainers holds the value of the trainers edge.
+	Trainers []*Trainer `json:"trainers,omitempty"`
+	// Members holds the value of the members edge.
+	Members []*User `json:"members,omitempty"`
+	// RegularUsers holds the value of the regularUsers edge.
+	RegularUsers []*User `json:"regularUsers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [20]bool
+	loadedTypes [25]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -327,6 +337,51 @@ func (e PlaceEdges) StaffsOrErr() ([]*Staff, error) {
 		return e.Staffs, nil
 	}
 	return nil, &NotLoadedError{edge: "staffs"}
+}
+
+// RoomCategoriesOrErr returns the RoomCategories value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) RoomCategoriesOrErr() ([]*RoomCategory, error) {
+	if e.loadedTypes[20] {
+		return e.RoomCategories, nil
+	}
+	return nil, &NotLoadedError{edge: "room_categories"}
+}
+
+// PlansOrErr returns the Plans value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) PlansOrErr() ([]*Plan, error) {
+	if e.loadedTypes[21] {
+		return e.Plans, nil
+	}
+	return nil, &NotLoadedError{edge: "plans"}
+}
+
+// TrainersOrErr returns the Trainers value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) TrainersOrErr() ([]*Trainer, error) {
+	if e.loadedTypes[22] {
+		return e.Trainers, nil
+	}
+	return nil, &NotLoadedError{edge: "trainers"}
+}
+
+// MembersOrErr returns the Members value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) MembersOrErr() ([]*User, error) {
+	if e.loadedTypes[23] {
+		return e.Members, nil
+	}
+	return nil, &NotLoadedError{edge: "members"}
+}
+
+// RegularUsersOrErr returns the RegularUsers value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) RegularUsersOrErr() ([]*User, error) {
+	if e.loadedTypes[24] {
+		return e.RegularUsers, nil
+	}
+	return nil, &NotLoadedError{edge: "regularUsers"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -730,6 +785,31 @@ func (pl *Place) QueryTables() *PlaceTableQuery {
 // QueryStaffs queries the "staffs" edge of the Place entity.
 func (pl *Place) QueryStaffs() *StaffQuery {
 	return NewPlaceClient(pl.config).QueryStaffs(pl)
+}
+
+// QueryRoomCategories queries the "room_categories" edge of the Place entity.
+func (pl *Place) QueryRoomCategories() *RoomCategoryQuery {
+	return NewPlaceClient(pl.config).QueryRoomCategories(pl)
+}
+
+// QueryPlans queries the "plans" edge of the Place entity.
+func (pl *Place) QueryPlans() *PlanQuery {
+	return NewPlaceClient(pl.config).QueryPlans(pl)
+}
+
+// QueryTrainers queries the "trainers" edge of the Place entity.
+func (pl *Place) QueryTrainers() *TrainerQuery {
+	return NewPlaceClient(pl.config).QueryTrainers(pl)
+}
+
+// QueryMembers queries the "members" edge of the Place entity.
+func (pl *Place) QueryMembers() *UserQuery {
+	return NewPlaceClient(pl.config).QueryMembers(pl)
+}
+
+// QueryRegularUsers queries the "regularUsers" edge of the Place entity.
+func (pl *Place) QueryRegularUsers() *UserQuery {
+	return NewPlaceClient(pl.config).QueryRegularUsers(pl)
 }
 
 // Update returns a builder for updating this Place.

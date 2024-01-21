@@ -1950,7 +1950,7 @@ func HasRooms() predicate.Place {
 	return predicate.Place(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RoomsTable, RoomsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, RoomsTable, RoomsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -2236,6 +2236,121 @@ func HasStaffs() predicate.Place {
 func HasStaffsWith(preds ...predicate.Staff) predicate.Place {
 	return predicate.Place(func(s *sql.Selector) {
 		step := newStaffsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRoomCategories applies the HasEdge predicate on the "room_categories" edge.
+func HasRoomCategories() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, RoomCategoriesTable, RoomCategoriesPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRoomCategoriesWith applies the HasEdge predicate on the "room_categories" edge with a given conditions (other predicates).
+func HasRoomCategoriesWith(preds ...predicate.RoomCategory) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newRoomCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPlans applies the HasEdge predicate on the "plans" edge.
+func HasPlans() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlansWith applies the HasEdge predicate on the "plans" edge with a given conditions (other predicates).
+func HasPlansWith(preds ...predicate.Plan) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newPlansStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasTrainers applies the HasEdge predicate on the "trainers" edge.
+func HasTrainers() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, TrainersTable, TrainersPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTrainersWith applies the HasEdge predicate on the "trainers" edge with a given conditions (other predicates).
+func HasTrainersWith(preds ...predicate.Trainer) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newTrainersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMembers applies the HasEdge predicate on the "members" edge.
+func HasMembers() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, MembersTable, MembersPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMembersWith applies the HasEdge predicate on the "members" edge with a given conditions (other predicates).
+func HasMembersWith(preds ...predicate.User) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newMembersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRegularUsers applies the HasEdge predicate on the "regularUsers" edge.
+func HasRegularUsers() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, RegularUsersTable, RegularUsersPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRegularUsersWith applies the HasEdge predicate on the "regularUsers" edge with a given conditions (other predicates).
+func HasRegularUsersWith(preds ...predicate.User) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newRegularUsersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

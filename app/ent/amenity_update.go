@@ -9,6 +9,8 @@ import (
 	"placio-app/ent/amenity"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -71,6 +73,36 @@ func (au *AmenityUpdate) AddPlaces(p ...*Place) *AmenityUpdate {
 	return au.AddPlaceIDs(ids...)
 }
 
+// AddRoomIDs adds the "rooms" edge to the Room entity by IDs.
+func (au *AmenityUpdate) AddRoomIDs(ids ...string) *AmenityUpdate {
+	au.mutation.AddRoomIDs(ids...)
+	return au
+}
+
+// AddRooms adds the "rooms" edges to the Room entity.
+func (au *AmenityUpdate) AddRooms(r ...*Room) *AmenityUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return au.AddRoomIDs(ids...)
+}
+
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by IDs.
+func (au *AmenityUpdate) AddRoomCategoryIDs(ids ...string) *AmenityUpdate {
+	au.mutation.AddRoomCategoryIDs(ids...)
+	return au
+}
+
+// AddRoomCategories adds the "room_categories" edges to the RoomCategory entity.
+func (au *AmenityUpdate) AddRoomCategories(r ...*RoomCategory) *AmenityUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return au.AddRoomCategoryIDs(ids...)
+}
+
 // Mutation returns the AmenityMutation object of the builder.
 func (au *AmenityUpdate) Mutation() *AmenityMutation {
 	return au.mutation
@@ -95,6 +127,48 @@ func (au *AmenityUpdate) RemovePlaces(p ...*Place) *AmenityUpdate {
 		ids[i] = p[i].ID
 	}
 	return au.RemovePlaceIDs(ids...)
+}
+
+// ClearRooms clears all "rooms" edges to the Room entity.
+func (au *AmenityUpdate) ClearRooms() *AmenityUpdate {
+	au.mutation.ClearRooms()
+	return au
+}
+
+// RemoveRoomIDs removes the "rooms" edge to Room entities by IDs.
+func (au *AmenityUpdate) RemoveRoomIDs(ids ...string) *AmenityUpdate {
+	au.mutation.RemoveRoomIDs(ids...)
+	return au
+}
+
+// RemoveRooms removes "rooms" edges to Room entities.
+func (au *AmenityUpdate) RemoveRooms(r ...*Room) *AmenityUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return au.RemoveRoomIDs(ids...)
+}
+
+// ClearRoomCategories clears all "room_categories" edges to the RoomCategory entity.
+func (au *AmenityUpdate) ClearRoomCategories() *AmenityUpdate {
+	au.mutation.ClearRoomCategories()
+	return au
+}
+
+// RemoveRoomCategoryIDs removes the "room_categories" edge to RoomCategory entities by IDs.
+func (au *AmenityUpdate) RemoveRoomCategoryIDs(ids ...string) *AmenityUpdate {
+	au.mutation.RemoveRoomCategoryIDs(ids...)
+	return au
+}
+
+// RemoveRoomCategories removes "room_categories" edges to RoomCategory entities.
+func (au *AmenityUpdate) RemoveRoomCategories(r ...*RoomCategory) *AmenityUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return au.RemoveRoomCategoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -184,6 +258,96 @@ func (au *AmenityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.RoomsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomsTable,
+			Columns: amenity.RoomsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedRoomsIDs(); len(nodes) > 0 && !au.mutation.RoomsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomsTable,
+			Columns: amenity.RoomsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RoomsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomsTable,
+			Columns: amenity.RoomsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.RoomCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomCategoriesTable,
+			Columns: amenity.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedRoomCategoriesIDs(); len(nodes) > 0 && !au.mutation.RoomCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomCategoriesTable,
+			Columns: amenity.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RoomCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomCategoriesTable,
+			Columns: amenity.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{amenity.Label}
@@ -247,6 +411,36 @@ func (auo *AmenityUpdateOne) AddPlaces(p ...*Place) *AmenityUpdateOne {
 	return auo.AddPlaceIDs(ids...)
 }
 
+// AddRoomIDs adds the "rooms" edge to the Room entity by IDs.
+func (auo *AmenityUpdateOne) AddRoomIDs(ids ...string) *AmenityUpdateOne {
+	auo.mutation.AddRoomIDs(ids...)
+	return auo
+}
+
+// AddRooms adds the "rooms" edges to the Room entity.
+func (auo *AmenityUpdateOne) AddRooms(r ...*Room) *AmenityUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return auo.AddRoomIDs(ids...)
+}
+
+// AddRoomCategoryIDs adds the "room_categories" edge to the RoomCategory entity by IDs.
+func (auo *AmenityUpdateOne) AddRoomCategoryIDs(ids ...string) *AmenityUpdateOne {
+	auo.mutation.AddRoomCategoryIDs(ids...)
+	return auo
+}
+
+// AddRoomCategories adds the "room_categories" edges to the RoomCategory entity.
+func (auo *AmenityUpdateOne) AddRoomCategories(r ...*RoomCategory) *AmenityUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return auo.AddRoomCategoryIDs(ids...)
+}
+
 // Mutation returns the AmenityMutation object of the builder.
 func (auo *AmenityUpdateOne) Mutation() *AmenityMutation {
 	return auo.mutation
@@ -271,6 +465,48 @@ func (auo *AmenityUpdateOne) RemovePlaces(p ...*Place) *AmenityUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return auo.RemovePlaceIDs(ids...)
+}
+
+// ClearRooms clears all "rooms" edges to the Room entity.
+func (auo *AmenityUpdateOne) ClearRooms() *AmenityUpdateOne {
+	auo.mutation.ClearRooms()
+	return auo
+}
+
+// RemoveRoomIDs removes the "rooms" edge to Room entities by IDs.
+func (auo *AmenityUpdateOne) RemoveRoomIDs(ids ...string) *AmenityUpdateOne {
+	auo.mutation.RemoveRoomIDs(ids...)
+	return auo
+}
+
+// RemoveRooms removes "rooms" edges to Room entities.
+func (auo *AmenityUpdateOne) RemoveRooms(r ...*Room) *AmenityUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return auo.RemoveRoomIDs(ids...)
+}
+
+// ClearRoomCategories clears all "room_categories" edges to the RoomCategory entity.
+func (auo *AmenityUpdateOne) ClearRoomCategories() *AmenityUpdateOne {
+	auo.mutation.ClearRoomCategories()
+	return auo
+}
+
+// RemoveRoomCategoryIDs removes the "room_categories" edge to RoomCategory entities by IDs.
+func (auo *AmenityUpdateOne) RemoveRoomCategoryIDs(ids ...string) *AmenityUpdateOne {
+	auo.mutation.RemoveRoomCategoryIDs(ids...)
+	return auo
+}
+
+// RemoveRoomCategories removes "room_categories" edges to RoomCategory entities.
+func (auo *AmenityUpdateOne) RemoveRoomCategories(r ...*RoomCategory) *AmenityUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return auo.RemoveRoomCategoryIDs(ids...)
 }
 
 // Where appends a list predicates to the AmenityUpdate builder.
@@ -383,6 +619,96 @@ func (auo *AmenityUpdateOne) sqlSave(ctx context.Context) (_node *Amenity, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.RoomsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomsTable,
+			Columns: amenity.RoomsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedRoomsIDs(); len(nodes) > 0 && !auo.mutation.RoomsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomsTable,
+			Columns: amenity.RoomsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RoomsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomsTable,
+			Columns: amenity.RoomsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.RoomCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomCategoriesTable,
+			Columns: amenity.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedRoomCategoriesIDs(); len(nodes) > 0 && !auo.mutation.RoomCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomCategoriesTable,
+			Columns: amenity.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RoomCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   amenity.RoomCategoriesTable,
+			Columns: amenity.RoomCategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(roomcategory.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

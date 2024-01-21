@@ -1,6 +1,7 @@
 package order
 
 import (
+	"log"
 	"net/http"
 	"placio-app/ent"
 	"placio-pkg/middleware"
@@ -24,7 +25,7 @@ func (oc *OrderController) RegisterRoutes(route *gin.RouterGroup) {
 		orderRoute.PUT("/:orderID", middleware.ErrorMiddleware(oc.updateOrder))
 		orderRoute.DELETE("/:orderID", middleware.ErrorMiddleware(oc.deleteOrder))
 		orderRoute.GET("/:orderID", middleware.ErrorMiddleware(oc.getOrder))
-		orderRoute.GET("/", middleware.ErrorMiddleware(oc.getOrders))
+		orderRoute.GET("/place/:placeID", middleware.ErrorMiddleware(oc.getOrders))
 		orderRoute.GET("/user/:userID", middleware.ErrorMiddleware(oc.getOrdersByUserID))
 		orderRoute.GET("/table/:tableID", middleware.ErrorMiddleware(oc.getOrdersByTableID))
 		orderRoute.GET("/table/:tableID/status/:status", middleware.ErrorMiddleware(oc.getOrdersByTableIDAndStatus))
@@ -33,23 +34,17 @@ func (oc *OrderController) RegisterRoutes(route *gin.RouterGroup) {
 }
 
 func (oc *OrderController) createOrder(ctx *gin.Context) error {
-	var orderDto ent.Order
-	if err := ctx.ShouldBindJSON(&orderDto); err != nil {
-		return err
-	}
-
-
 	tableID := ctx.DefaultQuery("tableID", "")
 	userID := ctx.MustGet("user").(string)
 
 	var orderItems OrderWithItemsDTO
 	if err := ctx.ShouldBindJSON(&orderItems); err != nil {
+		log.Println(err)
 		return err
 	}
 
-	newOrder, err := oc.orderService.CreateOrder(ctx, &orderDto, tableID, userID, orderItems)
+	newOrder, err := oc.orderService.CreateOrder(ctx, tableID, userID, orderItems)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return err
 	}
 
@@ -70,7 +65,7 @@ func (oc *OrderController) updateOrder(ctx *gin.Context) error {
 		return err
 	}
 
-	updatedOrder, err := oc.orderService.UpdateOrder(ctx, orderID, newMenuItems )
+	updatedOrder, err := oc.orderService.UpdateOrder(ctx, orderID, newMenuItems)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return err
@@ -108,7 +103,9 @@ func (oc *OrderController) getOrders(ctx *gin.Context) error {
 	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	offset, _ := strconv.Atoi(ctx.DefaultQuery("offset", "0"))
 
-	orders, err := oc.orderService.GetOrders(ctx, limit, offset)
+	placeId := ctx.Param("placeID")
+
+	orders, err := oc.orderService.GetOrders(ctx, placeId, limit, offset)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return err

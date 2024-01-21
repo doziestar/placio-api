@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/featurerelease"
+	"placio-app/ent/fitness"
 	"placio-app/ent/help"
 	"placio-app/ent/inventoryattribute"
 	"placio-app/ent/inventorytype"
@@ -30,15 +31,20 @@ import (
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
 	"placio-app/ent/placetable"
+	"placio-app/ent/plan"
 	"placio-app/ent/post"
+	"placio-app/ent/price"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/roomcategory"
 	"placio-app/ent/schema"
 	"placio-app/ent/staff"
+	"placio-app/ent/subscription"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -291,6 +297,12 @@ func init() {
 	featurereleaseDescID := featurereleaseFields[0].Descriptor()
 	// featurerelease.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	featurerelease.IDValidator = featurereleaseDescID.Validators[0].(func(string) error)
+	fitnessFields := schema.Fitness{}.Fields()
+	_ = fitnessFields
+	// fitnessDescID is the schema descriptor for id field.
+	fitnessDescID := fitnessFields[0].Descriptor()
+	// fitness.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	fitness.IDValidator = fitnessDescID.Validators[0].(func(string) error)
 	helpFields := schema.Help{}.Fields()
 	_ = helpFields
 	// helpDescStatus is the schema descriptor for status field.
@@ -575,6 +587,12 @@ func init() {
 	placetableDescID := placetableFields[0].Descriptor()
 	// placetable.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	placetable.IDValidator = placetableDescID.Validators[0].(func(string) error)
+	planFields := schema.Plan{}.Fields()
+	_ = planFields
+	// planDescID is the schema descriptor for id field.
+	planDescID := planFields[0].Descriptor()
+	// plan.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	plan.IDValidator = planDescID.Validators[0].(func(string) error)
 	postFields := schema.Post{}.Fields()
 	_ = postFields
 	// postDescContent is the schema descriptor for Content field.
@@ -645,6 +663,12 @@ func init() {
 	postDescID := postFields[0].Descriptor()
 	// post.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	post.IDValidator = postDescID.Validators[0].(func(string) error)
+	priceFields := schema.Price{}.Fields()
+	_ = priceFields
+	// priceDescID is the schema descriptor for id field.
+	priceDescID := priceFields[0].Descriptor()
+	// price.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	price.IDValidator = priceDescID.Validators[0].(func(string) error)
 	ratingHooks := schema.Rating{}.Hooks()
 	rating.Hooks[0] = ratingHooks[0]
 	ratingFields := schema.Rating{}.Fields()
@@ -717,16 +741,32 @@ func init() {
 	review.DefaultFlag = reviewDescFlag.Default.(string)
 	roomFields := schema.Room{}.Fields()
 	_ = roomFields
+	// roomDescAvailability is the schema descriptor for availability field.
+	roomDescAvailability := roomFields[11].Descriptor()
+	// room.DefaultAvailability holds the default value on creation for the availability field.
+	room.DefaultAvailability = roomDescAvailability.Default.(bool)
 	// roomDescID is the schema descriptor for id field.
 	roomDescID := roomFields[0].Descriptor()
 	// room.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	room.IDValidator = roomDescID.Validators[0].(func(string) error)
+	roomcategoryFields := schema.RoomCategory{}.Fields()
+	_ = roomcategoryFields
+	// roomcategoryDescID is the schema descriptor for id field.
+	roomcategoryDescID := roomcategoryFields[0].Descriptor()
+	// roomcategory.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	roomcategory.IDValidator = roomcategoryDescID.Validators[0].(func(string) error)
 	staffFields := schema.Staff{}.Fields()
 	_ = staffFields
 	// staffDescID is the schema descriptor for id field.
 	staffDescID := staffFields[0].Descriptor()
 	// staff.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	staff.IDValidator = staffDescID.Validators[0].(func(string) error)
+	subscriptionFields := schema.Subscription{}.Fields()
+	_ = subscriptionFields
+	// subscriptionDescID is the schema descriptor for id field.
+	subscriptionDescID := subscriptionFields[0].Descriptor()
+	// subscription.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	subscription.IDValidator = subscriptionDescID.Validators[0].(func(string) error)
 	ticketFields := schema.Ticket{}.Fields()
 	_ = ticketFields
 	// ticketDescCreatedAt is the schema descriptor for createdAt field.
@@ -751,6 +791,12 @@ func init() {
 	ticketoption.DefaultUpdatedAt = ticketoptionDescUpdatedAt.Default.(func() time.Time)
 	// ticketoption.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	ticketoption.UpdateDefaultUpdatedAt = ticketoptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	trainerFields := schema.Trainer{}.Fields()
+	_ = trainerFields
+	// trainerDescID is the schema descriptor for id field.
+	trainerDescID := trainerFields[0].Descriptor()
+	// trainer.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	trainer.IDValidator = trainerDescID.Validators[0].(func(string) error)
 	transactionhistoryFields := schema.TransactionHistory{}.Fields()
 	_ = transactionhistoryFields
 	// transactionhistoryDescDate is the schema descriptor for date field.
