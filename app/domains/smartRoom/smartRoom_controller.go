@@ -68,7 +68,7 @@ func (c *SmartRoomController) createRoomCategory(ctx *gin.Context) error {
 
 	log.Println("createRoomCategory", placeID)
 
-	var roomCategory *ent.RoomCategory
+	var roomCategory ent.RoomCategory
 
 	log.Println("createRoomCategory", roomCategory)
 
@@ -96,12 +96,12 @@ func (c *SmartRoomController) createRoomCategory(ctx *gin.Context) error {
 
 	log.Println("roomCategory", roomCategory)
 
-	roomCategory, err = c.smartRoomService.CreateRoomCategory(ctx, placeID, roomCategory, form.File["medias"])
+	roomCategoryData, err := c.smartRoomService.CreateRoomCategory(ctx, placeID, &roomCategory, form.File["medias"])
 	if err != nil {
 		return err
 	}
 
-	ctx.JSON(http.StatusCreated, utility.ProcessResponse(roomCategory))
+	ctx.JSON(http.StatusCreated, utility.ProcessResponse(roomCategoryData))
 	return nil
 }
 
@@ -208,7 +208,7 @@ func (c *SmartRoomController) createRoom(ctx *gin.Context) error {
 		return errors.IDMissing
 	}
 
-	var room *ent.Room
+	var room ent.Room
 
 	if len(form.File["medias"]) == 0 {
 		return errors.ErrMediaMissing
@@ -247,17 +247,17 @@ func (c *SmartRoomController) createRoom(ctx *gin.Context) error {
 		availabilityStr := availability[0]
 		availabilityBool, err := strconv.ParseBool(availabilityStr)
 		if err != nil {
-			return err
+			room.Availability = true
 		}
 		room.Availability = availabilityBool
 	}
 
-	room, err = c.smartRoomService.CreateRoom(ctx, categoryID, room, form.File["medias"])
+	roomData, err := c.smartRoomService.CreateRoom(ctx, categoryID, &room, form.File["medias"])
 	if err != nil {
 		return err
 	}
 
-	ctx.JSON(http.StatusCreated, utility.ProcessResponse(room))
+	ctx.JSON(http.StatusCreated, utility.ProcessResponse(roomData))
 	return nil
 }
 
