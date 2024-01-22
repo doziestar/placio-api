@@ -232,11 +232,16 @@ func (c *SmartRoomController) createRoom(ctx *gin.Context) error {
 	}
 
 	if roomNumber, exists := form.Value["roomNumber"]; exists {
-		room.RoomNumber = roomNumber[0]
-	}
-
-	if roomType, exists := form.Value["roomType"]; exists {
-		room.RoomType = roomType[0]
+		roomNum, err := strconv.ParseInt(roomNumber[0], 10, 64)
+		if err != nil {
+			return errors.New("Error parsing roomNumber")
+		}
+		if roomNum == 0 {
+			return errors.New("Invalid roomNumber, it can't be 0")
+		}
+		room.RoomNumber = int(roomNum)
+	} else {
+		return errors.New("Missing roomNumber")
 	}
 
 	//if extras, exists := form.Value["extras"]; exists {

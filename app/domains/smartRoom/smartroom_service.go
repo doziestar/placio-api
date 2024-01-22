@@ -254,7 +254,7 @@ func (s *SmartRoomService) CreateRoom(ctx context.Context, categoryId string, ro
 		return nil, fmt.Errorf("room category with ID '%s' does not exist", categoryId)
 	}
 
-	log.Printf("Creating room for category ID '%s'", categoryId)
+	log.Printf("Creating room for category ID '%s'", roomDto)
 	// check if a room with the same room name or room number already exist, if yes return an error
 	roomAlreadyExists, err := s.client.Room.
 		Query().
@@ -268,7 +268,7 @@ func (s *SmartRoomService) CreateRoom(ctx context.Context, categoryId string, ro
 	}
 
 	if roomAlreadyExists != nil {
-		return nil, fmt.Errorf("room with room number '%s' already exists", roomDto.RoomNumber)
+		return nil, fmt.Errorf("room with room number '%d' already exists", roomDto.RoomNumber)
 	}
 
 	// Create room
@@ -353,7 +353,7 @@ func (s *SmartRoomService) UpdateRoom(ctx context.Context, roomId string, roomDt
 
 	updateOp := s.client.Room.
 		UpdateOneID(roomId).
-		SetRoomNumber(roomDto.RoomNumber).
+		//SetRoomNumber(*roomDto.RoomNumber).
 		SetRoomType(roomDto.RoomType).
 		SetRoomStatus(roomDto.RoomStatus).
 		SetRoomRating(roomDto.RoomRating).
