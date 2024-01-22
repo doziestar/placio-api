@@ -40,15 +40,15 @@ func (rc *RoomCreate) SetNillableName(s *string) *RoomCreate {
 }
 
 // SetRoomNumber sets the "room_number" field.
-func (rc *RoomCreate) SetRoomNumber(s string) *RoomCreate {
-	rc.mutation.SetRoomNumber(s)
+func (rc *RoomCreate) SetRoomNumber(i int) *RoomCreate {
+	rc.mutation.SetRoomNumber(i)
 	return rc
 }
 
 // SetNillableRoomNumber sets the "room_number" field if the given value is not nil.
-func (rc *RoomCreate) SetNillableRoomNumber(s *string) *RoomCreate {
-	if s != nil {
-		rc.SetRoomNumber(*s)
+func (rc *RoomCreate) SetNillableRoomNumber(i *int) *RoomCreate {
+	if i != nil {
+		rc.SetRoomNumber(*i)
 	}
 	return rc
 }
@@ -384,7 +384,7 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 		_node.Name = value
 	}
 	if value, ok := rc.mutation.RoomNumber(); ok {
-		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
+		_spec.SetField(room.FieldRoomNumber, field.TypeInt, value)
 		_node.RoomNumber = value
 	}
 	if value, ok := rc.mutation.RoomType(); ok {

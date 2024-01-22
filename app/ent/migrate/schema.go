@@ -1388,7 +1388,7 @@ var (
 	RoomsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString, Nullable: true},
-		{Name: "room_number", Type: field.TypeString, Nullable: true},
+		{Name: "room_number", Type: field.TypeInt, Nullable: true},
 		{Name: "room_type", Type: field.TypeString, Nullable: true},
 		{Name: "room_status", Type: field.TypeString, Nullable: true},
 		{Name: "room_rating", Type: field.TypeString, Nullable: true},

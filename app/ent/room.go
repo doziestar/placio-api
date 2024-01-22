@@ -20,7 +20,7 @@ type Room struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// RoomNumber holds the value of the "room_number" field.
-	RoomNumber string `json:"room_number,omitempty"`
+	RoomNumber int `json:"room_number,omitempty"`
 	// RoomType holds the value of the "room_type" field.
 	RoomType string `json:"room_type,omitempty"`
 	// RoomStatus holds the value of the "room_status" field.
@@ -131,7 +131,9 @@ func (*Room) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case room.FieldRoomPrice:
 			values[i] = new(sql.NullFloat64)
-		case room.FieldID, room.FieldName, room.FieldRoomNumber, room.FieldRoomType, room.FieldRoomStatus, room.FieldRoomRating, room.FieldQrCode, room.FieldStatus, room.FieldDescription, room.FieldImage:
+		case room.FieldRoomNumber:
+			values[i] = new(sql.NullInt64)
+		case room.FieldID, room.FieldName, room.FieldRoomType, room.FieldRoomStatus, room.FieldRoomRating, room.FieldQrCode, room.FieldStatus, room.FieldDescription, room.FieldImage:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -161,10 +163,10 @@ func (r *Room) assignValues(columns []string, values []any) error {
 				r.Name = value.String
 			}
 		case room.FieldRoomNumber:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field room_number", values[i])
 			} else if value.Valid {
-				r.RoomNumber = value.String
+				r.RoomNumber = int(value.Int64)
 			}
 		case room.FieldRoomType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -298,7 +300,7 @@ func (r *Room) String() string {
 	builder.WriteString(r.Name)
 	builder.WriteString(", ")
 	builder.WriteString("room_number=")
-	builder.WriteString(r.RoomNumber)
+	builder.WriteString(fmt.Sprintf("%v", r.RoomNumber))
 	builder.WriteString(", ")
 	builder.WriteString("room_type=")
 	builder.WriteString(r.RoomType)

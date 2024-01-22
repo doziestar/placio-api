@@ -54,16 +54,23 @@ func (ru *RoomUpdate) ClearName() *RoomUpdate {
 }
 
 // SetRoomNumber sets the "room_number" field.
-func (ru *RoomUpdate) SetRoomNumber(s string) *RoomUpdate {
-	ru.mutation.SetRoomNumber(s)
+func (ru *RoomUpdate) SetRoomNumber(i int) *RoomUpdate {
+	ru.mutation.ResetRoomNumber()
+	ru.mutation.SetRoomNumber(i)
 	return ru
 }
 
 // SetNillableRoomNumber sets the "room_number" field if the given value is not nil.
-func (ru *RoomUpdate) SetNillableRoomNumber(s *string) *RoomUpdate {
-	if s != nil {
-		ru.SetRoomNumber(*s)
+func (ru *RoomUpdate) SetNillableRoomNumber(i *int) *RoomUpdate {
+	if i != nil {
+		ru.SetRoomNumber(*i)
 	}
+	return ru
+}
+
+// AddRoomNumber adds i to the "room_number" field.
+func (ru *RoomUpdate) AddRoomNumber(i int) *RoomUpdate {
+	ru.mutation.AddRoomNumber(i)
 	return ru
 }
 
@@ -537,10 +544,13 @@ func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(room.FieldName, field.TypeString)
 	}
 	if value, ok := ru.mutation.RoomNumber(); ok {
-		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
+		_spec.SetField(room.FieldRoomNumber, field.TypeInt, value)
+	}
+	if value, ok := ru.mutation.AddedRoomNumber(); ok {
+		_spec.AddField(room.FieldRoomNumber, field.TypeInt, value)
 	}
 	if ru.mutation.RoomNumberCleared() {
-		_spec.ClearField(room.FieldRoomNumber, field.TypeString)
+		_spec.ClearField(room.FieldRoomNumber, field.TypeInt)
 	}
 	if value, ok := ru.mutation.RoomType(); ok {
 		_spec.SetField(room.FieldRoomType, field.TypeString, value)
@@ -910,16 +920,23 @@ func (ruo *RoomUpdateOne) ClearName() *RoomUpdateOne {
 }
 
 // SetRoomNumber sets the "room_number" field.
-func (ruo *RoomUpdateOne) SetRoomNumber(s string) *RoomUpdateOne {
-	ruo.mutation.SetRoomNumber(s)
+func (ruo *RoomUpdateOne) SetRoomNumber(i int) *RoomUpdateOne {
+	ruo.mutation.ResetRoomNumber()
+	ruo.mutation.SetRoomNumber(i)
 	return ruo
 }
 
 // SetNillableRoomNumber sets the "room_number" field if the given value is not nil.
-func (ruo *RoomUpdateOne) SetNillableRoomNumber(s *string) *RoomUpdateOne {
-	if s != nil {
-		ruo.SetRoomNumber(*s)
+func (ruo *RoomUpdateOne) SetNillableRoomNumber(i *int) *RoomUpdateOne {
+	if i != nil {
+		ruo.SetRoomNumber(*i)
 	}
+	return ruo
+}
+
+// AddRoomNumber adds i to the "room_number" field.
+func (ruo *RoomUpdateOne) AddRoomNumber(i int) *RoomUpdateOne {
+	ruo.mutation.AddRoomNumber(i)
 	return ruo
 }
 
@@ -1423,10 +1440,13 @@ func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) 
 		_spec.ClearField(room.FieldName, field.TypeString)
 	}
 	if value, ok := ruo.mutation.RoomNumber(); ok {
-		_spec.SetField(room.FieldRoomNumber, field.TypeString, value)
+		_spec.SetField(room.FieldRoomNumber, field.TypeInt, value)
+	}
+	if value, ok := ruo.mutation.AddedRoomNumber(); ok {
+		_spec.AddField(room.FieldRoomNumber, field.TypeInt, value)
 	}
 	if ruo.mutation.RoomNumberCleared() {
-		_spec.ClearField(room.FieldRoomNumber, field.TypeString)
+		_spec.ClearField(room.FieldRoomNumber, field.TypeInt)
 	}
 	if value, ok := ruo.mutation.RoomType(); ok {
 		_spec.SetField(room.FieldRoomType, field.TypeString, value)
