@@ -45,6 +45,7 @@ func (c *SmartRoomController) RegisterRoutes(router, routerWithAuth *gin.RouterG
 		roomRouterWithAuth.POST(fmt.Sprintf("/category/:%s", categoryIDParam), middleware.ErrorMiddleware(c.createRoom))
 		routerRouterWithoutAuth.GET(fmt.Sprintf("/category/:%s", categoryIDParam), middleware.ErrorMiddleware(c.getRooms))
 		routerRouterWithoutAuth.GET(fmt.Sprintf("/:%s", roomIDParam), middleware.ErrorMiddleware(c.getRoomByID))
+		routerRouterWithoutAuth.GET(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.getRoomsByPlaceID))
 		roomRouterWithAuth.PUT(fmt.Sprintf("/:%s", roomIDParam), middleware.ErrorMiddleware(c.updateRoom))
 		roomRouterWithAuth.DELETE(fmt.Sprintf("/:%s", roomIDParam), middleware.ErrorMiddleware(c.deleteRoom))
 		roomRouterWithAuth.PATCH(fmt.Sprintf("/:%s/restore", roomIDParam), middleware.ErrorMiddleware(c.restoreRoom))
@@ -293,6 +294,21 @@ func (c *SmartRoomController) getRoomByID(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(room))
+	return nil
+}
+
+func (c *SmartRoomController) getRoomsByPlaceID(ctx *gin.Context) error {
+	placeId := ctx.Param("placeId")
+	if placeId == "" {
+		return errors.IDMissing
+	}
+
+	rooms, err := c.smartRoomService.GetRoomByPlaceID(ctx, placeId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(rooms))
 	return nil
 }
 

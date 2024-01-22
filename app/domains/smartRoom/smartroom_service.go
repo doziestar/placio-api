@@ -30,6 +30,7 @@ type ISmartRoom interface {
 	UpdateRoom(ctx context.Context, roomId string, roomDto *ent.Room) (*ent.Room, error)
 	DeleteRoom(ctx context.Context, roomId string) error
 	RestoreRoom(ctx context.Context, roomId string) (*ent.Room, error)
+	GetRoomByPlaceID(ctx context.Context, placeId string) ([]*ent.Room, error)
 
 	GenerateRoomQRCode(ctx context.Context, roomId string) (string, error)
 }
@@ -344,6 +345,31 @@ func (s *SmartRoomService) GetRoomByID(ctx context.Context, roomId string) (*ent
 	}
 
 	return room, nil
+}
+
+func (s *SmartRoomService) GetRoomByPlaceID(ctx context.Context, placeId string) ([]*ent.Room, error) {
+	if placeId == "" {
+		return nil, errors.New("placeId must be provided")
+	}
+
+	rooms, err := s.client.Room.
+		Query().
+		Where(room.HasRoomCategoryWith(roomcategory.HasPlaceWith(place.IDEQ(placeId)))).
+		WithRoomCategory(func(query *ent.RoomCategoryQuery) {
+			query.WithPlace(func(query *ent.PlaceQuery) {
+				query.WithMedias()
+			})
+			query.WithMedia()
+		}).
+		WithMedia().
+		WithReservations().
+		WithBookings().
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving rooms: %w", err)
+	}
+
+	return rooms, nil
 }
 
 func (s *SmartRoomService) UpdateRoom(ctx context.Context, roomId string, roomDto *ent.Room) (*ent.Room, error) {
