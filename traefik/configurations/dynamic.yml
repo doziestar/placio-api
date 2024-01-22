@@ -3,7 +3,8 @@ http:
   middlewares:
     corsHeaders:
       headers:
-        accessControlAllowOrigin: "*"
+        accessControlAllowOrigin: ["https://placio.io","http://localhost:3000","https://www.placio.io","https://control.placio.io"]
+        accessControlAllowOriginList: ["https://placio.io","http://localhost:3000","https://www.placio.io","https://control.placio.io"]
         accessControlAllowMethods: [ "GET","OPTIONS","PUT","POST","DELETE","PATCH" ]
         accessControlAllowCredentials: true
         accessControlAllowHeaders: [ "Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "Origin", "Authorization", "X-Requested-With", "X-CSRF-Token", "X-Auth-Token", "X-Forwarded-For", "X-Real-IP", "X-Forwarded-Proto", "X-Forwarded-Host", "X-Forwarded-Port", "X-Forwarded-Server", "X-Forwarded-By", "X-Request-ID", "X-Correlation-ID" ]
