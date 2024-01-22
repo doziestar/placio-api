@@ -46,7 +46,7 @@ func (Room) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name").Optional(),
-		field.String("room_number").Optional(),
+		field.Int("room_number").Optional(),
 		field.String("room_type").Optional(),
 		field.String("room_status").Optional(),
 		field.String("room_rating").Optional(),
