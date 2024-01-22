@@ -3,7 +3,6 @@ package smartRoom
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"log"
 	"mime/multipart"
 	"placio-app/domains/media"
@@ -13,6 +12,8 @@ import (
 	"placio-app/ent/roomcategory"
 	"placio-app/utility"
 	"placio-pkg/errors"
+
+	"github.com/google/uuid"
 )
 
 type ISmartRoom interface {
@@ -253,11 +254,25 @@ func (s *SmartRoomService) CreateRoom(ctx context.Context, categoryId string, ro
 		return nil, fmt.Errorf("room category with ID '%s' does not exist", categoryId)
 	}
 
+	// check if a room with the same room name or room number already exist, if yes return an error
+	roomAlreadyExists, err := s.client.Room.
+		Query().
+		Where(room.RoomNumberEQ(roomDto.RoomNumber)).
+		Where(room.HasRoomCategoryWith(roomcategory.IDEQ(categoryId))).
+		First(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error checking room existence: %w", err)
+	}
+
+	if roomAlreadyExists != nil {
+		return nil, fmt.Errorf("room with room number '%s' already exists", roomDto.RoomNumber)
+	}
+
 	// Create room
 	room, err := s.client.Room.
 		Create().
 		SetID(uuid.New().String()).
-		SetRoomNumber(roomDto.RoomNumber).
+		//SetRoomNumber(roomDto.RoomNumber).
 		SetRoomType(roomDto.RoomType).
 		SetRoomStatus(roomDto.RoomStatus).
 		SetRoomRating(roomDto.RoomRating).
