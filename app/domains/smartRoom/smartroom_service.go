@@ -379,7 +379,7 @@ func (s *SmartRoomService) UpdateRoom(ctx context.Context, roomId string, roomDt
 
 	updateOp := s.client.Room.
 		UpdateOneID(roomId).
-		//SetRoomNumber(*roomDto.RoomNumber).
+		SetRoomNumber(roomDto.RoomNumber).
 		SetRoomType(roomDto.RoomType).
 		SetRoomStatus(roomDto.RoomStatus).
 		SetRoomRating(roomDto.RoomRating).
