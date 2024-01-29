@@ -69,6 +69,7 @@ func (s *SmartRoomService) CreateRoomCategory(ctx context.Context, placeId strin
 		SetID(uuid.New().String()).
 		SetName(roomCategoryDto.Name).
 		SetDescription(roomCategoryDto.Description).
+		SetPrice(roomCategoryDto.Price).
 		AddPlaceIDs(placeId)
 
 	// Save the new room category
@@ -278,6 +279,7 @@ func (s *SmartRoomService) CreateRoom(ctx context.Context, categoryId string, ro
 		SetID(uuid.New().String()).
 		SetRoomNumber(roomDto.RoomNumber).
 		SetRoomType(roomDto.RoomType).
+		SetDescription(roomDto.Description).
 		SetRoomStatus(roomDto.RoomStatus).
 		SetRoomRating(roomDto.RoomRating).
 		SetRoomPrice(roomDto.RoomPrice).
@@ -291,22 +293,22 @@ func (s *SmartRoomService) CreateRoom(ctx context.Context, categoryId string, ro
 
 	// Handle media files asynchronously if provided
 	if len(mediaFiles) > 0 {
-		go func(roomID string, mediaFiles []*multipart.FileHeader) {
-			asyncCtx := context.Background()
-			media, mediaErr := s.mediaService.UploadAndCreateMedia(asyncCtx, mediaFiles)
-			if mediaErr != nil {
-				log.Printf("error uploading media for room ID '%s': %v", roomID, mediaErr)
-				return
-			}
+		//go func(roomID string, mediaFiles []*multipart.FileHeader) {
+		asyncCtx := context.Background()
+		media, mediaErr := s.mediaService.UploadAndCreateMedia(asyncCtx, mediaFiles)
+		if mediaErr != nil {
+			log.Printf("error uploading media for room ID '%s': %v", room.ID, mediaErr)
+			//return
+		}
 
-			_, mediaErr = s.client.Room.
-				UpdateOneID(roomID).
-				AddMedia(media...).
-				Save(asyncCtx)
-			if mediaErr != nil {
-				log.Printf("error adding media to room ID '%s': %v", roomID, mediaErr)
-			}
-		}(room.ID, mediaFiles)
+		_, mediaErr = s.client.Room.
+			UpdateOneID(room.ID).
+			AddMedia(media...).
+			Save(asyncCtx)
+		if mediaErr != nil {
+			log.Printf("error adding media to room ID '%s': %v", room.ID, mediaErr)
+		}
+		//}(room.ID, mediaFiles)
 	}
 
 	return room, nil
@@ -377,15 +379,29 @@ func (s *SmartRoomService) UpdateRoom(ctx context.Context, roomId string, roomDt
 		return nil, errors.New("roomId and room data must be provided")
 	}
 
-	updateOp := s.client.Room.
-		UpdateOneID(roomId).
-		SetRoomNumber(roomDto.RoomNumber).
-		SetRoomType(roomDto.RoomType).
-		SetRoomStatus(roomDto.RoomStatus).
-		SetRoomRating(roomDto.RoomRating).
-		SetRoomPrice(roomDto.RoomPrice).
-		SetAvailability(roomDto.Availability).
-		SetImage(roomDto.Image)
+	updateOp := s.client.Room.UpdateOneID(roomId)
+
+	if roomDto.RoomNumber != 0 {
+		updateOp = updateOp.SetRoomNumber(roomDto.RoomNumber)
+	}
+	if roomDto.RoomType != "" {
+		updateOp = updateOp.SetRoomType(roomDto.RoomType)
+	}
+	if roomDto.RoomStatus != "" {
+		updateOp = updateOp.SetRoomStatus(roomDto.RoomStatus)
+	}
+	if roomDto.RoomRating != "" {
+		updateOp = updateOp.SetRoomRating(roomDto.RoomRating)
+	}
+	if roomDto.RoomPrice != 0 {
+		updateOp = updateOp.SetRoomPrice(roomDto.RoomPrice)
+	}
+	if roomDto.Availability != false {
+		updateOp = updateOp.SetAvailability(roomDto.Availability)
+	}
+	if roomDto.Image != "" {
+		updateOp = updateOp.SetImage(roomDto.Image)
+	}
 
 	updatedRoom, err := updateOp.Save(ctx)
 	if err != nil {
