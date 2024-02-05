@@ -6,12 +6,6 @@ import (
 )
 
 type ISmartFitness interface {
-	CreateGym(ctx context.Context, gymDto *ent.Place) (*ent.Place, error)
-	GetGyms(ctx context.Context) ([]*ent.Place, error)
-	GetGymByID(ctx context.Context, gymId string) (*ent.Place, error)
-	UpdateGym(ctx context.Context, gymId string, gymDto *ent.Place) (*ent.Place, error)
-	DeleteGym(ctx context.Context, gymId string) error
-
 	CreateTrainer(ctx context.Context, trainerDto *ent.Trainer) (*ent.Trainer, error)
 	GetTrainers(ctx context.Context) ([]*ent.Trainer, error)
 	GetTrainerByID(ctx context.Context, trainerId string) (*ent.Trainer, error)
@@ -59,96 +53,6 @@ type SmartFitnessService struct {
 // - ISmartFitness: An instance of SmartFitnessService implementing the ISmartFitness interface.
 func NewSmartFitnessService(client *ent.Client) ISmartFitness {
 	return &SmartFitnessService{client: client}
-}
-
-// CreateGym creates a new gym.
-// Parameters:
-// - ctx: The context.Context to use for the request.
-// - gymDto: The gym details to create.
-// Returns:
-// - *ent.Place: The newly created gym.
-// - error: An error if the gym could not be created.
-// Example usage:
-//
-//	gym, err := s.CreateGym(ctx, &ent.Place{
-//	  Name:        "Gym Name",
-//	  Location:    "Gym Location",
-//	  Description: "Gym Description",
-//	})
-//
-//	if err != nil {
-//	  log.Println("Failed to create gym:", err)
-//	  return
-//	}
-func (s *SmartFitnessService) CreateGym(ctx context.Context, gymDto *ent.Place) (*ent.Place, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-// GetGyms retrieves all gyms.
-// Parameters:
-// - ctx: The context.Context to use for the request.
-// Returns:
-// - []*ent.Place: A list of gyms.
-// - error: An error if the gyms could not be retrieved.
-func (s *SmartFitnessService) GetGyms(ctx context.Context) ([]*ent.Place, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-// GetGymByID returns the gym identified by the given gym ID.
-// Parameters:
-// - ctx: The context.Context to use for the request.
-// - gymId: The ID of the gym to retrieve.
-// Returns:
-// - *ent.Place: The gym identified by the given gym ID.
-// - error: An error if the gym could not be retrieved.
-// Example usage:
-//
-//	gym, err := s.GetGymByID(ctx, "gym123")
-//	if err != nil {
-//	    log.Println("Failed to get gym by ID:", err)
-//	    return
-//	}
-func (s *SmartFitnessService) GetGymByID(ctx context.Context, gymId string) (*ent.Place, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-// UpdateGym updates the details of a gym.
-// Parameters:
-// - ctx: The context.Context to use for the request.
-// - gymId: The ID of the gym to update.
-// - gymDto: The updated gym details.
-// Returns:
-// - *ent.Place: The updated gym.
-// - error: An error if the gym could not be updated.
-// Example usage:
-//
-//	gym, err := s.UpdateGym(ctx, "gym123", &ent.Place{
-//	  Name:        "Updated Gym Name",
-//	  Location:    "Updated Gym Location",
-//	  Description: "Updated Gym Description",
-//	})
-//
-//	if err != nil {
-//	  log.Println("Failed to update gym:", err)
-//	  return
-//	}
-func (s *SmartFitnessService) UpdateGym(ctx context.Context, gymId string, gymDto *ent.Place) (*ent.Place, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-// DeleteGym deletes a gym.
-// Parameters:
-// - ctx: The context.Context to use for the request.
-// - gymId: The ID of the gym to delete.
-// Returns:
-// - error: An error if the gym could not be deleted.
-func (s *SmartFitnessService) DeleteGym(ctx context.Context, gymId string) error {
-	//TODO implement me
-	panic("implement me")
 }
 
 // CreateTrainer creates a new trainer.
