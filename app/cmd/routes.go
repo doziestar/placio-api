@@ -26,6 +26,7 @@ import (
 	"placio-app/domains/recommendations"
 	"placio-app/domains/reviews"
 	"placio-app/domains/search"
+	"placio-app/domains/smartGym"
 	"placio-app/domains/smartMenu"
 	"placio-app/domains/smartRoom"
 	"placio-app/domains/users"
@@ -217,6 +218,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		orderService := order.NewOrderServices(client)
 		orderController := order.NewOrderController(orderService)
 		orderController.RegisterRoutes(routerGroupV1)
+
+		// fitness
+		smartFitnessService := smartGym.NewSmartFitnessService(client)
+		smartFitnessController := smartGym.NewSmartFitnessController(smartFitnessService)
+		smartFitnessController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 	}
 
 }
