@@ -94,6 +94,11 @@ func RoomPrice(v float64) predicate.Room {
 	return predicate.Room(sql.FieldEQ(FieldRoomPrice, v))
 }
 
+// GuestCapacity applies equality check predicate on the "guest_capacity" field. It's identical to GuestCapacityEQ.
+func GuestCapacity(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldGuestCapacity, v))
+}
+
 // QrCode applies equality check predicate on the "qr_code" field. It's identical to QrCodeEQ.
 func QrCode(v string) predicate.Room {
 	return predicate.Room(sql.FieldEQ(FieldQrCode, v))
@@ -512,6 +517,81 @@ func RoomPriceIsNil() predicate.Room {
 // RoomPriceNotNil applies the NotNil predicate on the "room_price" field.
 func RoomPriceNotNil() predicate.Room {
 	return predicate.Room(sql.FieldNotNull(FieldRoomPrice))
+}
+
+// GuestCapacityEQ applies the EQ predicate on the "guest_capacity" field.
+func GuestCapacityEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldEQ(FieldGuestCapacity, v))
+}
+
+// GuestCapacityNEQ applies the NEQ predicate on the "guest_capacity" field.
+func GuestCapacityNEQ(v string) predicate.Room {
+	return predicate.Room(sql.FieldNEQ(FieldGuestCapacity, v))
+}
+
+// GuestCapacityIn applies the In predicate on the "guest_capacity" field.
+func GuestCapacityIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldIn(FieldGuestCapacity, vs...))
+}
+
+// GuestCapacityNotIn applies the NotIn predicate on the "guest_capacity" field.
+func GuestCapacityNotIn(vs ...string) predicate.Room {
+	return predicate.Room(sql.FieldNotIn(FieldGuestCapacity, vs...))
+}
+
+// GuestCapacityGT applies the GT predicate on the "guest_capacity" field.
+func GuestCapacityGT(v string) predicate.Room {
+	return predicate.Room(sql.FieldGT(FieldGuestCapacity, v))
+}
+
+// GuestCapacityGTE applies the GTE predicate on the "guest_capacity" field.
+func GuestCapacityGTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldGTE(FieldGuestCapacity, v))
+}
+
+// GuestCapacityLT applies the LT predicate on the "guest_capacity" field.
+func GuestCapacityLT(v string) predicate.Room {
+	return predicate.Room(sql.FieldLT(FieldGuestCapacity, v))
+}
+
+// GuestCapacityLTE applies the LTE predicate on the "guest_capacity" field.
+func GuestCapacityLTE(v string) predicate.Room {
+	return predicate.Room(sql.FieldLTE(FieldGuestCapacity, v))
+}
+
+// GuestCapacityContains applies the Contains predicate on the "guest_capacity" field.
+func GuestCapacityContains(v string) predicate.Room {
+	return predicate.Room(sql.FieldContains(FieldGuestCapacity, v))
+}
+
+// GuestCapacityHasPrefix applies the HasPrefix predicate on the "guest_capacity" field.
+func GuestCapacityHasPrefix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasPrefix(FieldGuestCapacity, v))
+}
+
+// GuestCapacityHasSuffix applies the HasSuffix predicate on the "guest_capacity" field.
+func GuestCapacityHasSuffix(v string) predicate.Room {
+	return predicate.Room(sql.FieldHasSuffix(FieldGuestCapacity, v))
+}
+
+// GuestCapacityIsNil applies the IsNil predicate on the "guest_capacity" field.
+func GuestCapacityIsNil() predicate.Room {
+	return predicate.Room(sql.FieldIsNull(FieldGuestCapacity))
+}
+
+// GuestCapacityNotNil applies the NotNil predicate on the "guest_capacity" field.
+func GuestCapacityNotNil() predicate.Room {
+	return predicate.Room(sql.FieldNotNull(FieldGuestCapacity))
+}
+
+// GuestCapacityEqualFold applies the EqualFold predicate on the "guest_capacity" field.
+func GuestCapacityEqualFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldEqualFold(FieldGuestCapacity, v))
+}
+
+// GuestCapacityContainsFold applies the ContainsFold predicate on the "guest_capacity" field.
+func GuestCapacityContainsFold(v string) predicate.Room {
+	return predicate.Room(sql.FieldContainsFold(FieldGuestCapacity, v))
 }
 
 // QrCodeEQ applies the EQ predicate on the "qr_code" field.

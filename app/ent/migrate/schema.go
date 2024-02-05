@@ -1393,6 +1393,7 @@ var (
 		{Name: "room_status", Type: field.TypeString, Nullable: true},
 		{Name: "room_rating", Type: field.TypeString, Nullable: true},
 		{Name: "room_price", Type: field.TypeFloat64, Nullable: true},
+		{Name: "guest_capacity", Type: field.TypeString, Nullable: true},
 		{Name: "qr_code", Type: field.TypeString, Nullable: true},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"available", "unavailable", "maintenance", "reserved"}, Default: "available"},
 		{Name: "extras", Type: field.TypeJSON, Nullable: true},

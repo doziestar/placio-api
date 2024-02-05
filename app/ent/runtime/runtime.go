@@ -742,7 +742,7 @@ func init() {
 	roomFields := schema.Room{}.Fields()
 	_ = roomFields
 	// roomDescAvailability is the schema descriptor for availability field.
-	roomDescAvailability := roomFields[11].Descriptor()
+	roomDescAvailability := roomFields[12].Descriptor()
 	// room.DefaultAvailability holds the default value on creation for the availability field.
 	room.DefaultAvailability = roomDescAvailability.Default.(bool)
 	// roomDescID is the schema descriptor for id field.

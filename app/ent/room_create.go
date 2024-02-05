@@ -109,6 +109,20 @@ func (rc *RoomCreate) SetNillableRoomPrice(f *float64) *RoomCreate {
 	return rc
 }
 
+// SetGuestCapacity sets the "guest_capacity" field.
+func (rc *RoomCreate) SetGuestCapacity(s string) *RoomCreate {
+	rc.mutation.SetGuestCapacity(s)
+	return rc
+}
+
+// SetNillableGuestCapacity sets the "guest_capacity" field if the given value is not nil.
+func (rc *RoomCreate) SetNillableGuestCapacity(s *string) *RoomCreate {
+	if s != nil {
+		rc.SetGuestCapacity(*s)
+	}
+	return rc
+}
+
 // SetQrCode sets the "qr_code" field.
 func (rc *RoomCreate) SetQrCode(s string) *RoomCreate {
 	rc.mutation.SetQrCode(s)
@@ -402,6 +416,10 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.RoomPrice(); ok {
 		_spec.SetField(room.FieldRoomPrice, field.TypeFloat64, value)
 		_node.RoomPrice = value
+	}
+	if value, ok := rc.mutation.GuestCapacity(); ok {
+		_spec.SetField(room.FieldGuestCapacity, field.TypeString, value)
+		_node.GuestCapacity = value
 	}
 	if value, ok := rc.mutation.QrCode(); ok {
 		_spec.SetField(room.FieldQrCode, field.TypeString, value)

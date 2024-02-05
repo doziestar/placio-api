@@ -167,6 +167,26 @@ func (ru *RoomUpdate) ClearRoomPrice() *RoomUpdate {
 	return ru
 }
 
+// SetGuestCapacity sets the "guest_capacity" field.
+func (ru *RoomUpdate) SetGuestCapacity(s string) *RoomUpdate {
+	ru.mutation.SetGuestCapacity(s)
+	return ru
+}
+
+// SetNillableGuestCapacity sets the "guest_capacity" field if the given value is not nil.
+func (ru *RoomUpdate) SetNillableGuestCapacity(s *string) *RoomUpdate {
+	if s != nil {
+		ru.SetGuestCapacity(*s)
+	}
+	return ru
+}
+
+// ClearGuestCapacity clears the value of the "guest_capacity" field.
+func (ru *RoomUpdate) ClearGuestCapacity() *RoomUpdate {
+	ru.mutation.ClearGuestCapacity()
+	return ru
+}
+
 // SetQrCode sets the "qr_code" field.
 func (ru *RoomUpdate) SetQrCode(s string) *RoomUpdate {
 	ru.mutation.SetQrCode(s)
@@ -578,6 +598,12 @@ func (ru *RoomUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if ru.mutation.RoomPriceCleared() {
 		_spec.ClearField(room.FieldRoomPrice, field.TypeFloat64)
+	}
+	if value, ok := ru.mutation.GuestCapacity(); ok {
+		_spec.SetField(room.FieldGuestCapacity, field.TypeString, value)
+	}
+	if ru.mutation.GuestCapacityCleared() {
+		_spec.ClearField(room.FieldGuestCapacity, field.TypeString)
 	}
 	if value, ok := ru.mutation.QrCode(); ok {
 		_spec.SetField(room.FieldQrCode, field.TypeString, value)
@@ -1033,6 +1059,26 @@ func (ruo *RoomUpdateOne) ClearRoomPrice() *RoomUpdateOne {
 	return ruo
 }
 
+// SetGuestCapacity sets the "guest_capacity" field.
+func (ruo *RoomUpdateOne) SetGuestCapacity(s string) *RoomUpdateOne {
+	ruo.mutation.SetGuestCapacity(s)
+	return ruo
+}
+
+// SetNillableGuestCapacity sets the "guest_capacity" field if the given value is not nil.
+func (ruo *RoomUpdateOne) SetNillableGuestCapacity(s *string) *RoomUpdateOne {
+	if s != nil {
+		ruo.SetGuestCapacity(*s)
+	}
+	return ruo
+}
+
+// ClearGuestCapacity clears the value of the "guest_capacity" field.
+func (ruo *RoomUpdateOne) ClearGuestCapacity() *RoomUpdateOne {
+	ruo.mutation.ClearGuestCapacity()
+	return ruo
+}
+
 // SetQrCode sets the "qr_code" field.
 func (ruo *RoomUpdateOne) SetQrCode(s string) *RoomUpdateOne {
 	ruo.mutation.SetQrCode(s)
@@ -1474,6 +1520,12 @@ func (ruo *RoomUpdateOne) sqlSave(ctx context.Context) (_node *Room, err error) 
 	}
 	if ruo.mutation.RoomPriceCleared() {
 		_spec.ClearField(room.FieldRoomPrice, field.TypeFloat64)
+	}
+	if value, ok := ruo.mutation.GuestCapacity(); ok {
+		_spec.SetField(room.FieldGuestCapacity, field.TypeString, value)
+	}
+	if ruo.mutation.GuestCapacityCleared() {
+		_spec.ClearField(room.FieldGuestCapacity, field.TypeString)
 	}
 	if value, ok := ruo.mutation.QrCode(); ok {
 		_spec.SetField(room.FieldQrCode, field.TypeString, value)

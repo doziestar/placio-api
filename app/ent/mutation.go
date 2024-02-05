@@ -49384,6 +49384,7 @@ type RoomMutation struct {
 	room_rating          *string
 	room_price           *float64
 	addroom_price        *float64
+	guest_capacity       *string
 	qr_code              *string
 	status               *room.Status
 	extras               *map[string]interface{}
@@ -49852,6 +49853,55 @@ func (m *RoomMutation) ResetRoomPrice() {
 	m.room_price = nil
 	m.addroom_price = nil
 	delete(m.clearedFields, room.FieldRoomPrice)
+}
+
+// SetGuestCapacity sets the "guest_capacity" field.
+func (m *RoomMutation) SetGuestCapacity(s string) {
+	m.guest_capacity = &s
+}
+
+// GuestCapacity returns the value of the "guest_capacity" field in the mutation.
+func (m *RoomMutation) GuestCapacity() (r string, exists bool) {
+	v := m.guest_capacity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGuestCapacity returns the old "guest_capacity" field's value of the Room entity.
+// If the Room object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoomMutation) OldGuestCapacity(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGuestCapacity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGuestCapacity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGuestCapacity: %w", err)
+	}
+	return oldValue.GuestCapacity, nil
+}
+
+// ClearGuestCapacity clears the value of the "guest_capacity" field.
+func (m *RoomMutation) ClearGuestCapacity() {
+	m.guest_capacity = nil
+	m.clearedFields[room.FieldGuestCapacity] = struct{}{}
+}
+
+// GuestCapacityCleared returns if the "guest_capacity" field was cleared in this mutation.
+func (m *RoomMutation) GuestCapacityCleared() bool {
+	_, ok := m.clearedFields[room.FieldGuestCapacity]
+	return ok
+}
+
+// ResetGuestCapacity resets all changes to the "guest_capacity" field.
+func (m *RoomMutation) ResetGuestCapacity() {
+	m.guest_capacity = nil
+	delete(m.clearedFields, room.FieldGuestCapacity)
 }
 
 // SetQrCode sets the "qr_code" field.
@@ -50480,7 +50530,7 @@ func (m *RoomMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoomMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.name != nil {
 		fields = append(fields, room.FieldName)
 	}
@@ -50498,6 +50548,9 @@ func (m *RoomMutation) Fields() []string {
 	}
 	if m.room_price != nil {
 		fields = append(fields, room.FieldRoomPrice)
+	}
+	if m.guest_capacity != nil {
+		fields = append(fields, room.FieldGuestCapacity)
 	}
 	if m.qr_code != nil {
 		fields = append(fields, room.FieldQrCode)
@@ -50537,6 +50590,8 @@ func (m *RoomMutation) Field(name string) (ent.Value, bool) {
 		return m.RoomRating()
 	case room.FieldRoomPrice:
 		return m.RoomPrice()
+	case room.FieldGuestCapacity:
+		return m.GuestCapacity()
 	case room.FieldQrCode:
 		return m.QrCode()
 	case room.FieldStatus:
@@ -50570,6 +50625,8 @@ func (m *RoomMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldRoomRating(ctx)
 	case room.FieldRoomPrice:
 		return m.OldRoomPrice(ctx)
+	case room.FieldGuestCapacity:
+		return m.OldGuestCapacity(ctx)
 	case room.FieldQrCode:
 		return m.OldQrCode(ctx)
 	case room.FieldStatus:
@@ -50632,6 +50689,13 @@ func (m *RoomMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRoomPrice(v)
+		return nil
+	case room.FieldGuestCapacity:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGuestCapacity(v)
 		return nil
 	case room.FieldQrCode:
 		v, ok := value.(string)
@@ -50750,6 +50814,9 @@ func (m *RoomMutation) ClearedFields() []string {
 	if m.FieldCleared(room.FieldRoomPrice) {
 		fields = append(fields, room.FieldRoomPrice)
 	}
+	if m.FieldCleared(room.FieldGuestCapacity) {
+		fields = append(fields, room.FieldGuestCapacity)
+	}
 	if m.FieldCleared(room.FieldQrCode) {
 		fields = append(fields, room.FieldQrCode)
 	}
@@ -50794,6 +50861,9 @@ func (m *RoomMutation) ClearField(name string) error {
 	case room.FieldRoomPrice:
 		m.ClearRoomPrice()
 		return nil
+	case room.FieldGuestCapacity:
+		m.ClearGuestCapacity()
+		return nil
 	case room.FieldQrCode:
 		m.ClearQrCode()
 		return nil
@@ -50831,6 +50901,9 @@ func (m *RoomMutation) ResetField(name string) error {
 		return nil
 	case room.FieldRoomPrice:
 		m.ResetRoomPrice()
+		return nil
+	case room.FieldGuestCapacity:
+		m.ResetGuestCapacity()
 		return nil
 	case room.FieldQrCode:
 		m.ResetQrCode()

@@ -26,6 +26,8 @@ const (
 	FieldRoomRating = "room_rating"
 	// FieldRoomPrice holds the string denoting the room_price field in the database.
 	FieldRoomPrice = "room_price"
+	// FieldGuestCapacity holds the string denoting the guest_capacity field in the database.
+	FieldGuestCapacity = "guest_capacity"
 	// FieldQrCode holds the string denoting the qr_code field in the database.
 	FieldQrCode = "qr_code"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -97,6 +99,7 @@ var Columns = []string{
 	FieldRoomStatus,
 	FieldRoomRating,
 	FieldRoomPrice,
+	FieldGuestCapacity,
 	FieldQrCode,
 	FieldStatus,
 	FieldExtras,
@@ -201,6 +204,11 @@ func ByRoomRating(opts ...sql.OrderTermOption) OrderOption {
 // ByRoomPrice orders the results by the room_price field.
 func ByRoomPrice(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRoomPrice, opts...).ToFunc()
+}
+
+// ByGuestCapacity orders the results by the guest_capacity field.
+func ByGuestCapacity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGuestCapacity, opts...).ToFunc()
 }
 
 // ByQrCode orders the results by the qr_code field.

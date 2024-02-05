@@ -51,6 +51,7 @@ func (Room) Fields() []ent.Field {
 		field.String("room_status").Optional(),
 		field.String("room_rating").Optional(),
 		field.Float("room_price").Optional(),
+		field.String("guest_capacity").Optional(),
 		field.String("qr_code").Optional(),
 		field.Enum("status").Values("available", "unavailable", "maintenance", "reserved").Default("available"),
 		field.JSON("extras", map[string]interface{}{}).Optional(),
