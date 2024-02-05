@@ -18,8 +18,8 @@ func NewSmartFitnessController(smartFitnessService ISmartFitness) *SmartFitnessC
 
 // RegisterRoutes sets up the routes for gym, trainer, member, and subscription endpoints.
 func (c *SmartFitnessController) RegisterRoutes(router, routerWithAuth *gin.RouterGroup) {
-	trainerRouter := router.Group("/trainers")
-	trainerRouterWithAuth := routerWithAuth.Group("/trainers")
+	trainerRouter := router.Group("/fitness/trainers")
+	trainerRouterWithAuth := routerWithAuth.Group("/fitness/trainers")
 	{
 		trainerRouterWithAuth.POST("/", middleware.ErrorMiddleware(c.createTrainer))
 		trainerRouter.GET("/", middleware.ErrorMiddleware(c.getTrainers))
@@ -28,8 +28,8 @@ func (c *SmartFitnessController) RegisterRoutes(router, routerWithAuth *gin.Rout
 		trainerRouterWithAuth.DELETE("/:trainerId", middleware.ErrorMiddleware(c.deleteTrainer))
 	}
 
-	memberRouter := router.Group("/members")
-	memberRouterWithAuth := routerWithAuth.Group("/members")
+	memberRouter := router.Group("/fitness/members")
+	memberRouterWithAuth := routerWithAuth.Group("/fitness/members")
 	{
 		memberRouterWithAuth.POST("/", middleware.ErrorMiddleware(c.createMember))
 		memberRouter.GET("/", middleware.ErrorMiddleware(c.getMembers))
@@ -38,8 +38,8 @@ func (c *SmartFitnessController) RegisterRoutes(router, routerWithAuth *gin.Rout
 		memberRouterWithAuth.DELETE("/:memberId", middleware.ErrorMiddleware(c.deleteMember))
 	}
 
-	subscriptionRouter := router.Group("/subscriptions")
-	subscriptionRouterWithAuth := routerWithAuth.Group("/subscriptions")
+	subscriptionRouter := router.Group("/fitness/subscriptions")
+	subscriptionRouterWithAuth := routerWithAuth.Group("/fitness/subscriptions")
 	{
 		subscriptionRouterWithAuth.POST("/", middleware.ErrorMiddleware(c.createSubscription))
 		subscriptionRouter.GET("/", middleware.ErrorMiddleware(c.getSubscriptions))
