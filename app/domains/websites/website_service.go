@@ -64,7 +64,11 @@ func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID, dom
 
 						mq.WithMedia()
 					})
-
+					pq.WithRooms(func(rq *ent.RoomQuery) {
+						rq.WithMedia()
+					})
+					pq.WithEvents(func(eq *ent.EventQuery) {
+					})
 					pq.WithMedias()
 				})
 
