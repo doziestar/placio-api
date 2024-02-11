@@ -31,8 +31,8 @@ func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 	eventRouter.DELETE("/:eventId", middleware.ErrorMiddleware(c.deleteEvent))
 	eventRouterWithoutAuth.GET("/:eventId", middleware.ErrorMiddleware(c.getEventByID))
 	eventRouterWithoutAuth.GET("/", middleware.ErrorMiddleware(c.getEventsByFilters))
-	//eventRouter.Get("/participants/:eventId", c.getEventParticipants)
-
+	eventRouter.POST("/:eventId/media", middleware.ErrorMiddleware(c.addMediaToEvent))
+	eventRouter.DELETE("/:eventId/media/:mediaID", middleware.ErrorMiddleware(c.removeMediaFromEvent))
 }
 
 // CreateEvent godoc
