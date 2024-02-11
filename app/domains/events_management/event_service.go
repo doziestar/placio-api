@@ -4,7 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
+	"mime/multipart"
+	"placio-app/domains/media"
 	"placio-app/domains/search"
 	"placio-app/ent"
 	"placio-app/ent/event"
@@ -16,9 +19,12 @@ import (
 type IEventService interface {
 	CreateEvent(ctx context.Context, businessId string, data *ent.Event) (*ent.Event, error)
 	AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error
-	UpdateEvent(ctx context.Context, eventId string, businessId string, data EventDTO) (*ent.Event, error)
+	GetOrganizersForEvent(ctx context.Context, eventID string) ([]interface{}, error)
+	UpdateEvent(ctx context.Context, eventId string, businessId string, data *ent.Event) (*ent.Event, error)
 	GetEventByID(ctx context.Context, id string) (*ent.Event, error)
 	DeleteEvent(ctx context.Context, eventId string) error
+	AddMediaToEvent(ctx context.Context, eventID string, files []*multipart.FileHeader) (*ent.Event, error)
+	RemoveMediaFromEvent(ctx context.Context, eventID string, mediaID string) error
 	GetEvents(ctx context.Context, filter *EventFilter, page int, pageSize int) ([]*ent.Event, error)
 	CheckInAttendee(ctx context.Context, eventId string, attendeeId string, method CheckInMethod) error
 	ManageTicketing(ctx context.Context, eventId string, ticketDetails *ent.Ticket) error
@@ -72,7 +78,12 @@ type IEventService interface {
 
 type EventService struct {
 	client        *ent.Client
+	mediaService  media.MediaService
 	searchService search.SearchService
+}
+
+func NewEventService(client *ent.Client, searchService search.SearchService, mediaService media.MediaService) *EventService {
+	return &EventService{client: client, searchService: searchService, mediaService: mediaService}
 }
 
 func (s *EventService) CheckInAttendee(ctx context.Context, eventId string, attendeeId string, method CheckInMethod) error {
@@ -190,12 +201,6 @@ func (s *EventService) MultiLanguageSupport(ctx context.Context, eventId string,
 	panic("implement me")
 }
 
-func NewEventService(client *ent.Client, searchService search.SearchService) *EventService {
-	return &EventService{client: client, searchService: searchService}
-}
-
-const OrganizerContextKey ContextKey = "organizers"
-
 func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent.Event) (*ent.Event, error) {
 	// Extract organizers from context
 	organizers, ok := ctx.Value(OrganizerContextKey).([]OrganizerInfo)
@@ -282,7 +287,7 @@ func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent
 	// Process each organizer, adding them to the event
 	for _, org := range organizers {
 		// Assume a method to process and add organizers based on their type
-		err := addOrganizerToEvent(tx, event, org)
+		err := addOrganizerToEvent(ctx, tx, event, org)
 		if err != nil {
 			tx.Rollback()
 			return nil, err
@@ -298,25 +303,53 @@ func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent
 }
 
 // Helper function to add an organizer to an event, distinguishing between user and business types
-func addOrganizerToEvent(tx *ent.Tx, event *ent.Event, org OrganizerInfo) error {
+func addOrganizerToEvent(ctx context.Context, tx *ent.Tx, event *ent.Event, org OrganizerInfo) error {
 	switch org.Type {
 	case "user":
 		_, err := tx.EventOrganizer.Create().
 			SetEvent(event).
 			SetOrganizerID(org.ID).
 			SetOrganizerType("user").
-			Save(context.Background()) // Consider passing the original context if available
+			Save(ctx)
 		return err
 	case "business":
 		_, err := tx.EventOrganizer.Create().
 			SetEvent(event).
 			SetOrganizerID(org.ID).
 			SetOrganizerType("business").
-			Save(context.Background()) // Consider passing the original context if available
+			Save(ctx)
 		return err
 	default:
 		return errors.New("invalid organizer type")
 	}
+}
+
+func (s *EventService) RemoveMediaFromEvent(ctx context.Context, eventID string, mediaID string) error {
+	// Fetch the event to ensure it exists
+	_, err := s.client.Event.Get(ctx, eventID)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	// Fetch the media to ensure it exists
+	media, err := s.client.Media.Get(ctx, mediaID)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+
+	}
+
+	// Remove the media from the event
+	_, err = s.client.Event.UpdateOneID(eventID).
+		RemoveMedia(media).
+		Save(ctx)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	return nil
 }
 
 func (s *EventService) AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error {
@@ -377,90 +410,179 @@ func (s *EventService) GetOrganizersForEvent(ctx context.Context, eventID string
 	return result, nil
 }
 
-func (s *EventService) UpdateEvent(ctx context.Context, eventId string, businessId string, data EventDTO) (*ent.Event, error) {
-	// get the user from the context
-	user := ctx.Value("user").(string)
+func (s *EventService) UpdateEvent(ctx context.Context, eventId string, businessId string, data *ent.Event) (*ent.Event, error) {
+	userID, exist := ctx.Value("userId").(string)
+	if !exist {
+		return nil, errors.New("user not found")
+	}
 
-	event, err := s.client.Event.Get(ctx, eventId)
+	// Load the event with its owner edges to check ownership.
+	event, err := s.client.Event.Query().
+		Where(event.IDEQ(eventId)).
+		WithOwnerUser().
+		WithOwnerBusiness().
+		Only(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	// check if the business is the owner of the event
-	if businessId != "" && event.Edges.OwnerBusiness.ID != businessId {
+	// Authorization checks
+	if event.Edges.OwnerBusiness != nil && businessId != event.Edges.OwnerBusiness.ID {
+		return nil, errors.New("unauthorized: You can only update events that your business owns")
+	}
+	if event.Edges.OwnerUser != nil && userID != event.Edges.OwnerUser.ID {
 		return nil, errors.New("unauthorized: You can only update events that you own")
 	}
 
-	// check if the user is the owner of the event
-	if event.Edges.OwnerUser.ID != user {
-		return nil, errors.New("unauthorized: You can only update events that you own")
-	}
+	// Begin updating the event fields
+	upd := s.client.Event.UpdateOneID(eventId)
 
-	typeEnum, err := parseEventType(data.EventType)
-	if err != nil {
-		return nil, err
-	}
-	frequencyEnum, err := parseFrequencyType(data.Frequency)
-	if err != nil {
-		return nil, err
-	}
-	venueTypeEnum, err := parseVenueType(data.VenueType)
-	if err != nil {
-		return nil, err
-	}
-
-	upd := s.client.Event.UpdateOne(event)
-
+	// Directly set fields if they are not nil in the DTO.
 	if data.Name != "" {
 		upd.SetName(data.Name)
 	}
-
-	upd.SetEventType(typeEnum).
-		SetStatus(data.Status).
-		SetLocation(data.Location).
-		SetURL(data.URL).
-		SetTitle(data.Title).
-		SetTimeZone(data.TimeZone).
-		SetStartTime(data.StartTime).
-		SetEndTime(data.EndTime).
-		SetStartDate(data.StartDate).
-		SetEndDate(data.EndDate).
-		SetFrequency(frequencyEnum).
-		SetFrequencyInterval(data.FrequencyInterval).
-		SetFrequencyDayOfWeek(data.FrequencyDayOfWeek).
-		SetFrequencyDayOfMonth(data.FrequencyDayOfMonth).
-		SetFrequencyMonthOfYear(data.FrequencyMonthOfYear).
-		SetVenueType(venueTypeEnum).
-		SetVenueName(data.VenueName).
-		SetVenueAddress(data.VenueAddress).
-		SetVenueCity(data.VenueCity).
-		SetVenueState(data.VenueState).
-		SetVenueCountry(data.VenueCountry).
-		//SetVenueZIP(data.VenueZIP).
-		SetVenueLat(data.VenueLat).
-		SetVenueLon(data.VenueLon).
-		SetVenueURL(data.VenueURL).
-		SetVenuePhone(data.VenuePhone).
-		SetVenueEmail(data.VenueEmail).
-		//SetTags(data.Tags).
-		SetDescription(data.Description).
-		SetCoverImage(data.CoverImage).
-		SetUpdatedAt(time.Now())
-
-	// Merge the existing and new settings.
-	newSettings := data.EventSettings
-	for k, value := range event.EventSettings {
-		if _, exists := newSettings[k]; !exists {
-			newSettings[k] = value
+	if data.EventType != "" {
+		// Assuming parseEventType returns an ent.EventType enum and handles conversion.
+		if eventType, err := parseEventType(string(data.EventType)); err == nil {
+			upd.SetEventType(eventType)
+		} else {
+			return nil, err
 		}
 	}
+	if data.Status != "" {
+		upd.SetStatus(data.Status)
+	}
+	if data.Location != "" {
+		upd.SetLocation(data.Location)
+	}
+	if data.URL != "" {
+		upd.SetURL(data.URL)
+	}
+	if data.Title != "" {
+		upd.SetTitle(data.Title)
+	}
+	if data.TimeZone != "" {
+		upd.SetTimeZone(data.TimeZone)
+	}
+	if data.StartTime != time.Now() {
+		upd.SetStartTime(data.StartTime)
+	}
+	if data.EndTime != time.Now() {
+		upd.SetEndTime(data.EndTime)
+	}
+	if data.StartDate != "" {
+		upd.SetStartDate(data.StartDate)
+	}
+	if data.EndDate != "" {
+		upd.SetEndDate(data.EndDate)
+	}
+	if data.Frequency != "" {
+		frequencyEnum, err := parseFrequencyType(string(data.Frequency))
+		if err != nil {
+			return nil, err
+		}
+		upd.SetFrequency(frequencyEnum)
+	}
+	if data.FrequencyInterval != "" {
+		upd.SetFrequencyInterval(data.FrequencyInterval)
+	}
+	if data.FrequencyDayOfWeek != "" {
+		upd.SetFrequencyDayOfWeek(data.FrequencyDayOfWeek)
+	}
+	if data.FrequencyDayOfMonth != "" {
+		upd.SetFrequencyDayOfMonth(data.FrequencyDayOfMonth)
+	}
+	if data.FrequencyMonthOfYear != "" {
+		upd.SetFrequencyMonthOfYear(data.FrequencyMonthOfYear)
+	}
+	if data.VenueType != "" {
+		venueTypeEnum, err := parseVenueType(string(data.VenueType)) // Convert to enum
+		if err != nil {
+			return nil, err
+		}
+		upd.SetVenueType(venueTypeEnum)
+	}
+	if data.VenueName != "" {
+		upd.SetVenueName(data.VenueName)
+	}
+	if data.VenueAddress != "" {
+		upd.SetVenueAddress(data.VenueAddress)
+	}
+	if data.VenueCity != "" {
+		upd.SetVenueCity(data.VenueCity)
+	}
+	if data.VenueState != "" {
+		upd.SetVenueState(data.VenueState)
+	}
+	if data.VenueCountry != "" {
+		upd.SetVenueCountry(data.VenueCountry)
+	}
+	if data.VenueZip != "" {
+		upd.SetVenueZip(data.VenueZip)
+	}
+	if data.VenueLat != "" {
+		upd.SetVenueLat(data.VenueLat)
+	}
+	if data.VenueLon != "" {
+		upd.SetVenueLon(data.VenueLon)
+	}
+	if data.VenueURL != "" {
+		upd.SetVenueURL(data.VenueURL)
+	}
+	if data.VenuePhone != "" {
+		upd.SetVenuePhone(data.VenuePhone)
+	}
+	if data.VenueEmail != "" {
+		upd.SetVenueEmail(data.VenueEmail)
+	}
+	if len(data.Tags) > 0 {
+		upd.SetTags(data.Tags)
+	}
+	if data.Description != "" {
+		upd.SetDescription(data.Description)
+	}
+	if data.CoverImage != "" {
+		upd.SetCoverImage(data.CoverImage)
+	}
+	if data.Longitude != "" {
+		upd.SetLongitude(data.Longitude)
+	}
+	if data.Latitude != "" {
+		upd.SetLatitude(data.Latitude)
+	}
+	if data.SearchText != "" {
+		upd.SetSearchText(data.SearchText)
+	}
+	//if data.RelevanceScore != "" {
+	//	upd.SetRelevanceScore(data.RelevanceScore)
+	//}
+	if data.RegistrationURL != "" {
+		upd.SetRegistrationURL(data.RegistrationURL)
+	}
+	upd.SetIsPremium(data.IsPremium).
+		SetIsPublished(data.IsPublished).
+		SetIsOnline(data.IsOnline).
+		SetIsFree(data.IsFree).
+		SetIsPaid(data.IsPaid).
+		SetIsPublic(data.IsPublic).
+		SetIsOnlineOnly(data.IsOnlineOnly).
+		SetIsInPersonOnly(data.IsInPersonOnly).
+		SetIsHybrid(data.IsHybrid).
+		SetIsOnlineAndInPerson(data.IsOnlineAndInPerson).
+		SetIsOnlineAndInPersonOnly(data.IsOnlineAndInPersonOnly).
+		SetIsOnlineAndInPersonOrHybrid(data.IsOnlineAndInPersonOrHybrid).
+		SetLikedByCurrentUser(data.LikedByCurrentUser).
+		SetFollowedByCurrentUser(data.FollowedByCurrentUser).
+		SetIsPhysicallyAccessible(data.IsPhysicallyAccessible).
+		SetIsVirtuallyAccessible(data.IsVirtuallyAccessible)
 
-	event, err = upd.Save(ctx)
+	// Execute the update
+	updatedEvent, err := upd.Save(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return event, nil
+	return updatedEvent, nil
 }
 
 func (s *EventService) GetEventByID(ctx context.Context, id string) (*ent.Event, error) {
@@ -471,6 +593,14 @@ func (s *EventService) GetEventByID(ctx context.Context, id string) (*ent.Event,
 		Where(event.IDEQ(id)).
 		WithOwnerUser().
 		WithOwnerBusiness().
+		WithEventOrganizers().
+		WithMedia().
+		WithEventComments().
+		WithAdditionalOrganizers().
+		WithPlace(func(query *ent.PlaceQuery) {
+
+		}).
+		WithPerformers().
 		WithFaqs().
 		WithTickets().
 		First(ctx)
@@ -481,7 +611,6 @@ func (s *EventService) GetEventByID(ctx context.Context, id string) (*ent.Event,
 }
 
 func (s *EventService) DeleteEvent(ctx context.Context, eventId string) error {
-	// Try to delete the event from the db.
 	err := s.client.Event.
 		DeleteOneID(eventId).
 		Exec(ctx)
@@ -491,6 +620,33 @@ func (s *EventService) DeleteEvent(ctx context.Context, eventId string) error {
 	}
 
 	return nil
+}
+
+func (s *EventService) AddMediaToEvent(ctx context.Context, eventID string, files []*multipart.FileHeader) (*ent.Event, error) {
+	// Fetch event
+	eventData, err := s.client.Event.Get(ctx, eventID)
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil, err
+	}
+
+	// Upload files and create media entities
+	uploadedFiles, err := s.mediaService.UploadAndCreateMedia(ctx, files)
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil, err
+	}
+
+	// Associate uploaded media with the event
+	eventData, err = s.client.Event.UpdateOne(eventData).
+		AddMedia(uploadedFiles...).
+		Save(ctx)
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil, err
+	}
+
+	return eventData, nil
 }
 
 func (s *EventService) GetEvents(ctx context.Context, filter *EventFilter, page int, pageSize int) ([]*ent.Event, error) {

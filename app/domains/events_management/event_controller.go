@@ -1,6 +1,7 @@
 package events_management
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"log"
@@ -65,7 +66,7 @@ func (c *EventController) createEvent(ctx *gin.Context) error {
 
 		return err
 	}
-	ctx.JSON(http.StatusCreated, event)
+	ctx.JSON(http.StatusCreated, utility.ProcessResponse(event))
 	return nil
 }
 
@@ -84,7 +85,7 @@ func (c *EventController) createEvent(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /events/{eventId} [put]
 func (c *EventController) updateEvent(ctx *gin.Context) error {
-	var data EventDTO
+	var data *ent.Event
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		return err
 	}
@@ -95,7 +96,41 @@ func (c *EventController) updateEvent(ctx *gin.Context) error {
 
 		return err
 	}
-	ctx.JSON(http.StatusOK, event)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(event))
+	return nil
+}
+
+func (c *EventController) addMediaToEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("id")
+
+	files, err := ctx.MultipartForm()
+	if err != nil {
+		return err
+	}
+
+	uploadedFiles, ok := files.File["files"]
+	if !ok || len(uploadedFiles) == 0 {
+		return errors.New("No files uploaded")
+	}
+
+	event, err := c.service.AddMediaToEvent(ctx, eventID, uploadedFiles)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(event))
+	return nil
+}
+
+func (c *EventController) removeMediaFromEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("id")
+	mediaID := ctx.Param("mediaID")
+
+	if err := c.service.RemoveMediaFromEvent(ctx, eventID, mediaID); err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse("", "Media removed successfully"))
 	return nil
 }
 

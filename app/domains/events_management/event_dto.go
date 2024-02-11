@@ -191,3 +191,5 @@ type OrganizerInfo struct {
 
 // ContextKey is a value for use with context.WithValue
 type ContextKey string
+
+const OrganizerContextKey ContextKey = "organizers"
