@@ -167,7 +167,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		// events
 		eventService := events_management.NewEventService(client, searchService)
 		eventController := events_management.NewEventController(eventService, utility.NewUtility())
-		eventController.RegisterRoutes(routerGroupV1)
+		eventController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// amenities
 		amenityService := amenities.NewAmenityService(client)

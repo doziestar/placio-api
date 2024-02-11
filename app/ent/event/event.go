@@ -108,6 +108,8 @@ const (
 	FieldIsFree = "is_free"
 	// FieldIsPaid holds the string denoting the is_paid field in the database.
 	FieldIsPaid = "is_paid"
+	// FieldIsPublic holds the string denoting the is_public field in the database.
+	FieldIsPublic = "is_public"
 	// FieldIsOnlineOnly holds the string denoting the is_online_only field in the database.
 	FieldIsOnlineOnly = "is_online_only"
 	// FieldIsInPersonOnly holds the string denoting the is_in_person_only field in the database.
@@ -124,6 +126,16 @@ const (
 	FieldLikedByCurrentUser = "liked_by_current_user"
 	// FieldFollowedByCurrentUser holds the string denoting the followedbycurrentuser field in the database.
 	FieldFollowedByCurrentUser = "followed_by_current_user"
+	// FieldRegistrationType holds the string denoting the registration_type field in the database.
+	FieldRegistrationType = "registration_type"
+	// FieldRegistrationURL holds the string denoting the registration_url field in the database.
+	FieldRegistrationURL = "registration_url"
+	// FieldIsPhysicallyAccessible holds the string denoting the is_physically_accessible field in the database.
+	FieldIsPhysicallyAccessible = "is_physically_accessible"
+	// FieldAccessibilityInfo holds the string denoting the accessibility_info field in the database.
+	FieldAccessibilityInfo = "accessibility_info"
+	// FieldIsVirtuallyAccessible holds the string denoting the is_virtually_accessible field in the database.
+	FieldIsVirtuallyAccessible = "is_virtually_accessible"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
 	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
@@ -146,6 +158,18 @@ const (
 	EdgeFaqs = "faqs"
 	// EdgeRatings holds the string denoting the ratings edge name in mutations.
 	EdgeRatings = "ratings"
+	// EdgeAdditionalOrganizers holds the string denoting the additional_organizers edge name in mutations.
+	EdgeAdditionalOrganizers = "additional_organizers"
+	// EdgeMedia holds the string denoting the media edge name in mutations.
+	EdgeMedia = "media"
+	// EdgeEventComments holds the string denoting the event_comments edge name in mutations.
+	EdgeEventComments = "event_comments"
+	// EdgeEventReviews holds the string denoting the event_reviews edge name in mutations.
+	EdgeEventReviews = "event_reviews"
+	// EdgePerformers holds the string denoting the performers edge name in mutations.
+	EdgePerformers = "performers"
+	// EdgeEventOrganizers holds the string denoting the event_organizers edge name in mutations.
+	EdgeEventOrganizers = "event_organizers"
 	// Table holds the table name of the event in the database.
 	Table = "events"
 	// TicketsTable is the table that holds the tickets relation/edge.
@@ -223,6 +247,48 @@ const (
 	RatingsInverseTable = "ratings"
 	// RatingsColumn is the table column denoting the ratings relation/edge.
 	RatingsColumn = "event_ratings"
+	// AdditionalOrganizersTable is the table that holds the additional_organizers relation/edge.
+	AdditionalOrganizersTable = "users"
+	// AdditionalOrganizersInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	AdditionalOrganizersInverseTable = "users"
+	// AdditionalOrganizersColumn is the table column denoting the additional_organizers relation/edge.
+	AdditionalOrganizersColumn = "event_additional_organizers"
+	// MediaTable is the table that holds the media relation/edge.
+	MediaTable = "media"
+	// MediaInverseTable is the table name for the Media entity.
+	// It exists in this package in order to avoid circular dependency with the "media" package.
+	MediaInverseTable = "media"
+	// MediaColumn is the table column denoting the media relation/edge.
+	MediaColumn = "event_media"
+	// EventCommentsTable is the table that holds the event_comments relation/edge.
+	EventCommentsTable = "comments"
+	// EventCommentsInverseTable is the table name for the Comment entity.
+	// It exists in this package in order to avoid circular dependency with the "comment" package.
+	EventCommentsInverseTable = "comments"
+	// EventCommentsColumn is the table column denoting the event_comments relation/edge.
+	EventCommentsColumn = "event_event_comments"
+	// EventReviewsTable is the table that holds the event_reviews relation/edge.
+	EventReviewsTable = "reviews"
+	// EventReviewsInverseTable is the table name for the Review entity.
+	// It exists in this package in order to avoid circular dependency with the "review" package.
+	EventReviewsInverseTable = "reviews"
+	// EventReviewsColumn is the table column denoting the event_reviews relation/edge.
+	EventReviewsColumn = "event_event_reviews"
+	// PerformersTable is the table that holds the performers relation/edge.
+	PerformersTable = "users"
+	// PerformersInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	PerformersInverseTable = "users"
+	// PerformersColumn is the table column denoting the performers relation/edge.
+	PerformersColumn = "event_performers"
+	// EventOrganizersTable is the table that holds the event_organizers relation/edge.
+	EventOrganizersTable = "event_organizers"
+	// EventOrganizersInverseTable is the table name for the EventOrganizer entity.
+	// It exists in this package in order to avoid circular dependency with the "eventorganizer" package.
+	EventOrganizersInverseTable = "event_organizers"
+	// EventOrganizersColumn is the table column denoting the event_organizers relation/edge.
+	EventOrganizersColumn = "event_event_organizers"
 )
 
 // Columns holds all SQL columns for event fields.
@@ -274,6 +340,7 @@ var Columns = []string{
 	FieldIsOnline,
 	FieldIsFree,
 	FieldIsPaid,
+	FieldIsPublic,
 	FieldIsOnlineOnly,
 	FieldIsInPersonOnly,
 	FieldIsHybrid,
@@ -282,6 +349,11 @@ var Columns = []string{
 	FieldIsOnlineAndInPersonOrHybrid,
 	FieldLikedByCurrentUser,
 	FieldFollowedByCurrentUser,
+	FieldRegistrationType,
+	FieldRegistrationURL,
+	FieldIsPhysicallyAccessible,
+	FieldAccessibilityInfo,
+	FieldIsVirtuallyAccessible,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "events"
@@ -342,6 +414,8 @@ var (
 	DefaultIsFree bool
 	// DefaultIsPaid holds the default value on creation for the "is_Paid" field.
 	DefaultIsPaid bool
+	// DefaultIsPublic holds the default value on creation for the "is_public" field.
+	DefaultIsPublic bool
 	// DefaultIsOnlineOnly holds the default value on creation for the "is_Online_Only" field.
 	DefaultIsOnlineOnly bool
 	// DefaultIsInPersonOnly holds the default value on creation for the "is_In_Person_Only" field.
@@ -358,6 +432,10 @@ var (
 	DefaultLikedByCurrentUser bool
 	// DefaultFollowedByCurrentUser holds the default value on creation for the "followedByCurrentUser" field.
 	DefaultFollowedByCurrentUser bool
+	// DefaultIsPhysicallyAccessible holds the default value on creation for the "is_physically_accessible" field.
+	DefaultIsPhysicallyAccessible bool
+	// DefaultIsVirtuallyAccessible holds the default value on creation for the "is_virtually_accessible" field.
+	DefaultIsVirtuallyAccessible bool
 )
 
 // EventType defines the type for the "EventType" enum field.
@@ -433,6 +511,31 @@ func VenueTypeValidator(vt VenueType) error {
 		return nil
 	default:
 		return fmt.Errorf("event: invalid enum value for venue_type field: %q", vt)
+	}
+}
+
+// RegistrationType defines the type for the "registration_type" enum field.
+type RegistrationType string
+
+// RegistrationType values.
+const (
+	RegistrationTypeNone     RegistrationType = "none"
+	RegistrationTypeRequired RegistrationType = "required"
+	RegistrationTypeOptional RegistrationType = "optional"
+	RegistrationTypeClosed   RegistrationType = "closed"
+)
+
+func (rt RegistrationType) String() string {
+	return string(rt)
+}
+
+// RegistrationTypeValidator is a validator for the "registration_type" field enum values. It is called by the builders before save.
+func RegistrationTypeValidator(rt RegistrationType) error {
+	switch rt {
+	case RegistrationTypeNone, RegistrationTypeRequired, RegistrationTypeOptional, RegistrationTypeClosed:
+		return nil
+	default:
+		return fmt.Errorf("event: invalid enum value for registration_type field: %q", rt)
 	}
 }
 
@@ -584,11 +687,6 @@ func ByVenueEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVenueEmail, opts...).ToFunc()
 }
 
-// ByTags orders the results by the tags field.
-func ByTags(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTags, opts...).ToFunc()
-}
-
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
@@ -664,6 +762,11 @@ func ByIsPaid(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsPaid, opts...).ToFunc()
 }
 
+// ByIsPublic orders the results by the is_public field.
+func ByIsPublic(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPublic, opts...).ToFunc()
+}
+
 // ByIsOnlineOnly orders the results by the is_Online_Only field.
 func ByIsOnlineOnly(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsOnlineOnly, opts...).ToFunc()
@@ -702,6 +805,31 @@ func ByLikedByCurrentUser(opts ...sql.OrderTermOption) OrderOption {
 // ByFollowedByCurrentUser orders the results by the followedByCurrentUser field.
 func ByFollowedByCurrentUser(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFollowedByCurrentUser, opts...).ToFunc()
+}
+
+// ByRegistrationType orders the results by the registration_type field.
+func ByRegistrationType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRegistrationType, opts...).ToFunc()
+}
+
+// ByRegistrationURL orders the results by the registration_url field.
+func ByRegistrationURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRegistrationURL, opts...).ToFunc()
+}
+
+// ByIsPhysicallyAccessible orders the results by the is_physically_accessible field.
+func ByIsPhysicallyAccessible(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPhysicallyAccessible, opts...).ToFunc()
+}
+
+// ByAccessibilityInfo orders the results by the accessibility_info field.
+func ByAccessibilityInfo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAccessibilityInfo, opts...).ToFunc()
+}
+
+// ByIsVirtuallyAccessible orders the results by the is_virtually_accessible field.
+func ByIsVirtuallyAccessible(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsVirtuallyAccessible, opts...).ToFunc()
 }
 
 // ByTicketsCount orders the results by tickets count.
@@ -843,6 +971,90 @@ func ByRatings(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRatingsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByAdditionalOrganizersCount orders the results by additional_organizers count.
+func ByAdditionalOrganizersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAdditionalOrganizersStep(), opts...)
+	}
+}
+
+// ByAdditionalOrganizers orders the results by additional_organizers terms.
+func ByAdditionalOrganizers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAdditionalOrganizersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByMediaCount orders the results by media count.
+func ByMediaCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMediaStep(), opts...)
+	}
+}
+
+// ByMedia orders the results by media terms.
+func ByMedia(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMediaStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByEventCommentsCount orders the results by event_comments count.
+func ByEventCommentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEventCommentsStep(), opts...)
+	}
+}
+
+// ByEventComments orders the results by event_comments terms.
+func ByEventComments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEventCommentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByEventReviewsCount orders the results by event_reviews count.
+func ByEventReviewsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEventReviewsStep(), opts...)
+	}
+}
+
+// ByEventReviews orders the results by event_reviews terms.
+func ByEventReviews(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEventReviewsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByPerformersCount orders the results by performers count.
+func ByPerformersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPerformersStep(), opts...)
+	}
+}
+
+// ByPerformers orders the results by performers terms.
+func ByPerformers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPerformersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByEventOrganizersCount orders the results by event_organizers count.
+func ByEventOrganizersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEventOrganizersStep(), opts...)
+	}
+}
+
+// ByEventOrganizers orders the results by event_organizers terms.
+func ByEventOrganizers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEventOrganizersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newTicketsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -918,5 +1130,47 @@ func newRatingsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RatingsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, RatingsTable, RatingsColumn),
+	)
+}
+func newAdditionalOrganizersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AdditionalOrganizersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AdditionalOrganizersTable, AdditionalOrganizersColumn),
+	)
+}
+func newMediaStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MediaInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, MediaTable, MediaColumn),
+	)
+}
+func newEventCommentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EventCommentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EventCommentsTable, EventCommentsColumn),
+	)
+}
+func newEventReviewsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EventReviewsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EventReviewsTable, EventReviewsColumn),
+	)
+}
+func newPerformersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PerformersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PerformersTable, PerformersColumn),
+	)
+}
+func newEventOrganizersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EventOrganizersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EventOrganizersTable, EventOrganizersColumn),
 	)
 }

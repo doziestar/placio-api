@@ -176,6 +176,18 @@ func (f EventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EventMutation", m)
 }
 
+// The EventOrganizerFunc type is an adapter to allow the use of ordinary
+// function as EventOrganizer mutator.
+type EventOrganizerFunc func(context.Context, *ent.EventOrganizerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EventOrganizerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EventOrganizerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EventOrganizerMutation", m)
+}
+
 // The FAQFunc type is an adapter to allow the use of ordinary
 // function as FAQ mutator.
 type FAQFunc func(context.Context, *ent.FAQMutation) (ent.Value, error)

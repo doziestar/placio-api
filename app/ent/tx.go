@@ -40,6 +40,8 @@ type Tx struct {
 	CustomBlock *CustomBlockClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
+	// EventOrganizer is the client for interacting with the EventOrganizer builders.
+	EventOrganizer *EventOrganizerClient
 	// FAQ is the client for interacting with the FAQ builders.
 	FAQ *FAQClient
 	// FeatureRelease is the client for interacting with the FeatureRelease builders.
@@ -275,6 +277,7 @@ func (tx *Tx) init() {
 	tx.Comment = NewCommentClient(tx.config)
 	tx.CustomBlock = NewCustomBlockClient(tx.config)
 	tx.Event = NewEventClient(tx.config)
+	tx.EventOrganizer = NewEventOrganizerClient(tx.config)
 	tx.FAQ = NewFAQClient(tx.config)
 	tx.FeatureRelease = NewFeatureReleaseClient(tx.config)
 	tx.Fitness = NewFitnessClient(tx.config)

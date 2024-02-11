@@ -75,6 +75,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "comments"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
+	"event_event_comments",
 	"post_comments",
 	"review_comments",
 	"user_comments",

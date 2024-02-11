@@ -25,6 +25,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/customblock"
 	"placio-app/ent/event"
+	"placio-app/ent/eventorganizer"
 	"placio-app/ent/faq"
 	"placio-app/ent/featurerelease"
 	"placio-app/ent/fitness"
@@ -110,6 +111,8 @@ type Client struct {
 	CustomBlock *CustomBlockClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
+	// EventOrganizer is the client for interacting with the EventOrganizer builders.
+	EventOrganizer *EventOrganizerClient
 	// FAQ is the client for interacting with the FAQ builders.
 	FAQ *FAQClient
 	// FeatureRelease is the client for interacting with the FeatureRelease builders.
@@ -225,6 +228,7 @@ func (c *Client) init() {
 	c.Comment = NewCommentClient(c.config)
 	c.CustomBlock = NewCustomBlockClient(c.config)
 	c.Event = NewEventClient(c.config)
+	c.EventOrganizer = NewEventOrganizerClient(c.config)
 	c.FAQ = NewFAQClient(c.config)
 	c.FeatureRelease = NewFeatureReleaseClient(c.config)
 	c.Fitness = NewFitnessClient(c.config)
@@ -376,6 +380,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Comment:                 NewCommentClient(cfg),
 		CustomBlock:             NewCustomBlockClient(cfg),
 		Event:                   NewEventClient(cfg),
+		EventOrganizer:          NewEventOrganizerClient(cfg),
 		FAQ:                     NewFAQClient(cfg),
 		FeatureRelease:          NewFeatureReleaseClient(cfg),
 		Fitness:                 NewFitnessClient(cfg),
@@ -454,6 +459,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Comment:                 NewCommentClient(cfg),
 		CustomBlock:             NewCustomBlockClient(cfg),
 		Event:                   NewEventClient(cfg),
+		EventOrganizer:          NewEventOrganizerClient(cfg),
 		FAQ:                     NewFAQClient(cfg),
 		FeatureRelease:          NewFeatureReleaseClient(cfg),
 		Fitness:                 NewFitnessClient(cfg),
@@ -531,15 +537,15 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AccountSettings, c.AccountWallet, c.Amenity, c.Booking, c.Business,
 		c.BusinessFollowBusiness, c.BusinessFollowEvent, c.BusinessFollowUser,
 		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
-		c.FAQ, c.FeatureRelease, c.Fitness, c.Help, c.InventoryAttribute,
-		c.InventoryType, c.Like, c.Media, c.Menu, c.MenuItem, c.Notification, c.Order,
-		c.OrderItem, c.Payment, c.Permission, c.Place, c.PlaceInventory,
-		c.PlaceInventoryAttribute, c.PlaceTable, c.Plan, c.Post, c.Price, c.Rating,
-		c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
-		c.RoomCategory, c.Staff, c.Subscription, c.Template, c.Ticket, c.TicketOption,
-		c.Trainer, c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
-		c.Website,
+		c.EventOrganizer, c.FAQ, c.FeatureRelease, c.Fitness, c.Help,
+		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.MenuItem,
+		c.Notification, c.Order, c.OrderItem, c.Payment, c.Permission, c.Place,
+		c.PlaceInventory, c.PlaceInventoryAttribute, c.PlaceTable, c.Plan, c.Post,
+		c.Price, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse,
+		c.Review, c.Room, c.RoomCategory, c.Staff, c.Subscription, c.Template,
+		c.Ticket, c.TicketOption, c.Trainer, c.TransactionHistory, c.User,
+		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
+		c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
 		n.Use(hooks...)
 	}
@@ -552,15 +558,15 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AccountSettings, c.AccountWallet, c.Amenity, c.Booking, c.Business,
 		c.BusinessFollowBusiness, c.BusinessFollowEvent, c.BusinessFollowUser,
 		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
-		c.FAQ, c.FeatureRelease, c.Fitness, c.Help, c.InventoryAttribute,
-		c.InventoryType, c.Like, c.Media, c.Menu, c.MenuItem, c.Notification, c.Order,
-		c.OrderItem, c.Payment, c.Permission, c.Place, c.PlaceInventory,
-		c.PlaceInventoryAttribute, c.PlaceTable, c.Plan, c.Post, c.Price, c.Rating,
-		c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
-		c.RoomCategory, c.Staff, c.Subscription, c.Template, c.Ticket, c.TicketOption,
-		c.Trainer, c.TransactionHistory, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
-		c.Website,
+		c.EventOrganizer, c.FAQ, c.FeatureRelease, c.Fitness, c.Help,
+		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.MenuItem,
+		c.Notification, c.Order, c.OrderItem, c.Payment, c.Permission, c.Place,
+		c.PlaceInventory, c.PlaceInventoryAttribute, c.PlaceTable, c.Plan, c.Post,
+		c.Price, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse,
+		c.Review, c.Room, c.RoomCategory, c.Staff, c.Subscription, c.Template,
+		c.Ticket, c.TicketOption, c.Trainer, c.TransactionHistory, c.User,
+		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
+		c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -597,6 +603,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CustomBlock.mutate(ctx, m)
 	case *EventMutation:
 		return c.Event.mutate(ctx, m)
+	case *EventOrganizerMutation:
+		return c.EventOrganizer.mutate(ctx, m)
 	case *FAQMutation:
 		return c.FAQ.mutate(ctx, m)
 	case *FeatureReleaseMutation:
@@ -3474,6 +3482,102 @@ func (c *EventClient) QueryRatings(e *Event) *RatingQuery {
 	return query
 }
 
+// QueryAdditionalOrganizers queries the additional_organizers edge of a Event.
+func (c *EventClient) QueryAdditionalOrganizers(e *Event) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.AdditionalOrganizersTable, event.AdditionalOrganizersColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a Event.
+func (c *EventClient) QueryMedia(e *Event) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.MediaTable, event.MediaColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEventComments queries the event_comments edge of a Event.
+func (c *EventClient) QueryEventComments(e *Event) *CommentQuery {
+	query := (&CommentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(comment.Table, comment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventCommentsTable, event.EventCommentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEventReviews queries the event_reviews edge of a Event.
+func (c *EventClient) QueryEventReviews(e *Event) *ReviewQuery {
+	query := (&ReviewClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventReviewsTable, event.EventReviewsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPerformers queries the performers edge of a Event.
+func (c *EventClient) QueryPerformers(e *Event) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.PerformersTable, event.PerformersColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEventOrganizers queries the event_organizers edge of a Event.
+func (c *EventClient) QueryEventOrganizers(e *Event) *EventOrganizerQuery {
+	query := (&EventOrganizerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(eventorganizer.Table, eventorganizer.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventOrganizersTable, event.EventOrganizersColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EventClient) Hooks() []Hook {
 	hooks := c.hooks.Event
@@ -3497,6 +3601,155 @@ func (c *EventClient) mutate(ctx context.Context, m *EventMutation) (Value, erro
 		return (&EventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Event mutation op: %q", m.Op())
+	}
+}
+
+// EventOrganizerClient is a client for the EventOrganizer schema.
+type EventOrganizerClient struct {
+	config
+}
+
+// NewEventOrganizerClient returns a client for the EventOrganizer from the given config.
+func NewEventOrganizerClient(c config) *EventOrganizerClient {
+	return &EventOrganizerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `eventorganizer.Hooks(f(g(h())))`.
+func (c *EventOrganizerClient) Use(hooks ...Hook) {
+	c.hooks.EventOrganizer = append(c.hooks.EventOrganizer, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `eventorganizer.Intercept(f(g(h())))`.
+func (c *EventOrganizerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EventOrganizer = append(c.inters.EventOrganizer, interceptors...)
+}
+
+// Create returns a builder for creating a EventOrganizer entity.
+func (c *EventOrganizerClient) Create() *EventOrganizerCreate {
+	mutation := newEventOrganizerMutation(c.config, OpCreate)
+	return &EventOrganizerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EventOrganizer entities.
+func (c *EventOrganizerClient) CreateBulk(builders ...*EventOrganizerCreate) *EventOrganizerCreateBulk {
+	return &EventOrganizerCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EventOrganizerClient) MapCreateBulk(slice any, setFunc func(*EventOrganizerCreate, int)) *EventOrganizerCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EventOrganizerCreateBulk{err: fmt.Errorf("calling to EventOrganizerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EventOrganizerCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EventOrganizerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EventOrganizer.
+func (c *EventOrganizerClient) Update() *EventOrganizerUpdate {
+	mutation := newEventOrganizerMutation(c.config, OpUpdate)
+	return &EventOrganizerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EventOrganizerClient) UpdateOne(eo *EventOrganizer) *EventOrganizerUpdateOne {
+	mutation := newEventOrganizerMutation(c.config, OpUpdateOne, withEventOrganizer(eo))
+	return &EventOrganizerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EventOrganizerClient) UpdateOneID(id string) *EventOrganizerUpdateOne {
+	mutation := newEventOrganizerMutation(c.config, OpUpdateOne, withEventOrganizerID(id))
+	return &EventOrganizerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EventOrganizer.
+func (c *EventOrganizerClient) Delete() *EventOrganizerDelete {
+	mutation := newEventOrganizerMutation(c.config, OpDelete)
+	return &EventOrganizerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EventOrganizerClient) DeleteOne(eo *EventOrganizer) *EventOrganizerDeleteOne {
+	return c.DeleteOneID(eo.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EventOrganizerClient) DeleteOneID(id string) *EventOrganizerDeleteOne {
+	builder := c.Delete().Where(eventorganizer.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EventOrganizerDeleteOne{builder}
+}
+
+// Query returns a query builder for EventOrganizer.
+func (c *EventOrganizerClient) Query() *EventOrganizerQuery {
+	return &EventOrganizerQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEventOrganizer},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EventOrganizer entity by its id.
+func (c *EventOrganizerClient) Get(ctx context.Context, id string) (*EventOrganizer, error) {
+	return c.Query().Where(eventorganizer.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EventOrganizerClient) GetX(ctx context.Context, id string) *EventOrganizer {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEvent queries the event edge of a EventOrganizer.
+func (c *EventOrganizerClient) QueryEvent(eo *EventOrganizer) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := eo.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(eventorganizer.Table, eventorganizer.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, eventorganizer.EventTable, eventorganizer.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(eo.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EventOrganizerClient) Hooks() []Hook {
+	return c.hooks.EventOrganizer
+}
+
+// Interceptors returns the client interceptors.
+func (c *EventOrganizerClient) Interceptors() []Interceptor {
+	return c.inters.EventOrganizer
+}
+
+func (c *EventOrganizerClient) mutate(ctx context.Context, m *EventOrganizerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EventOrganizerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EventOrganizerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EventOrganizerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EventOrganizerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EventOrganizer mutation op: %q", m.Op())
 	}
 }
 
@@ -12630,25 +12883,25 @@ type (
 	hooks struct {
 		AccountSettings, AccountWallet, Amenity, Booking, Business,
 		BusinessFollowBusiness, BusinessFollowEvent, BusinessFollowUser, Category,
-		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
-		Fitness, Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
-		Notification, Order, OrderItem, Payment, Permission, Place, PlaceInventory,
-		PlaceInventoryAttribute, PlaceTable, Plan, Post, Price, Rating, Reaction,
-		Reservation, ReservationBlock, Resourse, Review, Room, RoomCategory, Staff,
-		Subscription, Template, Ticket, TicketOption, Trainer, TransactionHistory,
-		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser, UserLikePlace, Website []ent.Hook
+		CategoryAssignment, Chat, Comment, CustomBlock, Event, EventOrganizer, FAQ,
+		FeatureRelease, Fitness, Help, InventoryAttribute, InventoryType, Like, Media,
+		Menu, MenuItem, Notification, Order, OrderItem, Payment, Permission, Place,
+		PlaceInventory, PlaceInventoryAttribute, PlaceTable, Plan, Post, Price, Rating,
+		Reaction, Reservation, ReservationBlock, Resourse, Review, Room, RoomCategory,
+		Staff, Subscription, Template, Ticket, TicketOption, Trainer,
+		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
+		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Hook
 	}
 	inters struct {
 		AccountSettings, AccountWallet, Amenity, Booking, Business,
 		BusinessFollowBusiness, BusinessFollowEvent, BusinessFollowUser, Category,
-		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
-		Fitness, Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
-		Notification, Order, OrderItem, Payment, Permission, Place, PlaceInventory,
-		PlaceInventoryAttribute, PlaceTable, Plan, Post, Price, Rating, Reaction,
-		Reservation, ReservationBlock, Resourse, Review, Room, RoomCategory, Staff,
-		Subscription, Template, Ticket, TicketOption, Trainer, TransactionHistory,
-		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser, UserLikePlace, Website []ent.Interceptor
+		CategoryAssignment, Chat, Comment, CustomBlock, Event, EventOrganizer, FAQ,
+		FeatureRelease, Fitness, Help, InventoryAttribute, InventoryType, Like, Media,
+		Menu, MenuItem, Notification, Order, OrderItem, Payment, Permission, Place,
+		PlaceInventory, PlaceInventoryAttribute, PlaceTable, Plan, Post, Price, Rating,
+		Reaction, Reservation, ReservationBlock, Resourse, Review, Room, RoomCategory,
+		Staff, Subscription, Template, Ticket, TicketOption, Trainer,
+		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
+		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Interceptor
 	}
 )

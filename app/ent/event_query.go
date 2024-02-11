@@ -11,11 +11,15 @@ import (
 	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/eventorganizer"
 	"placio-app/ent/faq"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
+	"placio-app/ent/review"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/user"
@@ -44,6 +48,12 @@ type EventQuery struct {
 	withBusinessFollowers        *BusinessFollowEventQuery
 	withFaqs                     *FAQQuery
 	withRatings                  *RatingQuery
+	withAdditionalOrganizers     *UserQuery
+	withMedia                    *MediaQuery
+	withEventComments            *CommentQuery
+	withEventReviews             *ReviewQuery
+	withPerformers               *UserQuery
+	withEventOrganizers          *EventOrganizerQuery
 	withFKs                      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -323,6 +333,138 @@ func (eq *EventQuery) QueryRatings() *RatingQuery {
 	return query
 }
 
+// QueryAdditionalOrganizers chains the current query on the "additional_organizers" edge.
+func (eq *EventQuery) QueryAdditionalOrganizers() *UserQuery {
+	query := (&UserClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.AdditionalOrganizersTable, event.AdditionalOrganizersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMedia chains the current query on the "media" edge.
+func (eq *EventQuery) QueryMedia() *MediaQuery {
+	query := (&MediaClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.MediaTable, event.MediaColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEventComments chains the current query on the "event_comments" edge.
+func (eq *EventQuery) QueryEventComments() *CommentQuery {
+	query := (&CommentClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(comment.Table, comment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventCommentsTable, event.EventCommentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEventReviews chains the current query on the "event_reviews" edge.
+func (eq *EventQuery) QueryEventReviews() *ReviewQuery {
+	query := (&ReviewClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventReviewsTable, event.EventReviewsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPerformers chains the current query on the "performers" edge.
+func (eq *EventQuery) QueryPerformers() *UserQuery {
+	query := (&UserClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.PerformersTable, event.PerformersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEventOrganizers chains the current query on the "event_organizers" edge.
+func (eq *EventQuery) QueryEventOrganizers() *EventOrganizerQuery {
+	query := (&EventOrganizerClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(eventorganizer.Table, eventorganizer.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventOrganizersTable, event.EventOrganizersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Event entity from the query.
 // Returns a *NotFoundError when no Event was found.
 func (eq *EventQuery) First(ctx context.Context) (*Event, error) {
@@ -526,6 +668,12 @@ func (eq *EventQuery) Clone() *EventQuery {
 		withBusinessFollowers:        eq.withBusinessFollowers.Clone(),
 		withFaqs:                     eq.withFaqs.Clone(),
 		withRatings:                  eq.withRatings.Clone(),
+		withAdditionalOrganizers:     eq.withAdditionalOrganizers.Clone(),
+		withMedia:                    eq.withMedia.Clone(),
+		withEventComments:            eq.withEventComments.Clone(),
+		withEventReviews:             eq.withEventReviews.Clone(),
+		withPerformers:               eq.withPerformers.Clone(),
+		withEventOrganizers:          eq.withEventOrganizers.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -653,6 +801,72 @@ func (eq *EventQuery) WithRatings(opts ...func(*RatingQuery)) *EventQuery {
 	return eq
 }
 
+// WithAdditionalOrganizers tells the query-builder to eager-load the nodes that are connected to
+// the "additional_organizers" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithAdditionalOrganizers(opts ...func(*UserQuery)) *EventQuery {
+	query := (&UserClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withAdditionalOrganizers = query
+	return eq
+}
+
+// WithMedia tells the query-builder to eager-load the nodes that are connected to
+// the "media" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithMedia(opts ...func(*MediaQuery)) *EventQuery {
+	query := (&MediaClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withMedia = query
+	return eq
+}
+
+// WithEventComments tells the query-builder to eager-load the nodes that are connected to
+// the "event_comments" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithEventComments(opts ...func(*CommentQuery)) *EventQuery {
+	query := (&CommentClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withEventComments = query
+	return eq
+}
+
+// WithEventReviews tells the query-builder to eager-load the nodes that are connected to
+// the "event_reviews" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithEventReviews(opts ...func(*ReviewQuery)) *EventQuery {
+	query := (&ReviewClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withEventReviews = query
+	return eq
+}
+
+// WithPerformers tells the query-builder to eager-load the nodes that are connected to
+// the "performers" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithPerformers(opts ...func(*UserQuery)) *EventQuery {
+	query := (&UserClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withPerformers = query
+	return eq
+}
+
+// WithEventOrganizers tells the query-builder to eager-load the nodes that are connected to
+// the "event_organizers" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithEventOrganizers(opts ...func(*EventOrganizerQuery)) *EventQuery {
+	query := (&EventOrganizerClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withEventOrganizers = query
+	return eq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -732,7 +946,7 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		nodes       = []*Event{}
 		withFKs     = eq.withFKs
 		_spec       = eq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [17]bool{
 			eq.withTickets != nil,
 			eq.withTicketOptions != nil,
 			eq.withPlace != nil,
@@ -744,6 +958,12 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 			eq.withBusinessFollowers != nil,
 			eq.withFaqs != nil,
 			eq.withRatings != nil,
+			eq.withAdditionalOrganizers != nil,
+			eq.withMedia != nil,
+			eq.withEventComments != nil,
+			eq.withEventReviews != nil,
+			eq.withPerformers != nil,
+			eq.withEventOrganizers != nil,
 		}
 	)
 	if eq.withOwnerUser != nil || eq.withOwnerBusiness != nil {
@@ -846,6 +1066,48 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		if err := eq.loadRatings(ctx, query, nodes,
 			func(n *Event) { n.Edges.Ratings = []*Rating{} },
 			func(n *Event, e *Rating) { n.Edges.Ratings = append(n.Edges.Ratings, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withAdditionalOrganizers; query != nil {
+		if err := eq.loadAdditionalOrganizers(ctx, query, nodes,
+			func(n *Event) { n.Edges.AdditionalOrganizers = []*User{} },
+			func(n *Event, e *User) { n.Edges.AdditionalOrganizers = append(n.Edges.AdditionalOrganizers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withMedia; query != nil {
+		if err := eq.loadMedia(ctx, query, nodes,
+			func(n *Event) { n.Edges.Media = []*Media{} },
+			func(n *Event, e *Media) { n.Edges.Media = append(n.Edges.Media, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withEventComments; query != nil {
+		if err := eq.loadEventComments(ctx, query, nodes,
+			func(n *Event) { n.Edges.EventComments = []*Comment{} },
+			func(n *Event, e *Comment) { n.Edges.EventComments = append(n.Edges.EventComments, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withEventReviews; query != nil {
+		if err := eq.loadEventReviews(ctx, query, nodes,
+			func(n *Event) { n.Edges.EventReviews = []*Review{} },
+			func(n *Event, e *Review) { n.Edges.EventReviews = append(n.Edges.EventReviews, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withPerformers; query != nil {
+		if err := eq.loadPerformers(ctx, query, nodes,
+			func(n *Event) { n.Edges.Performers = []*User{} },
+			func(n *Event, e *User) { n.Edges.Performers = append(n.Edges.Performers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withEventOrganizers; query != nil {
+		if err := eq.loadEventOrganizers(ctx, query, nodes,
+			func(n *Event) { n.Edges.EventOrganizers = []*EventOrganizer{} },
+			func(n *Event, e *EventOrganizer) { n.Edges.EventOrganizers = append(n.Edges.EventOrganizers, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1220,6 +1482,192 @@ func (eq *EventQuery) loadRatings(ctx context.Context, query *RatingQuery, nodes
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "event_ratings" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadAdditionalOrganizers(ctx context.Context, query *UserQuery, nodes []*Event, init func(*Event), assign func(*Event, *User)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.User(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.AdditionalOrganizersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_additional_organizers
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_additional_organizers" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_additional_organizers" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadMedia(ctx context.Context, query *MediaQuery, nodes []*Event, init func(*Event), assign func(*Event, *Media)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Media(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.MediaColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_media
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_media" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_media" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadEventComments(ctx context.Context, query *CommentQuery, nodes []*Event, init func(*Event), assign func(*Event, *Comment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Comment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.EventCommentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_event_comments
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_event_comments" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_event_comments" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadEventReviews(ctx context.Context, query *ReviewQuery, nodes []*Event, init func(*Event), assign func(*Event, *Review)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.EventReviewsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_event_reviews
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_event_reviews" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_event_reviews" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadPerformers(ctx context.Context, query *UserQuery, nodes []*Event, init func(*Event), assign func(*Event, *User)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.User(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.PerformersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_performers
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_performers" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_performers" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadEventOrganizers(ctx context.Context, query *EventOrganizerQuery, nodes []*Event, init func(*Event), assign func(*Event, *EventOrganizer)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.EventOrganizer(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.EventOrganizersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_event_organizers
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_event_organizers" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_event_organizers" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

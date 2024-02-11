@@ -64,8 +64,10 @@ type User struct {
 	IsPremium bool `json:"is_premium,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges        UserEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                       UserEdges `json:"edges"`
+	event_additional_organizers *string
+	event_performers            *string
+	selectValues                sql.SelectValues
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
@@ -516,6 +518,10 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldWebsite, user.FieldLocation, user.FieldLongitude, user.FieldLatitude, user.FieldBio, user.FieldSearchText, user.FieldRole:
 			values[i] = new(sql.NullString)
+		case user.ForeignKeys[0]: // event_additional_organizers
+			values[i] = new(sql.NullString)
+		case user.ForeignKeys[1]: // event_performers
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -672,6 +678,20 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_premium", values[i])
 			} else if value.Valid {
 				u.IsPremium = value.Bool
+			}
+		case user.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_additional_organizers", values[i])
+			} else if value.Valid {
+				u.event_additional_organizers = new(string)
+				*u.event_additional_organizers = value.String
+			}
+		case user.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_performers", values[i])
+			} else if value.Valid {
+				u.event_performers = new(string)
+				*u.event_performers = value.String
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])

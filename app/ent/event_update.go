@@ -10,11 +10,15 @@ import (
 	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/eventorganizer"
 	"placio-app/ent/faq"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
+	"placio-app/ent/review"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/user"
@@ -23,6 +27,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -600,16 +605,14 @@ func (eu *EventUpdate) ClearVenueEmail() *EventUpdate {
 }
 
 // SetTags sets the "tags" field.
-func (eu *EventUpdate) SetTags(s string) *EventUpdate {
+func (eu *EventUpdate) SetTags(s []string) *EventUpdate {
 	eu.mutation.SetTags(s)
 	return eu
 }
 
-// SetNillableTags sets the "tags" field if the given value is not nil.
-func (eu *EventUpdate) SetNillableTags(s *string) *EventUpdate {
-	if s != nil {
-		eu.SetTags(*s)
-	}
+// AppendTags appends s to the "tags" field.
+func (eu *EventUpdate) AppendTags(s []string) *EventUpdate {
+	eu.mutation.AppendTags(s)
 	return eu
 }
 
@@ -902,6 +905,20 @@ func (eu *EventUpdate) SetNillableIsPaid(b *bool) *EventUpdate {
 	return eu
 }
 
+// SetIsPublic sets the "is_public" field.
+func (eu *EventUpdate) SetIsPublic(b bool) *EventUpdate {
+	eu.mutation.SetIsPublic(b)
+	return eu
+}
+
+// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsPublic(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsPublic(*b)
+	}
+	return eu
+}
+
 // SetIsOnlineOnly sets the "is_Online_Only" field.
 func (eu *EventUpdate) SetIsOnlineOnly(b bool) *EventUpdate {
 	eu.mutation.SetIsOnlineOnly(b)
@@ -1010,6 +1027,94 @@ func (eu *EventUpdate) SetFollowedByCurrentUser(b bool) *EventUpdate {
 func (eu *EventUpdate) SetNillableFollowedByCurrentUser(b *bool) *EventUpdate {
 	if b != nil {
 		eu.SetFollowedByCurrentUser(*b)
+	}
+	return eu
+}
+
+// SetRegistrationType sets the "registration_type" field.
+func (eu *EventUpdate) SetRegistrationType(et event.RegistrationType) *EventUpdate {
+	eu.mutation.SetRegistrationType(et)
+	return eu
+}
+
+// SetNillableRegistrationType sets the "registration_type" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableRegistrationType(et *event.RegistrationType) *EventUpdate {
+	if et != nil {
+		eu.SetRegistrationType(*et)
+	}
+	return eu
+}
+
+// ClearRegistrationType clears the value of the "registration_type" field.
+func (eu *EventUpdate) ClearRegistrationType() *EventUpdate {
+	eu.mutation.ClearRegistrationType()
+	return eu
+}
+
+// SetRegistrationURL sets the "registration_url" field.
+func (eu *EventUpdate) SetRegistrationURL(s string) *EventUpdate {
+	eu.mutation.SetRegistrationURL(s)
+	return eu
+}
+
+// SetNillableRegistrationURL sets the "registration_url" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableRegistrationURL(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetRegistrationURL(*s)
+	}
+	return eu
+}
+
+// ClearRegistrationURL clears the value of the "registration_url" field.
+func (eu *EventUpdate) ClearRegistrationURL() *EventUpdate {
+	eu.mutation.ClearRegistrationURL()
+	return eu
+}
+
+// SetIsPhysicallyAccessible sets the "is_physically_accessible" field.
+func (eu *EventUpdate) SetIsPhysicallyAccessible(b bool) *EventUpdate {
+	eu.mutation.SetIsPhysicallyAccessible(b)
+	return eu
+}
+
+// SetNillableIsPhysicallyAccessible sets the "is_physically_accessible" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsPhysicallyAccessible(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsPhysicallyAccessible(*b)
+	}
+	return eu
+}
+
+// SetAccessibilityInfo sets the "accessibility_info" field.
+func (eu *EventUpdate) SetAccessibilityInfo(s string) *EventUpdate {
+	eu.mutation.SetAccessibilityInfo(s)
+	return eu
+}
+
+// SetNillableAccessibilityInfo sets the "accessibility_info" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableAccessibilityInfo(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetAccessibilityInfo(*s)
+	}
+	return eu
+}
+
+// ClearAccessibilityInfo clears the value of the "accessibility_info" field.
+func (eu *EventUpdate) ClearAccessibilityInfo() *EventUpdate {
+	eu.mutation.ClearAccessibilityInfo()
+	return eu
+}
+
+// SetIsVirtuallyAccessible sets the "is_virtually_accessible" field.
+func (eu *EventUpdate) SetIsVirtuallyAccessible(b bool) *EventUpdate {
+	eu.mutation.SetIsVirtuallyAccessible(b)
+	return eu
+}
+
+// SetNillableIsVirtuallyAccessible sets the "is_virtually_accessible" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsVirtuallyAccessible(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsVirtuallyAccessible(*b)
 	}
 	return eu
 }
@@ -1185,6 +1290,96 @@ func (eu *EventUpdate) AddRatings(r ...*Rating) *EventUpdate {
 		ids[i] = r[i].ID
 	}
 	return eu.AddRatingIDs(ids...)
+}
+
+// AddAdditionalOrganizerIDs adds the "additional_organizers" edge to the User entity by IDs.
+func (eu *EventUpdate) AddAdditionalOrganizerIDs(ids ...string) *EventUpdate {
+	eu.mutation.AddAdditionalOrganizerIDs(ids...)
+	return eu
+}
+
+// AddAdditionalOrganizers adds the "additional_organizers" edges to the User entity.
+func (eu *EventUpdate) AddAdditionalOrganizers(u ...*User) *EventUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return eu.AddAdditionalOrganizerIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (eu *EventUpdate) AddMediumIDs(ids ...string) *EventUpdate {
+	eu.mutation.AddMediumIDs(ids...)
+	return eu
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (eu *EventUpdate) AddMedia(m ...*Media) *EventUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return eu.AddMediumIDs(ids...)
+}
+
+// AddEventCommentIDs adds the "event_comments" edge to the Comment entity by IDs.
+func (eu *EventUpdate) AddEventCommentIDs(ids ...string) *EventUpdate {
+	eu.mutation.AddEventCommentIDs(ids...)
+	return eu
+}
+
+// AddEventComments adds the "event_comments" edges to the Comment entity.
+func (eu *EventUpdate) AddEventComments(c ...*Comment) *EventUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return eu.AddEventCommentIDs(ids...)
+}
+
+// AddEventReviewIDs adds the "event_reviews" edge to the Review entity by IDs.
+func (eu *EventUpdate) AddEventReviewIDs(ids ...string) *EventUpdate {
+	eu.mutation.AddEventReviewIDs(ids...)
+	return eu
+}
+
+// AddEventReviews adds the "event_reviews" edges to the Review entity.
+func (eu *EventUpdate) AddEventReviews(r ...*Review) *EventUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return eu.AddEventReviewIDs(ids...)
+}
+
+// AddPerformerIDs adds the "performers" edge to the User entity by IDs.
+func (eu *EventUpdate) AddPerformerIDs(ids ...string) *EventUpdate {
+	eu.mutation.AddPerformerIDs(ids...)
+	return eu
+}
+
+// AddPerformers adds the "performers" edges to the User entity.
+func (eu *EventUpdate) AddPerformers(u ...*User) *EventUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return eu.AddPerformerIDs(ids...)
+}
+
+// AddEventOrganizerIDs adds the "event_organizers" edge to the EventOrganizer entity by IDs.
+func (eu *EventUpdate) AddEventOrganizerIDs(ids ...string) *EventUpdate {
+	eu.mutation.AddEventOrganizerIDs(ids...)
+	return eu
+}
+
+// AddEventOrganizers adds the "event_organizers" edges to the EventOrganizer entity.
+func (eu *EventUpdate) AddEventOrganizers(e ...*EventOrganizer) *EventUpdate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.AddEventOrganizerIDs(ids...)
 }
 
 // Mutation returns the EventMutation object of the builder.
@@ -1393,6 +1588,132 @@ func (eu *EventUpdate) RemoveRatings(r ...*Rating) *EventUpdate {
 	return eu.RemoveRatingIDs(ids...)
 }
 
+// ClearAdditionalOrganizers clears all "additional_organizers" edges to the User entity.
+func (eu *EventUpdate) ClearAdditionalOrganizers() *EventUpdate {
+	eu.mutation.ClearAdditionalOrganizers()
+	return eu
+}
+
+// RemoveAdditionalOrganizerIDs removes the "additional_organizers" edge to User entities by IDs.
+func (eu *EventUpdate) RemoveAdditionalOrganizerIDs(ids ...string) *EventUpdate {
+	eu.mutation.RemoveAdditionalOrganizerIDs(ids...)
+	return eu
+}
+
+// RemoveAdditionalOrganizers removes "additional_organizers" edges to User entities.
+func (eu *EventUpdate) RemoveAdditionalOrganizers(u ...*User) *EventUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return eu.RemoveAdditionalOrganizerIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (eu *EventUpdate) ClearMedia() *EventUpdate {
+	eu.mutation.ClearMedia()
+	return eu
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (eu *EventUpdate) RemoveMediumIDs(ids ...string) *EventUpdate {
+	eu.mutation.RemoveMediumIDs(ids...)
+	return eu
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (eu *EventUpdate) RemoveMedia(m ...*Media) *EventUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return eu.RemoveMediumIDs(ids...)
+}
+
+// ClearEventComments clears all "event_comments" edges to the Comment entity.
+func (eu *EventUpdate) ClearEventComments() *EventUpdate {
+	eu.mutation.ClearEventComments()
+	return eu
+}
+
+// RemoveEventCommentIDs removes the "event_comments" edge to Comment entities by IDs.
+func (eu *EventUpdate) RemoveEventCommentIDs(ids ...string) *EventUpdate {
+	eu.mutation.RemoveEventCommentIDs(ids...)
+	return eu
+}
+
+// RemoveEventComments removes "event_comments" edges to Comment entities.
+func (eu *EventUpdate) RemoveEventComments(c ...*Comment) *EventUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return eu.RemoveEventCommentIDs(ids...)
+}
+
+// ClearEventReviews clears all "event_reviews" edges to the Review entity.
+func (eu *EventUpdate) ClearEventReviews() *EventUpdate {
+	eu.mutation.ClearEventReviews()
+	return eu
+}
+
+// RemoveEventReviewIDs removes the "event_reviews" edge to Review entities by IDs.
+func (eu *EventUpdate) RemoveEventReviewIDs(ids ...string) *EventUpdate {
+	eu.mutation.RemoveEventReviewIDs(ids...)
+	return eu
+}
+
+// RemoveEventReviews removes "event_reviews" edges to Review entities.
+func (eu *EventUpdate) RemoveEventReviews(r ...*Review) *EventUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return eu.RemoveEventReviewIDs(ids...)
+}
+
+// ClearPerformers clears all "performers" edges to the User entity.
+func (eu *EventUpdate) ClearPerformers() *EventUpdate {
+	eu.mutation.ClearPerformers()
+	return eu
+}
+
+// RemovePerformerIDs removes the "performers" edge to User entities by IDs.
+func (eu *EventUpdate) RemovePerformerIDs(ids ...string) *EventUpdate {
+	eu.mutation.RemovePerformerIDs(ids...)
+	return eu
+}
+
+// RemovePerformers removes "performers" edges to User entities.
+func (eu *EventUpdate) RemovePerformers(u ...*User) *EventUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return eu.RemovePerformerIDs(ids...)
+}
+
+// ClearEventOrganizers clears all "event_organizers" edges to the EventOrganizer entity.
+func (eu *EventUpdate) ClearEventOrganizers() *EventUpdate {
+	eu.mutation.ClearEventOrganizers()
+	return eu
+}
+
+// RemoveEventOrganizerIDs removes the "event_organizers" edge to EventOrganizer entities by IDs.
+func (eu *EventUpdate) RemoveEventOrganizerIDs(ids ...string) *EventUpdate {
+	eu.mutation.RemoveEventOrganizerIDs(ids...)
+	return eu
+}
+
+// RemoveEventOrganizers removes "event_organizers" edges to EventOrganizer entities.
+func (eu *EventUpdate) RemoveEventOrganizers(e ...*EventOrganizer) *EventUpdate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.RemoveEventOrganizerIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (eu *EventUpdate) Save(ctx context.Context) (int, error) {
 	if err := eu.defaults(); err != nil {
@@ -1450,6 +1771,11 @@ func (eu *EventUpdate) check() error {
 	if v, ok := eu.mutation.VenueType(); ok {
 		if err := event.VenueTypeValidator(v); err != nil {
 			return &ValidationError{Name: "venue_type", err: fmt.Errorf(`ent: validator failed for field "Event.venue_type": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.RegistrationType(); ok {
+		if err := event.RegistrationTypeValidator(v); err != nil {
+			return &ValidationError{Name: "registration_type", err: fmt.Errorf(`ent: validator failed for field "Event.registration_type": %w`, err)}
 		}
 	}
 	return nil
@@ -1636,10 +1962,15 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(event.FieldVenueEmail, field.TypeString)
 	}
 	if value, ok := eu.mutation.Tags(); ok {
-		_spec.SetField(event.FieldTags, field.TypeString, value)
+		_spec.SetField(event.FieldTags, field.TypeJSON, value)
+	}
+	if value, ok := eu.mutation.AppendedTags(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, event.FieldTags, value)
+		})
 	}
 	if eu.mutation.TagsCleared() {
-		_spec.ClearField(event.FieldTags, field.TypeString)
+		_spec.ClearField(event.FieldTags, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.Description(); ok {
 		_spec.SetField(event.FieldDescription, field.TypeString, value)
@@ -1725,6 +2056,9 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := eu.mutation.IsPaid(); ok {
 		_spec.SetField(event.FieldIsPaid, field.TypeBool, value)
 	}
+	if value, ok := eu.mutation.IsPublic(); ok {
+		_spec.SetField(event.FieldIsPublic, field.TypeBool, value)
+	}
 	if value, ok := eu.mutation.IsOnlineOnly(); ok {
 		_spec.SetField(event.FieldIsOnlineOnly, field.TypeBool, value)
 	}
@@ -1748,6 +2082,30 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.FollowedByCurrentUser(); ok {
 		_spec.SetField(event.FieldFollowedByCurrentUser, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.RegistrationType(); ok {
+		_spec.SetField(event.FieldRegistrationType, field.TypeEnum, value)
+	}
+	if eu.mutation.RegistrationTypeCleared() {
+		_spec.ClearField(event.FieldRegistrationType, field.TypeEnum)
+	}
+	if value, ok := eu.mutation.RegistrationURL(); ok {
+		_spec.SetField(event.FieldRegistrationURL, field.TypeString, value)
+	}
+	if eu.mutation.RegistrationURLCleared() {
+		_spec.ClearField(event.FieldRegistrationURL, field.TypeString)
+	}
+	if value, ok := eu.mutation.IsPhysicallyAccessible(); ok {
+		_spec.SetField(event.FieldIsPhysicallyAccessible, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.AccessibilityInfo(); ok {
+		_spec.SetField(event.FieldAccessibilityInfo, field.TypeString, value)
+	}
+	if eu.mutation.AccessibilityInfoCleared() {
+		_spec.ClearField(event.FieldAccessibilityInfo, field.TypeString)
+	}
+	if value, ok := eu.mutation.IsVirtuallyAccessible(); ok {
+		_spec.SetField(event.FieldIsVirtuallyAccessible, field.TypeBool, value)
 	}
 	if eu.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2205,6 +2563,276 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.AdditionalOrganizersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.AdditionalOrganizersTable,
+			Columns: []string{event.AdditionalOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedAdditionalOrganizersIDs(); len(nodes) > 0 && !eu.mutation.AdditionalOrganizersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.AdditionalOrganizersTable,
+			Columns: []string{event.AdditionalOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.AdditionalOrganizersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.AdditionalOrganizersTable,
+			Columns: []string{event.AdditionalOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.MediaTable,
+			Columns: []string{event.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedMediaIDs(); len(nodes) > 0 && !eu.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.MediaTable,
+			Columns: []string{event.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.MediaTable,
+			Columns: []string{event.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.EventCommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventCommentsTable,
+			Columns: []string{event.EventCommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedEventCommentsIDs(); len(nodes) > 0 && !eu.mutation.EventCommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventCommentsTable,
+			Columns: []string{event.EventCommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.EventCommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventCommentsTable,
+			Columns: []string{event.EventCommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.EventReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventReviewsTable,
+			Columns: []string{event.EventReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedEventReviewsIDs(); len(nodes) > 0 && !eu.mutation.EventReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventReviewsTable,
+			Columns: []string{event.EventReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.EventReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventReviewsTable,
+			Columns: []string{event.EventReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.PerformersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.PerformersTable,
+			Columns: []string{event.PerformersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedPerformersIDs(); len(nodes) > 0 && !eu.mutation.PerformersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.PerformersTable,
+			Columns: []string{event.PerformersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.PerformersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.PerformersTable,
+			Columns: []string{event.PerformersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.EventOrganizersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventOrganizersTable,
+			Columns: []string{event.EventOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(eventorganizer.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedEventOrganizersIDs(); len(nodes) > 0 && !eu.mutation.EventOrganizersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventOrganizersTable,
+			Columns: []string{event.EventOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(eventorganizer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.EventOrganizersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventOrganizersTable,
+			Columns: []string{event.EventOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(eventorganizer.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -2793,16 +3421,14 @@ func (euo *EventUpdateOne) ClearVenueEmail() *EventUpdateOne {
 }
 
 // SetTags sets the "tags" field.
-func (euo *EventUpdateOne) SetTags(s string) *EventUpdateOne {
+func (euo *EventUpdateOne) SetTags(s []string) *EventUpdateOne {
 	euo.mutation.SetTags(s)
 	return euo
 }
 
-// SetNillableTags sets the "tags" field if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableTags(s *string) *EventUpdateOne {
-	if s != nil {
-		euo.SetTags(*s)
-	}
+// AppendTags appends s to the "tags" field.
+func (euo *EventUpdateOne) AppendTags(s []string) *EventUpdateOne {
+	euo.mutation.AppendTags(s)
 	return euo
 }
 
@@ -3095,6 +3721,20 @@ func (euo *EventUpdateOne) SetNillableIsPaid(b *bool) *EventUpdateOne {
 	return euo
 }
 
+// SetIsPublic sets the "is_public" field.
+func (euo *EventUpdateOne) SetIsPublic(b bool) *EventUpdateOne {
+	euo.mutation.SetIsPublic(b)
+	return euo
+}
+
+// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsPublic(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsPublic(*b)
+	}
+	return euo
+}
+
 // SetIsOnlineOnly sets the "is_Online_Only" field.
 func (euo *EventUpdateOne) SetIsOnlineOnly(b bool) *EventUpdateOne {
 	euo.mutation.SetIsOnlineOnly(b)
@@ -3203,6 +3843,94 @@ func (euo *EventUpdateOne) SetFollowedByCurrentUser(b bool) *EventUpdateOne {
 func (euo *EventUpdateOne) SetNillableFollowedByCurrentUser(b *bool) *EventUpdateOne {
 	if b != nil {
 		euo.SetFollowedByCurrentUser(*b)
+	}
+	return euo
+}
+
+// SetRegistrationType sets the "registration_type" field.
+func (euo *EventUpdateOne) SetRegistrationType(et event.RegistrationType) *EventUpdateOne {
+	euo.mutation.SetRegistrationType(et)
+	return euo
+}
+
+// SetNillableRegistrationType sets the "registration_type" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableRegistrationType(et *event.RegistrationType) *EventUpdateOne {
+	if et != nil {
+		euo.SetRegistrationType(*et)
+	}
+	return euo
+}
+
+// ClearRegistrationType clears the value of the "registration_type" field.
+func (euo *EventUpdateOne) ClearRegistrationType() *EventUpdateOne {
+	euo.mutation.ClearRegistrationType()
+	return euo
+}
+
+// SetRegistrationURL sets the "registration_url" field.
+func (euo *EventUpdateOne) SetRegistrationURL(s string) *EventUpdateOne {
+	euo.mutation.SetRegistrationURL(s)
+	return euo
+}
+
+// SetNillableRegistrationURL sets the "registration_url" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableRegistrationURL(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetRegistrationURL(*s)
+	}
+	return euo
+}
+
+// ClearRegistrationURL clears the value of the "registration_url" field.
+func (euo *EventUpdateOne) ClearRegistrationURL() *EventUpdateOne {
+	euo.mutation.ClearRegistrationURL()
+	return euo
+}
+
+// SetIsPhysicallyAccessible sets the "is_physically_accessible" field.
+func (euo *EventUpdateOne) SetIsPhysicallyAccessible(b bool) *EventUpdateOne {
+	euo.mutation.SetIsPhysicallyAccessible(b)
+	return euo
+}
+
+// SetNillableIsPhysicallyAccessible sets the "is_physically_accessible" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsPhysicallyAccessible(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsPhysicallyAccessible(*b)
+	}
+	return euo
+}
+
+// SetAccessibilityInfo sets the "accessibility_info" field.
+func (euo *EventUpdateOne) SetAccessibilityInfo(s string) *EventUpdateOne {
+	euo.mutation.SetAccessibilityInfo(s)
+	return euo
+}
+
+// SetNillableAccessibilityInfo sets the "accessibility_info" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableAccessibilityInfo(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetAccessibilityInfo(*s)
+	}
+	return euo
+}
+
+// ClearAccessibilityInfo clears the value of the "accessibility_info" field.
+func (euo *EventUpdateOne) ClearAccessibilityInfo() *EventUpdateOne {
+	euo.mutation.ClearAccessibilityInfo()
+	return euo
+}
+
+// SetIsVirtuallyAccessible sets the "is_virtually_accessible" field.
+func (euo *EventUpdateOne) SetIsVirtuallyAccessible(b bool) *EventUpdateOne {
+	euo.mutation.SetIsVirtuallyAccessible(b)
+	return euo
+}
+
+// SetNillableIsVirtuallyAccessible sets the "is_virtually_accessible" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsVirtuallyAccessible(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsVirtuallyAccessible(*b)
 	}
 	return euo
 }
@@ -3378,6 +4106,96 @@ func (euo *EventUpdateOne) AddRatings(r ...*Rating) *EventUpdateOne {
 		ids[i] = r[i].ID
 	}
 	return euo.AddRatingIDs(ids...)
+}
+
+// AddAdditionalOrganizerIDs adds the "additional_organizers" edge to the User entity by IDs.
+func (euo *EventUpdateOne) AddAdditionalOrganizerIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.AddAdditionalOrganizerIDs(ids...)
+	return euo
+}
+
+// AddAdditionalOrganizers adds the "additional_organizers" edges to the User entity.
+func (euo *EventUpdateOne) AddAdditionalOrganizers(u ...*User) *EventUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return euo.AddAdditionalOrganizerIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (euo *EventUpdateOne) AddMediumIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.AddMediumIDs(ids...)
+	return euo
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (euo *EventUpdateOne) AddMedia(m ...*Media) *EventUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return euo.AddMediumIDs(ids...)
+}
+
+// AddEventCommentIDs adds the "event_comments" edge to the Comment entity by IDs.
+func (euo *EventUpdateOne) AddEventCommentIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.AddEventCommentIDs(ids...)
+	return euo
+}
+
+// AddEventComments adds the "event_comments" edges to the Comment entity.
+func (euo *EventUpdateOne) AddEventComments(c ...*Comment) *EventUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return euo.AddEventCommentIDs(ids...)
+}
+
+// AddEventReviewIDs adds the "event_reviews" edge to the Review entity by IDs.
+func (euo *EventUpdateOne) AddEventReviewIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.AddEventReviewIDs(ids...)
+	return euo
+}
+
+// AddEventReviews adds the "event_reviews" edges to the Review entity.
+func (euo *EventUpdateOne) AddEventReviews(r ...*Review) *EventUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return euo.AddEventReviewIDs(ids...)
+}
+
+// AddPerformerIDs adds the "performers" edge to the User entity by IDs.
+func (euo *EventUpdateOne) AddPerformerIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.AddPerformerIDs(ids...)
+	return euo
+}
+
+// AddPerformers adds the "performers" edges to the User entity.
+func (euo *EventUpdateOne) AddPerformers(u ...*User) *EventUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return euo.AddPerformerIDs(ids...)
+}
+
+// AddEventOrganizerIDs adds the "event_organizers" edge to the EventOrganizer entity by IDs.
+func (euo *EventUpdateOne) AddEventOrganizerIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.AddEventOrganizerIDs(ids...)
+	return euo
+}
+
+// AddEventOrganizers adds the "event_organizers" edges to the EventOrganizer entity.
+func (euo *EventUpdateOne) AddEventOrganizers(e ...*EventOrganizer) *EventUpdateOne {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.AddEventOrganizerIDs(ids...)
 }
 
 // Mutation returns the EventMutation object of the builder.
@@ -3586,6 +4404,132 @@ func (euo *EventUpdateOne) RemoveRatings(r ...*Rating) *EventUpdateOne {
 	return euo.RemoveRatingIDs(ids...)
 }
 
+// ClearAdditionalOrganizers clears all "additional_organizers" edges to the User entity.
+func (euo *EventUpdateOne) ClearAdditionalOrganizers() *EventUpdateOne {
+	euo.mutation.ClearAdditionalOrganizers()
+	return euo
+}
+
+// RemoveAdditionalOrganizerIDs removes the "additional_organizers" edge to User entities by IDs.
+func (euo *EventUpdateOne) RemoveAdditionalOrganizerIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.RemoveAdditionalOrganizerIDs(ids...)
+	return euo
+}
+
+// RemoveAdditionalOrganizers removes "additional_organizers" edges to User entities.
+func (euo *EventUpdateOne) RemoveAdditionalOrganizers(u ...*User) *EventUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return euo.RemoveAdditionalOrganizerIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (euo *EventUpdateOne) ClearMedia() *EventUpdateOne {
+	euo.mutation.ClearMedia()
+	return euo
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (euo *EventUpdateOne) RemoveMediumIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.RemoveMediumIDs(ids...)
+	return euo
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (euo *EventUpdateOne) RemoveMedia(m ...*Media) *EventUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return euo.RemoveMediumIDs(ids...)
+}
+
+// ClearEventComments clears all "event_comments" edges to the Comment entity.
+func (euo *EventUpdateOne) ClearEventComments() *EventUpdateOne {
+	euo.mutation.ClearEventComments()
+	return euo
+}
+
+// RemoveEventCommentIDs removes the "event_comments" edge to Comment entities by IDs.
+func (euo *EventUpdateOne) RemoveEventCommentIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.RemoveEventCommentIDs(ids...)
+	return euo
+}
+
+// RemoveEventComments removes "event_comments" edges to Comment entities.
+func (euo *EventUpdateOne) RemoveEventComments(c ...*Comment) *EventUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return euo.RemoveEventCommentIDs(ids...)
+}
+
+// ClearEventReviews clears all "event_reviews" edges to the Review entity.
+func (euo *EventUpdateOne) ClearEventReviews() *EventUpdateOne {
+	euo.mutation.ClearEventReviews()
+	return euo
+}
+
+// RemoveEventReviewIDs removes the "event_reviews" edge to Review entities by IDs.
+func (euo *EventUpdateOne) RemoveEventReviewIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.RemoveEventReviewIDs(ids...)
+	return euo
+}
+
+// RemoveEventReviews removes "event_reviews" edges to Review entities.
+func (euo *EventUpdateOne) RemoveEventReviews(r ...*Review) *EventUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return euo.RemoveEventReviewIDs(ids...)
+}
+
+// ClearPerformers clears all "performers" edges to the User entity.
+func (euo *EventUpdateOne) ClearPerformers() *EventUpdateOne {
+	euo.mutation.ClearPerformers()
+	return euo
+}
+
+// RemovePerformerIDs removes the "performers" edge to User entities by IDs.
+func (euo *EventUpdateOne) RemovePerformerIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.RemovePerformerIDs(ids...)
+	return euo
+}
+
+// RemovePerformers removes "performers" edges to User entities.
+func (euo *EventUpdateOne) RemovePerformers(u ...*User) *EventUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return euo.RemovePerformerIDs(ids...)
+}
+
+// ClearEventOrganizers clears all "event_organizers" edges to the EventOrganizer entity.
+func (euo *EventUpdateOne) ClearEventOrganizers() *EventUpdateOne {
+	euo.mutation.ClearEventOrganizers()
+	return euo
+}
+
+// RemoveEventOrganizerIDs removes the "event_organizers" edge to EventOrganizer entities by IDs.
+func (euo *EventUpdateOne) RemoveEventOrganizerIDs(ids ...string) *EventUpdateOne {
+	euo.mutation.RemoveEventOrganizerIDs(ids...)
+	return euo
+}
+
+// RemoveEventOrganizers removes "event_organizers" edges to EventOrganizer entities.
+func (euo *EventUpdateOne) RemoveEventOrganizers(e ...*EventOrganizer) *EventUpdateOne {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.RemoveEventOrganizerIDs(ids...)
+}
+
 // Where appends a list predicates to the EventUpdate builder.
 func (euo *EventUpdateOne) Where(ps ...predicate.Event) *EventUpdateOne {
 	euo.mutation.Where(ps...)
@@ -3656,6 +4600,11 @@ func (euo *EventUpdateOne) check() error {
 	if v, ok := euo.mutation.VenueType(); ok {
 		if err := event.VenueTypeValidator(v); err != nil {
 			return &ValidationError{Name: "venue_type", err: fmt.Errorf(`ent: validator failed for field "Event.venue_type": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.RegistrationType(); ok {
+		if err := event.RegistrationTypeValidator(v); err != nil {
+			return &ValidationError{Name: "registration_type", err: fmt.Errorf(`ent: validator failed for field "Event.registration_type": %w`, err)}
 		}
 	}
 	return nil
@@ -3859,10 +4808,15 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 		_spec.ClearField(event.FieldVenueEmail, field.TypeString)
 	}
 	if value, ok := euo.mutation.Tags(); ok {
-		_spec.SetField(event.FieldTags, field.TypeString, value)
+		_spec.SetField(event.FieldTags, field.TypeJSON, value)
+	}
+	if value, ok := euo.mutation.AppendedTags(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, event.FieldTags, value)
+		})
 	}
 	if euo.mutation.TagsCleared() {
-		_spec.ClearField(event.FieldTags, field.TypeString)
+		_spec.ClearField(event.FieldTags, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.Description(); ok {
 		_spec.SetField(event.FieldDescription, field.TypeString, value)
@@ -3948,6 +4902,9 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if value, ok := euo.mutation.IsPaid(); ok {
 		_spec.SetField(event.FieldIsPaid, field.TypeBool, value)
 	}
+	if value, ok := euo.mutation.IsPublic(); ok {
+		_spec.SetField(event.FieldIsPublic, field.TypeBool, value)
+	}
 	if value, ok := euo.mutation.IsOnlineOnly(); ok {
 		_spec.SetField(event.FieldIsOnlineOnly, field.TypeBool, value)
 	}
@@ -3971,6 +4928,30 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if value, ok := euo.mutation.FollowedByCurrentUser(); ok {
 		_spec.SetField(event.FieldFollowedByCurrentUser, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.RegistrationType(); ok {
+		_spec.SetField(event.FieldRegistrationType, field.TypeEnum, value)
+	}
+	if euo.mutation.RegistrationTypeCleared() {
+		_spec.ClearField(event.FieldRegistrationType, field.TypeEnum)
+	}
+	if value, ok := euo.mutation.RegistrationURL(); ok {
+		_spec.SetField(event.FieldRegistrationURL, field.TypeString, value)
+	}
+	if euo.mutation.RegistrationURLCleared() {
+		_spec.ClearField(event.FieldRegistrationURL, field.TypeString)
+	}
+	if value, ok := euo.mutation.IsPhysicallyAccessible(); ok {
+		_spec.SetField(event.FieldIsPhysicallyAccessible, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.AccessibilityInfo(); ok {
+		_spec.SetField(event.FieldAccessibilityInfo, field.TypeString, value)
+	}
+	if euo.mutation.AccessibilityInfoCleared() {
+		_spec.ClearField(event.FieldAccessibilityInfo, field.TypeString)
+	}
+	if value, ok := euo.mutation.IsVirtuallyAccessible(); ok {
+		_spec.SetField(event.FieldIsVirtuallyAccessible, field.TypeBool, value)
 	}
 	if euo.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -4428,6 +5409,276 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.AdditionalOrganizersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.AdditionalOrganizersTable,
+			Columns: []string{event.AdditionalOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedAdditionalOrganizersIDs(); len(nodes) > 0 && !euo.mutation.AdditionalOrganizersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.AdditionalOrganizersTable,
+			Columns: []string{event.AdditionalOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.AdditionalOrganizersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.AdditionalOrganizersTable,
+			Columns: []string{event.AdditionalOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.MediaTable,
+			Columns: []string{event.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedMediaIDs(); len(nodes) > 0 && !euo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.MediaTable,
+			Columns: []string{event.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.MediaTable,
+			Columns: []string{event.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.EventCommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventCommentsTable,
+			Columns: []string{event.EventCommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedEventCommentsIDs(); len(nodes) > 0 && !euo.mutation.EventCommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventCommentsTable,
+			Columns: []string{event.EventCommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.EventCommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventCommentsTable,
+			Columns: []string{event.EventCommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.EventReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventReviewsTable,
+			Columns: []string{event.EventReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedEventReviewsIDs(); len(nodes) > 0 && !euo.mutation.EventReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventReviewsTable,
+			Columns: []string{event.EventReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.EventReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventReviewsTable,
+			Columns: []string{event.EventReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.PerformersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.PerformersTable,
+			Columns: []string{event.PerformersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedPerformersIDs(); len(nodes) > 0 && !euo.mutation.PerformersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.PerformersTable,
+			Columns: []string{event.PerformersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.PerformersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.PerformersTable,
+			Columns: []string{event.PerformersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.EventOrganizersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventOrganizersTable,
+			Columns: []string{event.EventOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(eventorganizer.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedEventOrganizersIDs(); len(nodes) > 0 && !euo.mutation.EventOrganizersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventOrganizersTable,
+			Columns: []string{event.EventOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(eventorganizer.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.EventOrganizersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventOrganizersTable,
+			Columns: []string{event.EventOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(eventorganizer.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

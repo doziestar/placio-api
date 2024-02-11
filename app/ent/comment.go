@@ -29,11 +29,12 @@ type Comment struct {
 	ParentCommentID *string `json:"parentCommentID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CommentQuery when eager-loading is set.
-	Edges           CommentEdges `json:"edges"`
-	post_comments   *string
-	review_comments *string
-	user_comments   *string
-	selectValues    sql.SelectValues
+	Edges                CommentEdges `json:"edges"`
+	event_event_comments *string
+	post_comments        *string
+	review_comments      *string
+	user_comments        *string
+	selectValues         sql.SelectValues
 }
 
 // CommentEdges holds the relations/edges for other nodes in the graph.
@@ -119,11 +120,13 @@ func (*Comment) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case comment.FieldCreatedAt, comment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case comment.ForeignKeys[0]: // post_comments
+		case comment.ForeignKeys[0]: // event_event_comments
 			values[i] = new(sql.NullString)
-		case comment.ForeignKeys[1]: // review_comments
+		case comment.ForeignKeys[1]: // post_comments
 			values[i] = new(sql.NullString)
-		case comment.ForeignKeys[2]: // user_comments
+		case comment.ForeignKeys[2]: // review_comments
+			values[i] = new(sql.NullString)
+		case comment.ForeignKeys[3]: // user_comments
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -173,19 +176,26 @@ func (c *Comment) assignValues(columns []string, values []any) error {
 			}
 		case comment.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_event_comments", values[i])
+			} else if value.Valid {
+				c.event_event_comments = new(string)
+				*c.event_event_comments = value.String
+			}
+		case comment.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field post_comments", values[i])
 			} else if value.Valid {
 				c.post_comments = new(string)
 				*c.post_comments = value.String
 			}
-		case comment.ForeignKeys[1]:
+		case comment.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field review_comments", values[i])
 			} else if value.Valid {
 				c.review_comments = new(string)
 				*c.review_comments = value.String
 			}
-		case comment.ForeignKeys[2]:
+		case comment.ForeignKeys[3]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_comments", values[i])
 			} else if value.Valid {

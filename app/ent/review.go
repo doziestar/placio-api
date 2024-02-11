@@ -35,13 +35,14 @@ type Review struct {
 	Flag string `json:"flag,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ReviewQuery when eager-loading is set.
-	Edges           ReviewEdges `json:"edges"`
-	place_reviews   *string
-	review_business *string
-	review_place    *string
-	review_event    *string
-	user_reviews    *string
-	selectValues    sql.SelectValues
+	Edges               ReviewEdges `json:"edges"`
+	event_event_reviews *string
+	place_reviews       *string
+	review_business     *string
+	review_place        *string
+	review_event        *string
+	user_reviews        *string
+	selectValues        sql.SelectValues
 }
 
 // ReviewEdges holds the relations/edges for other nodes in the graph.
@@ -157,15 +158,17 @@ func (*Review) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case review.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case review.ForeignKeys[0]: // place_reviews
+		case review.ForeignKeys[0]: // event_event_reviews
 			values[i] = new(sql.NullString)
-		case review.ForeignKeys[1]: // review_business
+		case review.ForeignKeys[1]: // place_reviews
 			values[i] = new(sql.NullString)
-		case review.ForeignKeys[2]: // review_place
+		case review.ForeignKeys[2]: // review_business
 			values[i] = new(sql.NullString)
-		case review.ForeignKeys[3]: // review_event
+		case review.ForeignKeys[3]: // review_place
 			values[i] = new(sql.NullString)
-		case review.ForeignKeys[4]: // user_reviews
+		case review.ForeignKeys[4]: // review_event
+			values[i] = new(sql.NullString)
+		case review.ForeignKeys[5]: // user_reviews
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -226,33 +229,40 @@ func (r *Review) assignValues(columns []string, values []any) error {
 			}
 		case review.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_event_reviews", values[i])
+			} else if value.Valid {
+				r.event_event_reviews = new(string)
+				*r.event_event_reviews = value.String
+			}
+		case review.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_reviews", values[i])
 			} else if value.Valid {
 				r.place_reviews = new(string)
 				*r.place_reviews = value.String
 			}
-		case review.ForeignKeys[1]:
+		case review.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field review_business", values[i])
 			} else if value.Valid {
 				r.review_business = new(string)
 				*r.review_business = value.String
 			}
-		case review.ForeignKeys[2]:
+		case review.ForeignKeys[3]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field review_place", values[i])
 			} else if value.Valid {
 				r.review_place = new(string)
 				*r.review_place = value.String
 			}
-		case review.ForeignKeys[3]:
+		case review.ForeignKeys[4]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field review_event", values[i])
 			} else if value.Valid {
 				r.review_event = new(string)
 				*r.review_event = value.String
 			}
-		case review.ForeignKeys[4]:
+		case review.ForeignKeys[5]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_reviews", values[i])
 			} else if value.Valid {

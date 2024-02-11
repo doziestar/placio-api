@@ -77,7 +77,7 @@ type Event struct {
 	// VenueEmail holds the value of the "venue_email" field.
 	VenueEmail string `json:"venue_email,omitempty"`
 	// Tags holds the value of the "tags" field.
-	Tags string `json:"tags,omitempty"`
+	Tags []string `json:"tags,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
 	// EventSettings holds the value of the "event_settings" field.
@@ -112,6 +112,8 @@ type Event struct {
 	IsFree bool `json:"is_Free,omitempty"`
 	// IsPaid holds the value of the "is_Paid" field.
 	IsPaid bool `json:"is_Paid,omitempty"`
+	// IsPublic holds the value of the "is_public" field.
+	IsPublic bool `json:"is_public,omitempty"`
 	// IsOnlineOnly holds the value of the "is_Online_Only" field.
 	IsOnlineOnly bool `json:"is_Online_Only,omitempty"`
 	// IsInPersonOnly holds the value of the "is_In_Person_Only" field.
@@ -128,6 +130,16 @@ type Event struct {
 	LikedByCurrentUser bool `json:"likedByCurrentUser,omitempty"`
 	// FollowedByCurrentUser holds the value of the "followedByCurrentUser" field.
 	FollowedByCurrentUser bool `json:"followedByCurrentUser,omitempty"`
+	// RegistrationType holds the value of the "registration_type" field.
+	RegistrationType event.RegistrationType `json:"registration_type,omitempty"`
+	// RegistrationURL holds the value of the "registration_url" field.
+	RegistrationURL string `json:"registration_url,omitempty"`
+	// IsPhysicallyAccessible holds the value of the "is_physically_accessible" field.
+	IsPhysicallyAccessible bool `json:"is_physically_accessible,omitempty"`
+	// AccessibilityInfo holds the value of the "accessibility_info" field.
+	AccessibilityInfo string `json:"accessibility_info,omitempty"`
+	// IsVirtuallyAccessible holds the value of the "is_virtually_accessible" field.
+	IsVirtuallyAccessible bool `json:"is_virtually_accessible,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
 	Edges             EventEdges `json:"edges"`
@@ -161,9 +173,21 @@ type EventEdges struct {
 	Faqs []*FAQ `json:"faqs,omitempty"`
 	// Ratings holds the value of the ratings edge.
 	Ratings []*Rating `json:"ratings,omitempty"`
+	// AdditionalOrganizers holds the value of the additional_organizers edge.
+	AdditionalOrganizers []*User `json:"additional_organizers,omitempty"`
+	// Media holds the value of the media edge.
+	Media []*Media `json:"media,omitempty"`
+	// EventComments holds the value of the event_comments edge.
+	EventComments []*Comment `json:"event_comments,omitempty"`
+	// EventReviews holds the value of the event_reviews edge.
+	EventReviews []*Review `json:"event_reviews,omitempty"`
+	// Performers holds the value of the performers edge.
+	Performers []*User `json:"performers,omitempty"`
+	// EventOrganizers holds the value of the event_organizers edge.
+	EventOrganizers []*EventOrganizer `json:"event_organizers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [17]bool
 }
 
 // TicketsOrErr returns the Tickets value or an error if the edge
@@ -273,20 +297,74 @@ func (e EventEdges) RatingsOrErr() ([]*Rating, error) {
 	return nil, &NotLoadedError{edge: "ratings"}
 }
 
+// AdditionalOrganizersOrErr returns the AdditionalOrganizers value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) AdditionalOrganizersOrErr() ([]*User, error) {
+	if e.loadedTypes[11] {
+		return e.AdditionalOrganizers, nil
+	}
+	return nil, &NotLoadedError{edge: "additional_organizers"}
+}
+
+// MediaOrErr returns the Media value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) MediaOrErr() ([]*Media, error) {
+	if e.loadedTypes[12] {
+		return e.Media, nil
+	}
+	return nil, &NotLoadedError{edge: "media"}
+}
+
+// EventCommentsOrErr returns the EventComments value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) EventCommentsOrErr() ([]*Comment, error) {
+	if e.loadedTypes[13] {
+		return e.EventComments, nil
+	}
+	return nil, &NotLoadedError{edge: "event_comments"}
+}
+
+// EventReviewsOrErr returns the EventReviews value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) EventReviewsOrErr() ([]*Review, error) {
+	if e.loadedTypes[14] {
+		return e.EventReviews, nil
+	}
+	return nil, &NotLoadedError{edge: "event_reviews"}
+}
+
+// PerformersOrErr returns the Performers value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) PerformersOrErr() ([]*User, error) {
+	if e.loadedTypes[15] {
+		return e.Performers, nil
+	}
+	return nil, &NotLoadedError{edge: "performers"}
+}
+
+// EventOrganizersOrErr returns the EventOrganizers value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) EventOrganizersOrErr() ([]*EventOrganizer, error) {
+	if e.loadedTypes[16] {
+		return e.EventOrganizers, nil
+	}
+	return nil, &NotLoadedError{edge: "event_organizers"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Event) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldEventSettings, event.FieldMapCoordinates:
+		case event.FieldTags, event.FieldEventSettings, event.FieldMapCoordinates:
 			values[i] = new([]byte)
-		case event.FieldIsPremium, event.FieldIsPublished, event.FieldIsOnline, event.FieldIsFree, event.FieldIsPaid, event.FieldIsOnlineOnly, event.FieldIsInPersonOnly, event.FieldIsHybrid, event.FieldIsOnlineAndInPerson, event.FieldIsOnlineAndInPersonOnly, event.FieldIsOnlineAndInPersonOrHybrid, event.FieldLikedByCurrentUser, event.FieldFollowedByCurrentUser:
+		case event.FieldIsPremium, event.FieldIsPublished, event.FieldIsOnline, event.FieldIsFree, event.FieldIsPaid, event.FieldIsPublic, event.FieldIsOnlineOnly, event.FieldIsInPersonOnly, event.FieldIsHybrid, event.FieldIsOnlineAndInPerson, event.FieldIsOnlineAndInPersonOnly, event.FieldIsOnlineAndInPersonOrHybrid, event.FieldLikedByCurrentUser, event.FieldFollowedByCurrentUser, event.FieldIsPhysicallyAccessible, event.FieldIsVirtuallyAccessible:
 			values[i] = new(sql.NullBool)
 		case event.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
 		case event.FieldFollowerCount, event.FieldFollowingCount:
 			values[i] = new(sql.NullInt64)
-		case event.FieldID, event.FieldName, event.FieldEventType, event.FieldStatus, event.FieldLocation, event.FieldURL, event.FieldTitle, event.FieldTimeZone, event.FieldStartDate, event.FieldEndDate, event.FieldFrequency, event.FieldFrequencyInterval, event.FieldFrequencyDayOfWeek, event.FieldFrequencyDayOfMonth, event.FieldFrequencyMonthOfYear, event.FieldVenueType, event.FieldVenueName, event.FieldVenueAddress, event.FieldVenueCity, event.FieldVenueState, event.FieldVenueCountry, event.FieldVenueZip, event.FieldVenueLat, event.FieldVenueLon, event.FieldVenueURL, event.FieldVenuePhone, event.FieldVenueEmail, event.FieldTags, event.FieldDescription, event.FieldCoverImage, event.FieldLongitude, event.FieldLatitude, event.FieldSearchText:
+		case event.FieldID, event.FieldName, event.FieldEventType, event.FieldStatus, event.FieldLocation, event.FieldURL, event.FieldTitle, event.FieldTimeZone, event.FieldStartDate, event.FieldEndDate, event.FieldFrequency, event.FieldFrequencyInterval, event.FieldFrequencyDayOfWeek, event.FieldFrequencyDayOfMonth, event.FieldFrequencyMonthOfYear, event.FieldVenueType, event.FieldVenueName, event.FieldVenueAddress, event.FieldVenueCity, event.FieldVenueState, event.FieldVenueCountry, event.FieldVenueZip, event.FieldVenueLat, event.FieldVenueLon, event.FieldVenueURL, event.FieldVenuePhone, event.FieldVenueEmail, event.FieldDescription, event.FieldCoverImage, event.FieldLongitude, event.FieldLatitude, event.FieldSearchText, event.FieldRegistrationType, event.FieldRegistrationURL, event.FieldAccessibilityInfo:
 			values[i] = new(sql.NullString)
 		case event.FieldStartTime, event.FieldEndTime, event.FieldCreatedAt, event.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -486,10 +564,12 @@ func (e *Event) assignValues(columns []string, values []any) error {
 				e.VenueEmail = value.String
 			}
 		case event.FieldTags:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field tags", values[i])
-			} else if value.Valid {
-				e.Tags = value.String
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.Tags); err != nil {
+					return fmt.Errorf("unmarshal field tags: %w", err)
+				}
 			}
 		case event.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -597,6 +677,12 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.IsPaid = value.Bool
 			}
+		case event.FieldIsPublic:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_public", values[i])
+			} else if value.Valid {
+				e.IsPublic = value.Bool
+			}
 		case event.FieldIsOnlineOnly:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_Online_Only", values[i])
@@ -644,6 +730,36 @@ func (e *Event) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field followedByCurrentUser", values[i])
 			} else if value.Valid {
 				e.FollowedByCurrentUser = value.Bool
+			}
+		case event.FieldRegistrationType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field registration_type", values[i])
+			} else if value.Valid {
+				e.RegistrationType = event.RegistrationType(value.String)
+			}
+		case event.FieldRegistrationURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field registration_url", values[i])
+			} else if value.Valid {
+				e.RegistrationURL = value.String
+			}
+		case event.FieldIsPhysicallyAccessible:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_physically_accessible", values[i])
+			} else if value.Valid {
+				e.IsPhysicallyAccessible = value.Bool
+			}
+		case event.FieldAccessibilityInfo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field accessibility_info", values[i])
+			} else if value.Valid {
+				e.AccessibilityInfo = value.String
+			}
+		case event.FieldIsVirtuallyAccessible:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_virtually_accessible", values[i])
+			} else if value.Valid {
+				e.IsVirtuallyAccessible = value.Bool
 			}
 		case event.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -732,6 +848,36 @@ func (e *Event) QueryFaqs() *FAQQuery {
 // QueryRatings queries the "ratings" edge of the Event entity.
 func (e *Event) QueryRatings() *RatingQuery {
 	return NewEventClient(e.config).QueryRatings(e)
+}
+
+// QueryAdditionalOrganizers queries the "additional_organizers" edge of the Event entity.
+func (e *Event) QueryAdditionalOrganizers() *UserQuery {
+	return NewEventClient(e.config).QueryAdditionalOrganizers(e)
+}
+
+// QueryMedia queries the "media" edge of the Event entity.
+func (e *Event) QueryMedia() *MediaQuery {
+	return NewEventClient(e.config).QueryMedia(e)
+}
+
+// QueryEventComments queries the "event_comments" edge of the Event entity.
+func (e *Event) QueryEventComments() *CommentQuery {
+	return NewEventClient(e.config).QueryEventComments(e)
+}
+
+// QueryEventReviews queries the "event_reviews" edge of the Event entity.
+func (e *Event) QueryEventReviews() *ReviewQuery {
+	return NewEventClient(e.config).QueryEventReviews(e)
+}
+
+// QueryPerformers queries the "performers" edge of the Event entity.
+func (e *Event) QueryPerformers() *UserQuery {
+	return NewEventClient(e.config).QueryPerformers(e)
+}
+
+// QueryEventOrganizers queries the "event_organizers" edge of the Event entity.
+func (e *Event) QueryEventOrganizers() *EventOrganizerQuery {
+	return NewEventClient(e.config).QueryEventOrganizers(e)
 }
 
 // Update returns a builder for updating this Event.
@@ -842,7 +988,7 @@ func (e *Event) String() string {
 	builder.WriteString(e.VenueEmail)
 	builder.WriteString(", ")
 	builder.WriteString("tags=")
-	builder.WriteString(e.Tags)
+	builder.WriteString(fmt.Sprintf("%v", e.Tags))
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(e.Description)
@@ -895,6 +1041,9 @@ func (e *Event) String() string {
 	builder.WriteString("is_Paid=")
 	builder.WriteString(fmt.Sprintf("%v", e.IsPaid))
 	builder.WriteString(", ")
+	builder.WriteString("is_public=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsPublic))
+	builder.WriteString(", ")
 	builder.WriteString("is_Online_Only=")
 	builder.WriteString(fmt.Sprintf("%v", e.IsOnlineOnly))
 	builder.WriteString(", ")
@@ -918,6 +1067,21 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("followedByCurrentUser=")
 	builder.WriteString(fmt.Sprintf("%v", e.FollowedByCurrentUser))
+	builder.WriteString(", ")
+	builder.WriteString("registration_type=")
+	builder.WriteString(fmt.Sprintf("%v", e.RegistrationType))
+	builder.WriteString(", ")
+	builder.WriteString("registration_url=")
+	builder.WriteString(e.RegistrationURL)
+	builder.WriteString(", ")
+	builder.WriteString("is_physically_accessible=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsPhysicallyAccessible))
+	builder.WriteString(", ")
+	builder.WriteString("accessibility_info=")
+	builder.WriteString(e.AccessibilityInfo)
+	builder.WriteString(", ")
+	builder.WriteString("is_virtually_accessible=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsVirtuallyAccessible))
 	builder.WriteByte(')')
 	return builder.String()
 }

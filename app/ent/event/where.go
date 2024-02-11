@@ -190,11 +190,6 @@ func VenueEmail(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldVenueEmail, v))
 }
 
-// Tags applies equality check predicate on the "tags" field. It's identical to TagsEQ.
-func Tags(v string) predicate.Event {
-	return predicate.Event(sql.FieldEQ(FieldTags, v))
-}
-
 // Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
 func Description(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldDescription, v))
@@ -270,6 +265,11 @@ func IsPaid(v bool) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldIsPaid, v))
 }
 
+// IsPublic applies equality check predicate on the "is_public" field. It's identical to IsPublicEQ.
+func IsPublic(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPublic, v))
+}
+
 // IsOnlineOnly applies equality check predicate on the "is_Online_Only" field. It's identical to IsOnlineOnlyEQ.
 func IsOnlineOnly(v bool) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldIsOnlineOnly, v))
@@ -308,6 +308,26 @@ func LikedByCurrentUser(v bool) predicate.Event {
 // FollowedByCurrentUser applies equality check predicate on the "followedByCurrentUser" field. It's identical to FollowedByCurrentUserEQ.
 func FollowedByCurrentUser(v bool) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldFollowedByCurrentUser, v))
+}
+
+// RegistrationURL applies equality check predicate on the "registration_url" field. It's identical to RegistrationURLEQ.
+func RegistrationURL(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldRegistrationURL, v))
+}
+
+// IsPhysicallyAccessible applies equality check predicate on the "is_physically_accessible" field. It's identical to IsPhysicallyAccessibleEQ.
+func IsPhysicallyAccessible(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPhysicallyAccessible, v))
+}
+
+// AccessibilityInfo applies equality check predicate on the "accessibility_info" field. It's identical to AccessibilityInfoEQ.
+func AccessibilityInfo(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldAccessibilityInfo, v))
+}
+
+// IsVirtuallyAccessible applies equality check predicate on the "is_virtually_accessible" field. It's identical to IsVirtuallyAccessibleEQ.
+func IsVirtuallyAccessible(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsVirtuallyAccessible, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -2225,61 +2245,6 @@ func VenueEmailContainsFold(v string) predicate.Event {
 	return predicate.Event(sql.FieldContainsFold(FieldVenueEmail, v))
 }
 
-// TagsEQ applies the EQ predicate on the "tags" field.
-func TagsEQ(v string) predicate.Event {
-	return predicate.Event(sql.FieldEQ(FieldTags, v))
-}
-
-// TagsNEQ applies the NEQ predicate on the "tags" field.
-func TagsNEQ(v string) predicate.Event {
-	return predicate.Event(sql.FieldNEQ(FieldTags, v))
-}
-
-// TagsIn applies the In predicate on the "tags" field.
-func TagsIn(vs ...string) predicate.Event {
-	return predicate.Event(sql.FieldIn(FieldTags, vs...))
-}
-
-// TagsNotIn applies the NotIn predicate on the "tags" field.
-func TagsNotIn(vs ...string) predicate.Event {
-	return predicate.Event(sql.FieldNotIn(FieldTags, vs...))
-}
-
-// TagsGT applies the GT predicate on the "tags" field.
-func TagsGT(v string) predicate.Event {
-	return predicate.Event(sql.FieldGT(FieldTags, v))
-}
-
-// TagsGTE applies the GTE predicate on the "tags" field.
-func TagsGTE(v string) predicate.Event {
-	return predicate.Event(sql.FieldGTE(FieldTags, v))
-}
-
-// TagsLT applies the LT predicate on the "tags" field.
-func TagsLT(v string) predicate.Event {
-	return predicate.Event(sql.FieldLT(FieldTags, v))
-}
-
-// TagsLTE applies the LTE predicate on the "tags" field.
-func TagsLTE(v string) predicate.Event {
-	return predicate.Event(sql.FieldLTE(FieldTags, v))
-}
-
-// TagsContains applies the Contains predicate on the "tags" field.
-func TagsContains(v string) predicate.Event {
-	return predicate.Event(sql.FieldContains(FieldTags, v))
-}
-
-// TagsHasPrefix applies the HasPrefix predicate on the "tags" field.
-func TagsHasPrefix(v string) predicate.Event {
-	return predicate.Event(sql.FieldHasPrefix(FieldTags, v))
-}
-
-// TagsHasSuffix applies the HasSuffix predicate on the "tags" field.
-func TagsHasSuffix(v string) predicate.Event {
-	return predicate.Event(sql.FieldHasSuffix(FieldTags, v))
-}
-
 // TagsIsNil applies the IsNil predicate on the "tags" field.
 func TagsIsNil() predicate.Event {
 	return predicate.Event(sql.FieldIsNull(FieldTags))
@@ -2288,16 +2253,6 @@ func TagsIsNil() predicate.Event {
 // TagsNotNil applies the NotNil predicate on the "tags" field.
 func TagsNotNil() predicate.Event {
 	return predicate.Event(sql.FieldNotNull(FieldTags))
-}
-
-// TagsEqualFold applies the EqualFold predicate on the "tags" field.
-func TagsEqualFold(v string) predicate.Event {
-	return predicate.Event(sql.FieldEqualFold(FieldTags, v))
-}
-
-// TagsContainsFold applies the ContainsFold predicate on the "tags" field.
-func TagsContainsFold(v string) predicate.Event {
-	return predicate.Event(sql.FieldContainsFold(FieldTags, v))
 }
 
 // DescriptionEQ applies the EQ predicate on the "description" field.
@@ -2955,6 +2910,16 @@ func IsPaidNEQ(v bool) predicate.Event {
 	return predicate.Event(sql.FieldNEQ(FieldIsPaid, v))
 }
 
+// IsPublicEQ applies the EQ predicate on the "is_public" field.
+func IsPublicEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPublic, v))
+}
+
+// IsPublicNEQ applies the NEQ predicate on the "is_public" field.
+func IsPublicNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsPublic, v))
+}
+
 // IsOnlineOnlyEQ applies the EQ predicate on the "is_Online_Only" field.
 func IsOnlineOnlyEQ(v bool) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldIsOnlineOnly, v))
@@ -3033,6 +2998,206 @@ func FollowedByCurrentUserEQ(v bool) predicate.Event {
 // FollowedByCurrentUserNEQ applies the NEQ predicate on the "followedByCurrentUser" field.
 func FollowedByCurrentUserNEQ(v bool) predicate.Event {
 	return predicate.Event(sql.FieldNEQ(FieldFollowedByCurrentUser, v))
+}
+
+// RegistrationTypeEQ applies the EQ predicate on the "registration_type" field.
+func RegistrationTypeEQ(v RegistrationType) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldRegistrationType, v))
+}
+
+// RegistrationTypeNEQ applies the NEQ predicate on the "registration_type" field.
+func RegistrationTypeNEQ(v RegistrationType) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldRegistrationType, v))
+}
+
+// RegistrationTypeIn applies the In predicate on the "registration_type" field.
+func RegistrationTypeIn(vs ...RegistrationType) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldRegistrationType, vs...))
+}
+
+// RegistrationTypeNotIn applies the NotIn predicate on the "registration_type" field.
+func RegistrationTypeNotIn(vs ...RegistrationType) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldRegistrationType, vs...))
+}
+
+// RegistrationTypeIsNil applies the IsNil predicate on the "registration_type" field.
+func RegistrationTypeIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldRegistrationType))
+}
+
+// RegistrationTypeNotNil applies the NotNil predicate on the "registration_type" field.
+func RegistrationTypeNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldRegistrationType))
+}
+
+// RegistrationURLEQ applies the EQ predicate on the "registration_url" field.
+func RegistrationURLEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldRegistrationURL, v))
+}
+
+// RegistrationURLNEQ applies the NEQ predicate on the "registration_url" field.
+func RegistrationURLNEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldRegistrationURL, v))
+}
+
+// RegistrationURLIn applies the In predicate on the "registration_url" field.
+func RegistrationURLIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldRegistrationURL, vs...))
+}
+
+// RegistrationURLNotIn applies the NotIn predicate on the "registration_url" field.
+func RegistrationURLNotIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldRegistrationURL, vs...))
+}
+
+// RegistrationURLGT applies the GT predicate on the "registration_url" field.
+func RegistrationURLGT(v string) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldRegistrationURL, v))
+}
+
+// RegistrationURLGTE applies the GTE predicate on the "registration_url" field.
+func RegistrationURLGTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldRegistrationURL, v))
+}
+
+// RegistrationURLLT applies the LT predicate on the "registration_url" field.
+func RegistrationURLLT(v string) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldRegistrationURL, v))
+}
+
+// RegistrationURLLTE applies the LTE predicate on the "registration_url" field.
+func RegistrationURLLTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldRegistrationURL, v))
+}
+
+// RegistrationURLContains applies the Contains predicate on the "registration_url" field.
+func RegistrationURLContains(v string) predicate.Event {
+	return predicate.Event(sql.FieldContains(FieldRegistrationURL, v))
+}
+
+// RegistrationURLHasPrefix applies the HasPrefix predicate on the "registration_url" field.
+func RegistrationURLHasPrefix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasPrefix(FieldRegistrationURL, v))
+}
+
+// RegistrationURLHasSuffix applies the HasSuffix predicate on the "registration_url" field.
+func RegistrationURLHasSuffix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasSuffix(FieldRegistrationURL, v))
+}
+
+// RegistrationURLIsNil applies the IsNil predicate on the "registration_url" field.
+func RegistrationURLIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldRegistrationURL))
+}
+
+// RegistrationURLNotNil applies the NotNil predicate on the "registration_url" field.
+func RegistrationURLNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldRegistrationURL))
+}
+
+// RegistrationURLEqualFold applies the EqualFold predicate on the "registration_url" field.
+func RegistrationURLEqualFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldEqualFold(FieldRegistrationURL, v))
+}
+
+// RegistrationURLContainsFold applies the ContainsFold predicate on the "registration_url" field.
+func RegistrationURLContainsFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldContainsFold(FieldRegistrationURL, v))
+}
+
+// IsPhysicallyAccessibleEQ applies the EQ predicate on the "is_physically_accessible" field.
+func IsPhysicallyAccessibleEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPhysicallyAccessible, v))
+}
+
+// IsPhysicallyAccessibleNEQ applies the NEQ predicate on the "is_physically_accessible" field.
+func IsPhysicallyAccessibleNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsPhysicallyAccessible, v))
+}
+
+// AccessibilityInfoEQ applies the EQ predicate on the "accessibility_info" field.
+func AccessibilityInfoEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoNEQ applies the NEQ predicate on the "accessibility_info" field.
+func AccessibilityInfoNEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoIn applies the In predicate on the "accessibility_info" field.
+func AccessibilityInfoIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldAccessibilityInfo, vs...))
+}
+
+// AccessibilityInfoNotIn applies the NotIn predicate on the "accessibility_info" field.
+func AccessibilityInfoNotIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldAccessibilityInfo, vs...))
+}
+
+// AccessibilityInfoGT applies the GT predicate on the "accessibility_info" field.
+func AccessibilityInfoGT(v string) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoGTE applies the GTE predicate on the "accessibility_info" field.
+func AccessibilityInfoGTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoLT applies the LT predicate on the "accessibility_info" field.
+func AccessibilityInfoLT(v string) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoLTE applies the LTE predicate on the "accessibility_info" field.
+func AccessibilityInfoLTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoContains applies the Contains predicate on the "accessibility_info" field.
+func AccessibilityInfoContains(v string) predicate.Event {
+	return predicate.Event(sql.FieldContains(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoHasPrefix applies the HasPrefix predicate on the "accessibility_info" field.
+func AccessibilityInfoHasPrefix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasPrefix(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoHasSuffix applies the HasSuffix predicate on the "accessibility_info" field.
+func AccessibilityInfoHasSuffix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasSuffix(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoIsNil applies the IsNil predicate on the "accessibility_info" field.
+func AccessibilityInfoIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldAccessibilityInfo))
+}
+
+// AccessibilityInfoNotNil applies the NotNil predicate on the "accessibility_info" field.
+func AccessibilityInfoNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldAccessibilityInfo))
+}
+
+// AccessibilityInfoEqualFold applies the EqualFold predicate on the "accessibility_info" field.
+func AccessibilityInfoEqualFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldEqualFold(FieldAccessibilityInfo, v))
+}
+
+// AccessibilityInfoContainsFold applies the ContainsFold predicate on the "accessibility_info" field.
+func AccessibilityInfoContainsFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldContainsFold(FieldAccessibilityInfo, v))
+}
+
+// IsVirtuallyAccessibleEQ applies the EQ predicate on the "is_virtually_accessible" field.
+func IsVirtuallyAccessibleEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsVirtuallyAccessible, v))
+}
+
+// IsVirtuallyAccessibleNEQ applies the NEQ predicate on the "is_virtually_accessible" field.
+func IsVirtuallyAccessibleNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsVirtuallyAccessible, v))
 }
 
 // HasTickets applies the HasEdge predicate on the "tickets" edge.
@@ -3280,6 +3445,144 @@ func HasRatings() predicate.Event {
 func HasRatingsWith(preds ...predicate.Rating) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		step := newRatingsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAdditionalOrganizers applies the HasEdge predicate on the "additional_organizers" edge.
+func HasAdditionalOrganizers() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AdditionalOrganizersTable, AdditionalOrganizersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAdditionalOrganizersWith applies the HasEdge predicate on the "additional_organizers" edge with a given conditions (other predicates).
+func HasAdditionalOrganizersWith(preds ...predicate.User) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := newAdditionalOrganizersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMedia applies the HasEdge predicate on the "media" edge.
+func HasMedia() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MediaTable, MediaColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMediaWith applies the HasEdge predicate on the "media" edge with a given conditions (other predicates).
+func HasMediaWith(preds ...predicate.Media) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := newMediaStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEventComments applies the HasEdge predicate on the "event_comments" edge.
+func HasEventComments() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EventCommentsTable, EventCommentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEventCommentsWith applies the HasEdge predicate on the "event_comments" edge with a given conditions (other predicates).
+func HasEventCommentsWith(preds ...predicate.Comment) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := newEventCommentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEventReviews applies the HasEdge predicate on the "event_reviews" edge.
+func HasEventReviews() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EventReviewsTable, EventReviewsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEventReviewsWith applies the HasEdge predicate on the "event_reviews" edge with a given conditions (other predicates).
+func HasEventReviewsWith(preds ...predicate.Review) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := newEventReviewsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPerformers applies the HasEdge predicate on the "performers" edge.
+func HasPerformers() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PerformersTable, PerformersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPerformersWith applies the HasEdge predicate on the "performers" edge with a given conditions (other predicates).
+func HasPerformersWith(preds ...predicate.User) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := newPerformersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEventOrganizers applies the HasEdge predicate on the "event_organizers" edge.
+func HasEventOrganizers() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EventOrganizersTable, EventOrganizersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEventOrganizersWith applies the HasEdge predicate on the "event_organizers" edge with a given conditions (other predicates).
+func HasEventOrganizersWith(preds ...predicate.EventOrganizer) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := newEventOrganizersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

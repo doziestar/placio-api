@@ -113,6 +113,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "media"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
+	"event_media",
 	"menu_item_media",
 	"plan_media",
 	"post_medias",

@@ -8,12 +8,35 @@ import (
 	"github.com/getsentry/sentry-go"
 	gen "placio-app/ent"
 	"placio-app/ent/hook"
+	"placio-pkg/errors"
 
 	//"github.com/getsentry/sentry-go"
 	//gen "placio-app/ent/ent"
 	//"placio-app/ent/ent/hook"
 	"time"
 )
+
+type EventOrganizer struct {
+	ent.Schema
+}
+
+func (EventOrganizer) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("organizerID").NotEmpty(),
+		field.String("organizerType").NotEmpty().Validate(func(s string) error {
+			if s != "user" && s != "business" {
+				return errors.New("invalid organizer type")
+			}
+			return nil
+		}),
+	}
+}
+
+func (EventOrganizer) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("event", Event.Type).Ref("event_organizers").Unique().Required(),
+	}
+}
 
 type Event struct {
 	ent.Schema
@@ -69,6 +92,7 @@ func (Event) Fields() []ent.Field {
 		field.Bool("is_Online").Default(false),
 		field.Bool("is_Free").Default(false),
 		field.Bool("is_Paid").Default(false),
+		field.Bool("is_public").Default(false),
 		field.Bool("is_Online_Only").Default(false),
 		field.Bool("is_In_Person_Only").Default(false),
 		field.Bool("is_Hybrid").Default(false),
@@ -77,6 +101,11 @@ func (Event) Fields() []ent.Field {
 		field.Bool("is_Online_And_In_Person_Or_Hybrid").Default(false),
 		field.Bool("likedByCurrentUser").Default(false),
 		field.Bool("followedByCurrentUser").Default(false),
+		field.Enum("registration_type").Values("none", "required", "optional", "closed").Optional(),
+		field.String("registration_url").Optional(),
+		field.Bool("is_physically_accessible").Default(false),
+		field.String("accessibility_info").Optional(),
+		field.Bool("is_virtually_accessible").Default(false),
 	}
 }
 
@@ -100,6 +129,12 @@ func (Event) Edges() []ent.Edge {
 			Ref("event"),
 		edge.From("faqs", FAQ.Type).Ref("event"),
 		edge.To("ratings", Rating.Type),
+		edge.To("additional_organizers", User.Type),
+		edge.To("media", Media.Type),
+		edge.To("event_comments", Comment.Type),
+		edge.To("event_reviews", Review.Type),
+		edge.To("performers", User.Type),
+		edge.To("event_organizers", EventOrganizer.Type),
 	}
 }
 

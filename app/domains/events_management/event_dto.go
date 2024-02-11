@@ -177,3 +177,17 @@ type LanguageSupportDTO struct {
 
 type CustomAppDetails struct {
 }
+
+// OrganizerInput represents the necessary input to identify an organizer.
+type OrganizerInput struct {
+	OrganizerID   string
+	OrganizerType string
+}
+
+type OrganizerInfo struct {
+	ID   string
+	Type string
+}
+
+// ContextKey is a value for use with context.WithValue
+type ContextKey string

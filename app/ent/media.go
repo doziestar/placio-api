@@ -35,6 +35,7 @@ type Media struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MediaQuery when eager-loading is set.
 	Edges           MediaEdges `json:"edges"`
+	event_media     *string
 	menu_item_media *string
 	plan_media      *string
 	post_medias     *string
@@ -172,15 +173,17 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case media.FieldCreatedAt, media.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case media.ForeignKeys[0]: // menu_item_media
+		case media.ForeignKeys[0]: // event_media
 			values[i] = new(sql.NullString)
-		case media.ForeignKeys[1]: // plan_media
+		case media.ForeignKeys[1]: // menu_item_media
 			values[i] = new(sql.NullString)
-		case media.ForeignKeys[2]: // post_medias
+		case media.ForeignKeys[2]: // plan_media
 			values[i] = new(sql.NullString)
-		case media.ForeignKeys[3]: // review_medias
+		case media.ForeignKeys[3]: // post_medias
 			values[i] = new(sql.NullString)
-		case media.ForeignKeys[4]: // website_assets
+		case media.ForeignKeys[4]: // review_medias
+			values[i] = new(sql.NullString)
+		case media.ForeignKeys[5]: // website_assets
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -241,33 +244,40 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			}
 		case media.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_media", values[i])
+			} else if value.Valid {
+				m.event_media = new(string)
+				*m.event_media = value.String
+			}
+		case media.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field menu_item_media", values[i])
 			} else if value.Valid {
 				m.menu_item_media = new(string)
 				*m.menu_item_media = value.String
 			}
-		case media.ForeignKeys[1]:
+		case media.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field plan_media", values[i])
 			} else if value.Valid {
 				m.plan_media = new(string)
 				*m.plan_media = value.String
 			}
-		case media.ForeignKeys[2]:
+		case media.ForeignKeys[3]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field post_medias", values[i])
 			} else if value.Valid {
 				m.post_medias = new(string)
 				*m.post_medias = value.String
 			}
-		case media.ForeignKeys[3]:
+		case media.ForeignKeys[4]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field review_medias", values[i])
 			} else if value.Valid {
 				m.review_medias = new(string)
 				*m.review_medias = value.String
 			}
-		case media.ForeignKeys[4]:
+		case media.ForeignKeys[5]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field website_assets", values[i])
 			} else if value.Valid {

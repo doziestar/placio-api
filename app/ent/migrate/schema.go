@@ -348,6 +348,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "parent_comment_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "event_event_comments", Type: field.TypeString, Nullable: true},
 		{Name: "post_comments", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "review_comments", Type: field.TypeString, Nullable: true},
 		{Name: "user_comments", Type: field.TypeString, Nullable: true, Size: 36},
@@ -365,20 +366,26 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "comments_posts_comments",
+				Symbol:     "comments_events_event_comments",
 				Columns:    []*schema.Column{CommentsColumns[5]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "comments_posts_comments",
+				Columns:    []*schema.Column{CommentsColumns[6]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "comments_reviews_comments",
-				Columns:    []*schema.Column{CommentsColumns[6]},
+				Columns:    []*schema.Column{CommentsColumns[7]},
 				RefColumns: []*schema.Column{ReviewsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "comments_users_comments",
-				Columns:    []*schema.Column{CommentsColumns[7]},
+				Columns:    []*schema.Column{CommentsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -435,7 +442,7 @@ var (
 		{Name: "venue_url", Type: field.TypeString, Nullable: true},
 		{Name: "venue_phone", Type: field.TypeString, Nullable: true},
 		{Name: "venue_email", Type: field.TypeString, Nullable: true},
-		{Name: "tags", Type: field.TypeString, Nullable: true},
+		{Name: "tags", Type: field.TypeJSON, Nullable: true},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "event_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "cover_image", Type: field.TypeString, Nullable: true, Default: "https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"},
@@ -453,6 +460,7 @@ var (
 		{Name: "is_online", Type: field.TypeBool, Default: false},
 		{Name: "is_free", Type: field.TypeBool, Default: false},
 		{Name: "is_paid", Type: field.TypeBool, Default: false},
+		{Name: "is_public", Type: field.TypeBool, Default: false},
 		{Name: "is_online_only", Type: field.TypeBool, Default: false},
 		{Name: "is_in_person_only", Type: field.TypeBool, Default: false},
 		{Name: "is_hybrid", Type: field.TypeBool, Default: false},
@@ -461,6 +469,11 @@ var (
 		{Name: "is_online_and_in_person_or_hybrid", Type: field.TypeBool, Default: false},
 		{Name: "liked_by_current_user", Type: field.TypeBool, Default: false},
 		{Name: "followed_by_current_user", Type: field.TypeBool, Default: false},
+		{Name: "registration_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"none", "required", "optional", "closed"}},
+		{Name: "registration_url", Type: field.TypeString, Nullable: true},
+		{Name: "is_physically_accessible", Type: field.TypeBool, Default: false},
+		{Name: "accessibility_info", Type: field.TypeString, Nullable: true},
+		{Name: "is_virtually_accessible", Type: field.TypeBool, Default: false},
 		{Name: "business_events", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_events", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_owned_events", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
@@ -473,21 +486,42 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "events_businesses_events",
-				Columns:    []*schema.Column{EventsColumns[55]},
+				Columns:    []*schema.Column{EventsColumns[61]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_places_events",
-				Columns:    []*schema.Column{EventsColumns[56]},
+				Columns:    []*schema.Column{EventsColumns[62]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_users_ownedEvents",
-				Columns:    []*schema.Column{EventsColumns[57]},
+				Columns:    []*schema.Column{EventsColumns[63]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// EventOrganizersColumns holds the columns for the "event_organizers" table.
+	EventOrganizersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "organizer_id", Type: field.TypeString},
+		{Name: "organizer_type", Type: field.TypeString},
+		{Name: "event_event_organizers", Type: field.TypeString},
+	}
+	// EventOrganizersTable holds the schema information for the "event_organizers" table.
+	EventOrganizersTable = &schema.Table{
+		Name:       "event_organizers",
+		Columns:    EventOrganizersColumns,
+		PrimaryKey: []*schema.Column{EventOrganizersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "event_organizers_events_event_organizers",
+				Columns:    []*schema.Column{EventOrganizersColumns[3]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -670,6 +704,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "like_count", Type: field.TypeInt, Default: 0},
 		{Name: "dislike_count", Type: field.TypeInt, Default: 0},
+		{Name: "event_media", Type: field.TypeString, Nullable: true},
 		{Name: "menu_item_media", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "plan_media", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "post_medias", Type: field.TypeString, Nullable: true, Size: 36},
@@ -683,32 +718,38 @@ var (
 		PrimaryKey: []*schema.Column{MediaColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "media_menu_items_media",
+				Symbol:     "media_events_media",
 				Columns:    []*schema.Column{MediaColumns[7]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "media_menu_items_media",
+				Columns:    []*schema.Column{MediaColumns[8]},
 				RefColumns: []*schema.Column{MenuItemsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "media_plans_media",
-				Columns:    []*schema.Column{MediaColumns[8]},
+				Columns:    []*schema.Column{MediaColumns[9]},
 				RefColumns: []*schema.Column{PlansColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "media_posts_medias",
-				Columns:    []*schema.Column{MediaColumns[9]},
+				Columns:    []*schema.Column{MediaColumns[10]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "media_reviews_medias",
-				Columns:    []*schema.Column{MediaColumns[10]},
+				Columns:    []*schema.Column{MediaColumns[11]},
 				RefColumns: []*schema.Column{ReviewsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "media_websites_assets",
-				Columns:    []*schema.Column{MediaColumns[11]},
+				Columns:    []*schema.Column{MediaColumns[12]},
 				RefColumns: []*schema.Column{WebsitesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1340,6 +1381,7 @@ var (
 		{Name: "like_count", Type: field.TypeInt, Default: 0},
 		{Name: "dislike_count", Type: field.TypeInt, Default: 0},
 		{Name: "flag", Type: field.TypeString, Default: ""},
+		{Name: "event_event_reviews", Type: field.TypeString, Nullable: true},
 		{Name: "place_reviews", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "review_business", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "review_place", Type: field.TypeString, Nullable: true, Size: 36},
@@ -1353,32 +1395,38 @@ var (
 		PrimaryKey: []*schema.Column{ReviewsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "reviews_places_reviews",
+				Symbol:     "reviews_events_event_reviews",
 				Columns:    []*schema.Column{ReviewsColumns[7]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "reviews_places_reviews",
+				Columns:    []*schema.Column{ReviewsColumns[8]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "reviews_businesses_business",
-				Columns:    []*schema.Column{ReviewsColumns[8]},
+				Columns:    []*schema.Column{ReviewsColumns[9]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "reviews_places_place",
-				Columns:    []*schema.Column{ReviewsColumns[9]},
+				Columns:    []*schema.Column{ReviewsColumns[10]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "reviews_events_event",
-				Columns:    []*schema.Column{ReviewsColumns[10]},
+				Columns:    []*schema.Column{ReviewsColumns[11]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "reviews_users_reviews",
-				Columns:    []*schema.Column{ReviewsColumns[11]},
+				Columns:    []*schema.Column{ReviewsColumns[12]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1604,12 +1652,28 @@ var (
 		{Name: "role", Type: field.TypeEnum, Enums: []string{"user", "admin", "business_owner", "staff"}, Default: "user"},
 		{Name: "permissions", Type: field.TypeJSON, Nullable: true},
 		{Name: "is_premium", Type: field.TypeBool, Default: false},
+		{Name: "event_additional_organizers", Type: field.TypeString, Nullable: true},
+		{Name: "event_performers", Type: field.TypeString, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "users_events_additional_organizers",
+				Columns:    []*schema.Column{UsersColumns[22]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "users_events_performers",
+				Columns:    []*schema.Column{UsersColumns[23]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// UserBusinessesColumns holds the columns for the "user_businesses" table.
 	UserBusinessesColumns = []*schema.Column{
@@ -2824,6 +2888,7 @@ var (
 		CommentsTable,
 		CustomBlocksTable,
 		EventsTable,
+		EventOrganizersTable,
 		FaQsTable,
 		FeatureReleasesTable,
 		FitnessesTable,
@@ -2934,13 +2999,15 @@ func init() {
 	CategoryAssignmentsTable.ForeignKeys[3].RefTable = PlacesTable
 	CategoryAssignmentsTable.ForeignKeys[4].RefTable = UsersTable
 	CommentsTable.ForeignKeys[0].RefTable = CommentsTable
-	CommentsTable.ForeignKeys[1].RefTable = PostsTable
-	CommentsTable.ForeignKeys[2].RefTable = ReviewsTable
-	CommentsTable.ForeignKeys[3].RefTable = UsersTable
+	CommentsTable.ForeignKeys[1].RefTable = EventsTable
+	CommentsTable.ForeignKeys[2].RefTable = PostsTable
+	CommentsTable.ForeignKeys[3].RefTable = ReviewsTable
+	CommentsTable.ForeignKeys[4].RefTable = UsersTable
 	CustomBlocksTable.ForeignKeys[0].RefTable = WebsitesTable
 	EventsTable.ForeignKeys[0].RefTable = BusinessesTable
 	EventsTable.ForeignKeys[1].RefTable = PlacesTable
 	EventsTable.ForeignKeys[2].RefTable = UsersTable
+	EventOrganizersTable.ForeignKeys[0].RefTable = EventsTable
 	FaQsTable.ForeignKeys[0].RefTable = BusinessesTable
 	HelpsTable.ForeignKeys[0].RefTable = UsersTable
 	InventoryAttributesTable.ForeignKeys[0].RefTable = InventoryTypesTable
@@ -2950,11 +3017,12 @@ func init() {
 	LikesTable.ForeignKeys[3].RefTable = PostsTable
 	LikesTable.ForeignKeys[4].RefTable = ReviewsTable
 	LikesTable.ForeignKeys[5].RefTable = UsersTable
-	MediaTable.ForeignKeys[0].RefTable = MenuItemsTable
-	MediaTable.ForeignKeys[1].RefTable = PlansTable
-	MediaTable.ForeignKeys[2].RefTable = PostsTable
-	MediaTable.ForeignKeys[3].RefTable = ReviewsTable
-	MediaTable.ForeignKeys[4].RefTable = WebsitesTable
+	MediaTable.ForeignKeys[0].RefTable = EventsTable
+	MediaTable.ForeignKeys[1].RefTable = MenuItemsTable
+	MediaTable.ForeignKeys[2].RefTable = PlansTable
+	MediaTable.ForeignKeys[3].RefTable = PostsTable
+	MediaTable.ForeignKeys[4].RefTable = ReviewsTable
+	MediaTable.ForeignKeys[5].RefTable = WebsitesTable
 	OrdersTable.ForeignKeys[0].RefTable = UsersTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
@@ -2987,11 +3055,12 @@ func init() {
 	ReservationsTable.ForeignKeys[2].RefTable = UsersTable
 	ReservationBlocksTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	ReservationBlocksTable.ForeignKeys[1].RefTable = UsersTable
-	ReviewsTable.ForeignKeys[0].RefTable = PlacesTable
-	ReviewsTable.ForeignKeys[1].RefTable = BusinessesTable
-	ReviewsTable.ForeignKeys[2].RefTable = PlacesTable
-	ReviewsTable.ForeignKeys[3].RefTable = EventsTable
-	ReviewsTable.ForeignKeys[4].RefTable = UsersTable
+	ReviewsTable.ForeignKeys[0].RefTable = EventsTable
+	ReviewsTable.ForeignKeys[1].RefTable = PlacesTable
+	ReviewsTable.ForeignKeys[2].RefTable = BusinessesTable
+	ReviewsTable.ForeignKeys[3].RefTable = PlacesTable
+	ReviewsTable.ForeignKeys[4].RefTable = EventsTable
+	ReviewsTable.ForeignKeys[5].RefTable = UsersTable
 	StaffsTable.ForeignKeys[0].RefTable = UsersTable
 	SubscriptionsTable.ForeignKeys[0].RefTable = PlansTable
 	SubscriptionsTable.ForeignKeys[1].RefTable = PricesTable
@@ -3001,6 +3070,8 @@ func init() {
 	TicketOptionsTable.ForeignKeys[1].RefTable = TicketsTable
 	TransactionHistoriesTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	TransactionHistoriesTable.ForeignKeys[1].RefTable = UsersTable
+	UsersTable.ForeignKeys[0].RefTable = EventsTable
+	UsersTable.ForeignKeys[1].RefTable = EventsTable
 	UserBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	UserBusinessesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable

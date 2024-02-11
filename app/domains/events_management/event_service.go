@@ -4,16 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"github.com/google/uuid"
 	"placio-app/domains/search"
 	"placio-app/ent"
 	"placio-app/ent/event"
+	"placio-app/ent/eventorganizer"
 	"strings"
 	"time"
 )
 
 type IEventService interface {
-	CreateEvent(ctx context.Context, businessId string, data EventDTO) (*ent.Event, error)
+	CreateEvent(ctx context.Context, businessId string, data *ent.Event) (*ent.Event, error)
+	AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error
 	UpdateEvent(ctx context.Context, eventId string, businessId string, data EventDTO) (*ent.Event, error)
 	GetEventByID(ctx context.Context, id string) (*ent.Event, error)
 	DeleteEvent(ctx context.Context, eventId string) error
@@ -192,94 +194,187 @@ func NewEventService(client *ent.Client, searchService search.SearchService) *Ev
 	return &EventService{client: client, searchService: searchService}
 }
 
-func (s *EventService) CreateEvent(ctx context.Context, businessId string, data EventDTO) (*ent.Event, error) {
-	// get the user from the context
-	user := ctx.Value("user").(string)
-	// get user from db
-	userEnt, err := s.client.User.Get(ctx, user)
+const OrganizerContextKey ContextKey = "organizers"
+
+func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent.Event) (*ent.Event, error) {
+	// Extract organizers from context
+	organizers, ok := ctx.Value(OrganizerContextKey).([]OrganizerInfo)
+	if !ok {
+		return nil, errors.New("organizer information missing")
+	}
+
+	// Start a transaction
+	tx, err := s.client.Tx(ctx)
 	if err != nil {
-		log.Println("error: ", err)
 		return nil, err
 	}
 
-	var businessEnt *ent.Business
+	// Use eventData directly to create the event, assuming SetOwnerUserID or similar linkage
+	event, err := tx.Event.Create().
+		SetName(data.Name).
+		SetID(uuid.NewString()).
+		SetNillableName(&data.Name). // SetNillable used for optional fields
+		SetNillableEventType(&data.EventType).
+		SetNillableStatus(&data.Status).
+		SetNillableLocation(&data.Location).
+		SetNillableURL(&data.URL).
+		SetNillableTitle(&data.Title).
+		SetNillableTimeZone(&data.TimeZone).
+		SetNillableStartTime(&data.StartTime).
+		SetNillableEndTime(&data.EndTime).
+		SetNillableStartDate(&data.StartDate).
+		SetNillableEndDate(&data.EndDate).
+		//SetNillableFrequency(event.Frequency(data.Frequency)).
+		SetNillableFrequencyInterval(&data.FrequencyInterval).
+		SetNillableFrequencyDayOfWeek(&data.FrequencyDayOfWeek).
+		SetNillableFrequencyDayOfMonth(&data.FrequencyDayOfMonth).
+		SetNillableFrequencyMonthOfYear(&data.FrequencyMonthOfYear).
+		//SetNillableVenueType(event.VenueType(data.VenueType)).
+		SetNillableVenueName(&data.VenueName).
+		SetNillableVenueAddress(&data.VenueAddress).
+		SetNillableVenueCity(&data.VenueCity).
+		SetNillableVenueState(&data.VenueState).
+		//SetNillableVenueCountry(data.VenueCountry).
+		SetNillableVenueZip(&data.VenueZip).
+		SetNillableVenueLat(&data.VenueLat).
+		SetNillableVenueLon(&data.VenueLon).
+		SetNillableVenueURL(&data.VenueURL).
+		SetNillableVenuePhone(&data.VenuePhone).
+		SetNillableVenueEmail(&data.VenueEmail).
+		SetTags(data.Tags).
+		SetNillableDescription(&data.Description).
+		//SetNillableEventSettings(data.EventSettings).
+		SetCoverImage(data.CoverImage).
+		SetCreatedAt(data.CreatedAt).
+		SetUpdatedAt(data.UpdatedAt).
+		//SetNillableMapCoordinates(data.MapCoordinates).
+		SetNillableLongitude(&data.Longitude).
+		SetNillableLatitude(&data.Latitude).
+		SetNillableSearchText(&data.SearchText).
+		SetNillableRelevanceScore(&data.RelevanceScore).
+		SetFollowerCount(data.FollowerCount).
+		SetFollowingCount(data.FollowingCount).
+		SetIsPremium(data.IsPremium).
+		SetIsPublished(data.IsPublished).
+		SetIsOnline(data.IsOnline).
+		SetIsFree(data.IsFree).
+		SetIsPaid(data.IsPaid).
+		SetIsPublic(data.IsPublic).
+		SetIsOnlineOnly(data.IsOnlineOnly).
+		SetIsInPersonOnly(data.IsInPersonOnly).
+		SetIsHybrid(data.IsHybrid).
+		SetIsOnlineAndInPerson(data.IsOnlineAndInPerson).
+		SetIsOnlineAndInPersonOnly(data.IsOnlineAndInPersonOnly).
+		SetIsOnlineAndInPersonOrHybrid(data.IsOnlineAndInPersonOrHybrid).
+		SetLikedByCurrentUser(data.LikedByCurrentUser).
+		SetFollowedByCurrentUser(data.FollowedByCurrentUser).
+		SetNillableRegistrationType(&data.RegistrationType).
+		SetNillableRegistrationURL(&data.RegistrationURL).
+		SetIsPhysicallyAccessible(data.IsPhysicallyAccessible).
+		SetNillableAccessibilityInfo(&data.AccessibilityInfo).
+		SetIsVirtuallyAccessible(data.IsVirtuallyAccessible).
+		Save(ctx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 
-	// get business from db
-	if businessId != "" {
-		businessEnt, err = s.client.Business.Get(ctx, businessId)
+	// Process each organizer, adding them to the event
+	for _, org := range organizers {
+		// Assume a method to process and add organizers based on their type
+		err := addOrganizerToEvent(tx, event, org)
 		if err != nil {
-			log.Println("error: ", err)
+			tx.Rollback()
 			return nil, err
 		}
 	}
 
-	log.Println("data.EventType", data.EventType)
-
-	//typeEnum, err := parseEventType(data.EventType)
-	//if err != nil {
-	//	log.Println("error: ", err)
-	//	return nil, err
-	//}
-	//frequencyEnum, err := parseFrequencyType(data.Frequency)
-	//if err != nil {
-	//	log.Println("error: ", err)
-	//	return nil, err
-	//}
-	//venueTypeEnum, err := parseVenueType(data.VenueType)
-	//if err != nil {
-	//	log.Println("error: ", err)
-	//	return nil, err
-	//}
-
-	event, err := s.client.Event.
-		Create().
-		SetID(data.ID).
-		SetName(data.Name).
-		//SetEventType(typeEnum).
-		SetStatus(data.Status).
-		SetLocation(data.Location).
-		SetURL(data.URL).
-		SetTitle(data.Title).
-		SetTimeZone(data.TimeZone).
-		SetStartTime(data.StartTime).
-		SetEndTime(data.EndTime).
-		SetStartDate(data.StartDate).
-		SetEndDate(data.EndDate).
-		//SetFrequency(frequencyEnum).
-		SetFrequencyInterval(data.FrequencyInterval).
-		SetFrequencyDayOfWeek(data.FrequencyDayOfWeek).
-		SetFrequencyDayOfMonth(data.FrequencyDayOfMonth).
-		SetFrequencyMonthOfYear(data.FrequencyMonthOfYear).
-		//SetVenueType(venueTypeEnum).
-		SetVenueName(data.VenueName).
-		SetVenueAddress(data.VenueAddress).
-		SetVenueCity(data.VenueCity).
-		SetVenueState(data.VenueState).
-		SetVenueCountry(data.VenueCountry).
-		//SetVenueZIP(data.VenueZIP).
-		SetVenueLat(data.VenueLat).
-		SetVenueLon(data.VenueLon).
-		SetVenueURL(data.VenueURL).
-		SetVenuePhone(data.VenuePhone).
-		SetVenueEmail(data.VenueEmail).
-		//SetVenueCapacity(data.VenueCapacity).
-		// TODO: SetTags(data.Tags).
-		//SetTags(data.Tags).
-		SetDescription(data.Description).
-		SetEventSettings(data.EventSettings).
-		SetCoverImage(data.CoverImage).
-		SetCreatedAt(data.CreatedAt).
-		SetUpdatedAt(data.UpdatedAt).
-		SetOwnerUser(userEnt).
-		SetOwnerBusiness(businessEnt).
-		Save(ctx)
-
-	if err != nil {
-		log.Println("error: ", err)
+	// Attempt to commit the transaction
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
 	return event, nil
+}
+
+// Helper function to add an organizer to an event, distinguishing between user and business types
+func addOrganizerToEvent(tx *ent.Tx, event *ent.Event, org OrganizerInfo) error {
+	switch org.Type {
+	case "user":
+		_, err := tx.EventOrganizer.Create().
+			SetEvent(event).
+			SetOrganizerID(org.ID).
+			SetOrganizerType("user").
+			Save(context.Background()) // Consider passing the original context if available
+		return err
+	case "business":
+		_, err := tx.EventOrganizer.Create().
+			SetEvent(event).
+			SetOrganizerID(org.ID).
+			SetOrganizerType("business").
+			Save(context.Background()) // Consider passing the original context if available
+		return err
+	default:
+		return errors.New("invalid organizer type")
+	}
+}
+
+func (s *EventService) AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error {
+	tx, err := s.client.Tx(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, organizer := range organizers {
+		if organizer.OrganizerType != "user" && organizer.OrganizerType != "business" {
+			tx.Rollback()
+			return errors.New("invalid organizer type")
+		}
+
+		_, err := tx.EventOrganizer.
+			Create().
+			SetOrganizerID(organizer.OrganizerID).
+			SetOrganizerType(organizer.OrganizerType).
+			SetEventID(eventID).
+			Save(ctx)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	return tx.Commit()
+}
+
+func (s *EventService) GetOrganizersForEvent(ctx context.Context, eventID string) ([]interface{}, error) {
+	organizers, err := s.client.EventOrganizer.
+		Query().
+		Where(eventorganizer.HasEventWith(event.ID(eventID))).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []interface{}
+	for _, org := range organizers {
+		switch org.OrganizerType {
+		case "user":
+			user, err := s.client.User.Get(ctx, org.OrganizerID)
+			if err != nil {
+				return nil, err
+			}
+			result = append(result, user)
+		case "business":
+			business, err := s.client.Business.Get(ctx, org.OrganizerID)
+			if err != nil {
+				return nil, err
+			}
+			result = append(result, business)
+		default:
+			// Handle invalid type
+		}
+	}
+	return result, nil
 }
 
 func (s *EventService) UpdateEvent(ctx context.Context, eventId string, businessId string, data EventDTO) (*ent.Event, error) {

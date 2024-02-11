@@ -6,8 +6,10 @@ import (
 	"log"
 	"net/http"
 	_ "placio-app/Dto"
+	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/utility"
+	"placio-pkg/middleware"
 	"strconv"
 )
 
@@ -20,13 +22,14 @@ func NewEventController(service IEventService, utility utility.IUtility) *EventC
 	return &EventController{service: service, utility: utility}
 }
 
-func (c *EventController) RegisterRoutes(router *gin.RouterGroup) {
+func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGroup) {
 	eventRouter := router.Group("/events")
-	eventRouter.POST("/", utility.Use(c.createEvent))
-	eventRouter.PATCH("/:eventId", utility.Use(c.updateEvent))
-	eventRouter.DELETE("/:eventId", utility.Use(c.deleteEvent))
-	eventRouter.GET("/:eventId", utility.Use(c.getEventByID))
-	eventRouter.GET("/", utility.Use(c.getEventsByFilters))
+	eventRouterWithoutAuth := routerWithoutAuth.Group("/events")
+	eventRouter.POST("/", middleware.ErrorMiddleware(c.createEvent))
+	eventRouter.PATCH("/:eventId", middleware.ErrorMiddleware(c.updateEvent))
+	eventRouter.DELETE("/:eventId", middleware.ErrorMiddleware(c.deleteEvent))
+	eventRouterWithoutAuth.GET("/:eventId", middleware.ErrorMiddleware(c.getEventByID))
+	eventRouterWithoutAuth.GET("/", middleware.ErrorMiddleware(c.getEventsByFilters))
 	//eventRouter.Get("/participants/:eventId", c.getEventParticipants)
 
 }
@@ -45,7 +48,7 @@ func (c *EventController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /events [post]
 func (c *EventController) createEvent(ctx *gin.Context) error {
-	var data EventDTO
+	var data *ent.Event
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		log.Println("error: ", err)
 		return err

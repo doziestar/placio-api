@@ -10,10 +10,14 @@ import (
 	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/eventorganizer"
 	"placio-app/ent/faq"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/rating"
+	"placio-app/ent/review"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/user"
@@ -424,16 +428,8 @@ func (ec *EventCreate) SetNillableVenueEmail(s *string) *EventCreate {
 }
 
 // SetTags sets the "tags" field.
-func (ec *EventCreate) SetTags(s string) *EventCreate {
+func (ec *EventCreate) SetTags(s []string) *EventCreate {
 	ec.mutation.SetTags(s)
-	return ec
-}
-
-// SetNillableTags sets the "tags" field if the given value is not nil.
-func (ec *EventCreate) SetNillableTags(s *string) *EventCreate {
-	if s != nil {
-		ec.SetTags(*s)
-	}
 	return ec
 }
 
@@ -659,6 +655,20 @@ func (ec *EventCreate) SetNillableIsPaid(b *bool) *EventCreate {
 	return ec
 }
 
+// SetIsPublic sets the "is_public" field.
+func (ec *EventCreate) SetIsPublic(b bool) *EventCreate {
+	ec.mutation.SetIsPublic(b)
+	return ec
+}
+
+// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsPublic(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsPublic(*b)
+	}
+	return ec
+}
+
 // SetIsOnlineOnly sets the "is_Online_Only" field.
 func (ec *EventCreate) SetIsOnlineOnly(b bool) *EventCreate {
 	ec.mutation.SetIsOnlineOnly(b)
@@ -767,6 +777,76 @@ func (ec *EventCreate) SetFollowedByCurrentUser(b bool) *EventCreate {
 func (ec *EventCreate) SetNillableFollowedByCurrentUser(b *bool) *EventCreate {
 	if b != nil {
 		ec.SetFollowedByCurrentUser(*b)
+	}
+	return ec
+}
+
+// SetRegistrationType sets the "registration_type" field.
+func (ec *EventCreate) SetRegistrationType(et event.RegistrationType) *EventCreate {
+	ec.mutation.SetRegistrationType(et)
+	return ec
+}
+
+// SetNillableRegistrationType sets the "registration_type" field if the given value is not nil.
+func (ec *EventCreate) SetNillableRegistrationType(et *event.RegistrationType) *EventCreate {
+	if et != nil {
+		ec.SetRegistrationType(*et)
+	}
+	return ec
+}
+
+// SetRegistrationURL sets the "registration_url" field.
+func (ec *EventCreate) SetRegistrationURL(s string) *EventCreate {
+	ec.mutation.SetRegistrationURL(s)
+	return ec
+}
+
+// SetNillableRegistrationURL sets the "registration_url" field if the given value is not nil.
+func (ec *EventCreate) SetNillableRegistrationURL(s *string) *EventCreate {
+	if s != nil {
+		ec.SetRegistrationURL(*s)
+	}
+	return ec
+}
+
+// SetIsPhysicallyAccessible sets the "is_physically_accessible" field.
+func (ec *EventCreate) SetIsPhysicallyAccessible(b bool) *EventCreate {
+	ec.mutation.SetIsPhysicallyAccessible(b)
+	return ec
+}
+
+// SetNillableIsPhysicallyAccessible sets the "is_physically_accessible" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsPhysicallyAccessible(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsPhysicallyAccessible(*b)
+	}
+	return ec
+}
+
+// SetAccessibilityInfo sets the "accessibility_info" field.
+func (ec *EventCreate) SetAccessibilityInfo(s string) *EventCreate {
+	ec.mutation.SetAccessibilityInfo(s)
+	return ec
+}
+
+// SetNillableAccessibilityInfo sets the "accessibility_info" field if the given value is not nil.
+func (ec *EventCreate) SetNillableAccessibilityInfo(s *string) *EventCreate {
+	if s != nil {
+		ec.SetAccessibilityInfo(*s)
+	}
+	return ec
+}
+
+// SetIsVirtuallyAccessible sets the "is_virtually_accessible" field.
+func (ec *EventCreate) SetIsVirtuallyAccessible(b bool) *EventCreate {
+	ec.mutation.SetIsVirtuallyAccessible(b)
+	return ec
+}
+
+// SetNillableIsVirtuallyAccessible sets the "is_virtually_accessible" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsVirtuallyAccessible(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsVirtuallyAccessible(*b)
 	}
 	return ec
 }
@@ -950,6 +1030,96 @@ func (ec *EventCreate) AddRatings(r ...*Rating) *EventCreate {
 	return ec.AddRatingIDs(ids...)
 }
 
+// AddAdditionalOrganizerIDs adds the "additional_organizers" edge to the User entity by IDs.
+func (ec *EventCreate) AddAdditionalOrganizerIDs(ids ...string) *EventCreate {
+	ec.mutation.AddAdditionalOrganizerIDs(ids...)
+	return ec
+}
+
+// AddAdditionalOrganizers adds the "additional_organizers" edges to the User entity.
+func (ec *EventCreate) AddAdditionalOrganizers(u ...*User) *EventCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return ec.AddAdditionalOrganizerIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (ec *EventCreate) AddMediumIDs(ids ...string) *EventCreate {
+	ec.mutation.AddMediumIDs(ids...)
+	return ec
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (ec *EventCreate) AddMedia(m ...*Media) *EventCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ec.AddMediumIDs(ids...)
+}
+
+// AddEventCommentIDs adds the "event_comments" edge to the Comment entity by IDs.
+func (ec *EventCreate) AddEventCommentIDs(ids ...string) *EventCreate {
+	ec.mutation.AddEventCommentIDs(ids...)
+	return ec
+}
+
+// AddEventComments adds the "event_comments" edges to the Comment entity.
+func (ec *EventCreate) AddEventComments(c ...*Comment) *EventCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ec.AddEventCommentIDs(ids...)
+}
+
+// AddEventReviewIDs adds the "event_reviews" edge to the Review entity by IDs.
+func (ec *EventCreate) AddEventReviewIDs(ids ...string) *EventCreate {
+	ec.mutation.AddEventReviewIDs(ids...)
+	return ec
+}
+
+// AddEventReviews adds the "event_reviews" edges to the Review entity.
+func (ec *EventCreate) AddEventReviews(r ...*Review) *EventCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ec.AddEventReviewIDs(ids...)
+}
+
+// AddPerformerIDs adds the "performers" edge to the User entity by IDs.
+func (ec *EventCreate) AddPerformerIDs(ids ...string) *EventCreate {
+	ec.mutation.AddPerformerIDs(ids...)
+	return ec
+}
+
+// AddPerformers adds the "performers" edges to the User entity.
+func (ec *EventCreate) AddPerformers(u ...*User) *EventCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return ec.AddPerformerIDs(ids...)
+}
+
+// AddEventOrganizerIDs adds the "event_organizers" edge to the EventOrganizer entity by IDs.
+func (ec *EventCreate) AddEventOrganizerIDs(ids ...string) *EventCreate {
+	ec.mutation.AddEventOrganizerIDs(ids...)
+	return ec
+}
+
+// AddEventOrganizers adds the "event_organizers" edges to the EventOrganizer entity.
+func (ec *EventCreate) AddEventOrganizers(e ...*EventOrganizer) *EventCreate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ec.AddEventOrganizerIDs(ids...)
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (ec *EventCreate) Mutation() *EventMutation {
 	return ec.mutation
@@ -1033,6 +1203,10 @@ func (ec *EventCreate) defaults() error {
 		v := event.DefaultIsPaid
 		ec.mutation.SetIsPaid(v)
 	}
+	if _, ok := ec.mutation.IsPublic(); !ok {
+		v := event.DefaultIsPublic
+		ec.mutation.SetIsPublic(v)
+	}
 	if _, ok := ec.mutation.IsOnlineOnly(); !ok {
 		v := event.DefaultIsOnlineOnly
 		ec.mutation.SetIsOnlineOnly(v)
@@ -1064,6 +1238,14 @@ func (ec *EventCreate) defaults() error {
 	if _, ok := ec.mutation.FollowedByCurrentUser(); !ok {
 		v := event.DefaultFollowedByCurrentUser
 		ec.mutation.SetFollowedByCurrentUser(v)
+	}
+	if _, ok := ec.mutation.IsPhysicallyAccessible(); !ok {
+		v := event.DefaultIsPhysicallyAccessible
+		ec.mutation.SetIsPhysicallyAccessible(v)
+	}
+	if _, ok := ec.mutation.IsVirtuallyAccessible(); !ok {
+		v := event.DefaultIsVirtuallyAccessible
+		ec.mutation.SetIsVirtuallyAccessible(v)
 	}
 	return nil
 }
@@ -1112,6 +1294,9 @@ func (ec *EventCreate) check() error {
 	if _, ok := ec.mutation.IsPaid(); !ok {
 		return &ValidationError{Name: "is_Paid", err: errors.New(`ent: missing required field "Event.is_Paid"`)}
 	}
+	if _, ok := ec.mutation.IsPublic(); !ok {
+		return &ValidationError{Name: "is_public", err: errors.New(`ent: missing required field "Event.is_public"`)}
+	}
 	if _, ok := ec.mutation.IsOnlineOnly(); !ok {
 		return &ValidationError{Name: "is_Online_Only", err: errors.New(`ent: missing required field "Event.is_Online_Only"`)}
 	}
@@ -1135,6 +1320,17 @@ func (ec *EventCreate) check() error {
 	}
 	if _, ok := ec.mutation.FollowedByCurrentUser(); !ok {
 		return &ValidationError{Name: "followedByCurrentUser", err: errors.New(`ent: missing required field "Event.followedByCurrentUser"`)}
+	}
+	if v, ok := ec.mutation.RegistrationType(); ok {
+		if err := event.RegistrationTypeValidator(v); err != nil {
+			return &ValidationError{Name: "registration_type", err: fmt.Errorf(`ent: validator failed for field "Event.registration_type": %w`, err)}
+		}
+	}
+	if _, ok := ec.mutation.IsPhysicallyAccessible(); !ok {
+		return &ValidationError{Name: "is_physically_accessible", err: errors.New(`ent: missing required field "Event.is_physically_accessible"`)}
+	}
+	if _, ok := ec.mutation.IsVirtuallyAccessible(); !ok {
+		return &ValidationError{Name: "is_virtually_accessible", err: errors.New(`ent: missing required field "Event.is_virtually_accessible"`)}
 	}
 	return nil
 }
@@ -1284,7 +1480,7 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_node.VenueEmail = value
 	}
 	if value, ok := ec.mutation.Tags(); ok {
-		_spec.SetField(event.FieldTags, field.TypeString, value)
+		_spec.SetField(event.FieldTags, field.TypeJSON, value)
 		_node.Tags = value
 	}
 	if value, ok := ec.mutation.Description(); ok {
@@ -1355,6 +1551,10 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec.SetField(event.FieldIsPaid, field.TypeBool, value)
 		_node.IsPaid = value
 	}
+	if value, ok := ec.mutation.IsPublic(); ok {
+		_spec.SetField(event.FieldIsPublic, field.TypeBool, value)
+		_node.IsPublic = value
+	}
 	if value, ok := ec.mutation.IsOnlineOnly(); ok {
 		_spec.SetField(event.FieldIsOnlineOnly, field.TypeBool, value)
 		_node.IsOnlineOnly = value
@@ -1386,6 +1586,26 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.FollowedByCurrentUser(); ok {
 		_spec.SetField(event.FieldFollowedByCurrentUser, field.TypeBool, value)
 		_node.FollowedByCurrentUser = value
+	}
+	if value, ok := ec.mutation.RegistrationType(); ok {
+		_spec.SetField(event.FieldRegistrationType, field.TypeEnum, value)
+		_node.RegistrationType = value
+	}
+	if value, ok := ec.mutation.RegistrationURL(); ok {
+		_spec.SetField(event.FieldRegistrationURL, field.TypeString, value)
+		_node.RegistrationURL = value
+	}
+	if value, ok := ec.mutation.IsPhysicallyAccessible(); ok {
+		_spec.SetField(event.FieldIsPhysicallyAccessible, field.TypeBool, value)
+		_node.IsPhysicallyAccessible = value
+	}
+	if value, ok := ec.mutation.AccessibilityInfo(); ok {
+		_spec.SetField(event.FieldAccessibilityInfo, field.TypeString, value)
+		_node.AccessibilityInfo = value
+	}
+	if value, ok := ec.mutation.IsVirtuallyAccessible(); ok {
+		_spec.SetField(event.FieldIsVirtuallyAccessible, field.TypeBool, value)
+		_node.IsVirtuallyAccessible = value
 	}
 	if nodes := ec.mutation.TicketsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1558,6 +1778,102 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.AdditionalOrganizersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.AdditionalOrganizersTable,
+			Columns: []string{event.AdditionalOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.MediaTable,
+			Columns: []string{event.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.EventCommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventCommentsTable,
+			Columns: []string{event.EventCommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.EventReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventReviewsTable,
+			Columns: []string{event.EventReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.PerformersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.PerformersTable,
+			Columns: []string{event.PerformersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.EventOrganizersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.EventOrganizersTable,
+			Columns: []string{event.EventOrganizersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(eventorganizer.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -20,6 +20,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/customblock"
 	"placio-app/ent/event"
+	"placio-app/ent/eventorganizer"
 	"placio-app/ent/faq"
 	"placio-app/ent/featurerelease"
 	"placio-app/ent/fitness"
@@ -145,6 +146,7 @@ func checkColumn(table, column string) error {
 			comment.Table:                 comment.ValidColumn,
 			customblock.Table:             customblock.ValidColumn,
 			event.Table:                   event.ValidColumn,
+			eventorganizer.Table:          eventorganizer.ValidColumn,
 			faq.Table:                     faq.ValidColumn,
 			featurerelease.Table:          featurerelease.ValidColumn,
 			fitness.Table:                 fitness.ValidColumn,
