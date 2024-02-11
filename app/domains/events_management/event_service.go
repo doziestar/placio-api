@@ -19,6 +19,7 @@ import (
 type IEventService interface {
 	CreateEvent(ctx context.Context, businessId string, data *ent.Event) (*ent.Event, error)
 	AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error
+	RemoveOrganizer(ctx context.Context, eventID string, organizerID string) error
 	GetOrganizersForEvent(ctx context.Context, eventID string) ([]interface{}, error)
 	UpdateEvent(ctx context.Context, eventId string, businessId string, data *ent.Event) (*ent.Event, error)
 	GetEventByID(ctx context.Context, id string) (*ent.Event, error)
@@ -408,6 +409,27 @@ func (s *EventService) GetOrganizersForEvent(ctx context.Context, eventID string
 		}
 	}
 	return result, nil
+}
+
+func (s *EventService) RemoveOrganizer(ctx context.Context, eventID string, organizerID string) error {
+	tx, err := s.client.Tx(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Attempt to remove the organizer
+	_, err = tx.EventOrganizer.Delete().
+		Where(
+			eventorganizer.HasEventWith(event.ID(eventID)),
+			eventorganizer.OrganizerID(organizerID),
+		).
+		Exec(ctx)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (s *EventService) UpdateEvent(ctx context.Context, eventId string, businessId string, data *ent.Event) (*ent.Event, error) {

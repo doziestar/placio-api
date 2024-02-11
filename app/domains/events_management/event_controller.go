@@ -33,6 +33,9 @@ func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 	eventRouterWithoutAuth.GET("/", middleware.ErrorMiddleware(c.getEventsByFilters))
 	eventRouter.POST("/:eventId/media", middleware.ErrorMiddleware(c.addMediaToEvent))
 	eventRouter.DELETE("/:eventId/media/:mediaID", middleware.ErrorMiddleware(c.removeMediaFromEvent))
+	eventRouter.POST("/:eventId/organizers", middleware.ErrorMiddleware(c.addOrganizersToEvent))
+	eventRouterWithoutAuth.GET("/:eventId/organizers", middleware.ErrorMiddleware(c.getOrganizersForEvent))
+	eventRouter.DELETE("/:eventId/organizers/:organizerId", middleware.ErrorMiddleware(c.removeOrganizerFromEvent))
 }
 
 // CreateEvent godoc
@@ -119,6 +122,47 @@ func (c *EventController) addMediaToEvent(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(event))
+	return nil
+}
+
+// AddOrganizersToEvent handles adding organizers to an event.
+func (c *EventController) addOrganizersToEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("eventId")
+	var organizers []OrganizerInput
+	if err := ctx.BindJSON(&organizers); err != nil {
+		return err
+	}
+
+	if err := c.service.AddOrganizers(ctx, eventID, organizers); err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Organizers added successfully"})
+	return nil
+}
+
+// GetOrganizersForEvent handles retrieving organizers for an event.
+func (c *EventController) getOrganizersForEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("eventId")
+	organizers, err := c.service.GetOrganizersForEvent(ctx, eventID)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(organizers))
+	return nil
+}
+
+// RemoveOrganizerFromEvent handles removing an organizer from an event.
+func (c *EventController) removeOrganizerFromEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("eventId")
+	organizerID := ctx.Param("organizerId") // Ensure this param name matches your routing definition
+
+	if err := c.service.RemoveOrganizer(ctx, eventID, organizerID); err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Organizer removed successfully"})
 	return nil
 }
 

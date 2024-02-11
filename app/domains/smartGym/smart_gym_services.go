@@ -2,12 +2,13 @@ package smartGym
 
 import (
 	"context"
+	"fmt"
 	"placio-app/ent"
 )
 
 type ISmartFitness interface {
 	CreateTrainer(ctx context.Context, trainerDto *ent.Trainer) (*ent.Trainer, error)
-	GetTrainers(ctx context.Context) ([]*ent.Trainer, error)
+	GetTrainers(ctx context.Context, placeId string) ([]*ent.Trainer, error)
 	GetTrainerByID(ctx context.Context, trainerId string) (*ent.Trainer, error)
 	UpdateTrainer(ctx context.Context, trainerId string, trainerDto *ent.Trainer) (*ent.Trainer, error)
 	DeleteTrainer(ctx context.Context, trainerId string) error
@@ -89,9 +90,18 @@ func (s *SmartFitnessService) CreateTrainer(ctx context.Context, trainerDto *ent
 //	for _, trainer := range trainers {
 //	  // Perform operations on each trainer
 //	}
-func (s *SmartFitnessService) GetTrainers(ctx context.Context) ([]*ent.Trainer, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *SmartFitnessService) GetTrainers(ctx context.Context, placeId string) ([]*ent.Trainer, error) {
+	trainers, err := s.client.Trainer.
+		Query().
+		WithPlace().
+		All(ctx)
+
+	if err != nil {
+		// Handle and log error
+		return nil, fmt.Errorf("failed to fetch trainers: %w", err)
+	}
+
+	return trainers, nil
 }
 
 // GetTrainerByID retrieves a trainer by their ID.

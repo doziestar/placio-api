@@ -76,7 +76,8 @@ func (c *SmartFitnessController) createTrainer(ctx *gin.Context) error {
 }
 
 func (c *SmartFitnessController) getTrainers(ctx *gin.Context) error {
-	trainers, err := c.smartFitnessService.GetTrainers(ctx)
+	placeId := ctx.Query("placeId")
+	trainers, err := c.smartFitnessService.GetTrainers(ctx, placeId)
 	if err != nil {
 		return err
 	}
