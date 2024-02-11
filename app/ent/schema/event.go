@@ -51,8 +51,7 @@ func (Event) Fields() []ent.Field {
 		field.String("venue_url").Optional(),
 		field.String("venue_phone").Optional(),
 		field.String("venue_email").Optional(),
-		// TODO: convert tags to array
-		field.String("tags").Optional(),
+		field.JSON("tags", []string{}).Optional(),
 		field.Text("description").Optional(),
 		field.JSON("event_settings", map[string]interface{}{}).Optional(),
 		field.String("cover_image").Optional().Default("https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"),
