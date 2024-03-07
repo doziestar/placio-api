@@ -1,199 +1,195 @@
 package tickets
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-	"net/http"
-	_ "placio-app/Dto"
-	"placio-app/models"
-	"placio-app/utility"
+	"placio-pkg/middleware"
 )
 
-type TicketController struct {
-	ticketService TicketService
+type ticketController struct {
+	service ITicketService
 }
 
-func NewTicketController(ticketService TicketService) *TicketController {
-	return &TicketController{ticketService: ticketService}
+func NewTicketController(service ITicketService) *ticketController {
+	return &ticketController{service: service}
 }
 
-func (tc *TicketController) RegisterRoutes(router *gin.RouterGroup) {
+func (c *ticketController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGroup) {
 	ticketRouter := router.Group("/tickets")
-	{
-		ticketRouter.POST("/", utility.Use(tc.createTicket))
-		ticketRouter.GET("/:id", utility.Use(tc.getTicket))
-		ticketRouter.PUT("/:id", utility.Use(tc.updateTicket))
-		ticketRouter.DELETE("/:id", utility.Use(tc.deleteTicket))
-		ticketRouter.GET("/event/:eventId", utility.Use(tc.getTicketsByEvent))
-	}
+	ticketRouterWithoutAuth := routerWithoutAuth.Group("/tickets")
+
+	// Ticket Option Management
+	ticketRouter.POST("/options", middleware.ErrorMiddleware(c.createTicketOption))
+	ticketRouter.PATCH("/options/:optionId", middleware.ErrorMiddleware(c.updateTicketOption))
+	ticketRouter.DELETE("/options/:optionId", middleware.ErrorMiddleware(c.deleteTicketOption))
+	ticketRouterWithoutAuth.GET("/event/:eventId/options", middleware.ErrorMiddleware(c.getTicketOptionsForEvent))
+
+	// Ticket Management
+	ticketRouter.POST("/", middleware.ErrorMiddleware(c.purchaseTicket))
+	ticketRouter.POST("/:ticketId/validate", middleware.ErrorMiddleware(c.validateTicket))
+	ticketRouter.POST("/:ticketId/cancel", middleware.ErrorMiddleware(c.cancelTicket))
+	ticketRouter.POST("/:ticketId/transfer", middleware.ErrorMiddleware(c.transferTicket))
+	ticketRouterWithoutAuth.GET("/:ticketId", middleware.ErrorMiddleware(c.getTicketDetails))
+	ticketRouterWithoutAuth.GET("/user/:userId", middleware.ErrorMiddleware(c.getTicketsByUser))
 }
 
-// createTicket creates a new ticket
-// @Summary Create a new ticket
-// @Description Create a new ticket for the specified event
-// @Tags Ticket
+// CreateTicketOption godoc
+// @Summary Create a new ticket option
+// @Description Create a new ticket option for an event
 // @Accept json
 // @Produce json
-// @Param CreateTicketDto body models.Ticket true "Ticket Data"
-// @Success 201 {object} models.Ticket "Successfully created ticket"
-// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
-// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/tickets/ [post]
-func (tc *TicketController) createTicket(ctx *gin.Context) error {
-	data := new(models.Ticket)
-	if err := ctx.BindJSON(data); err != nil {
-
-		return err
-	}
-
-	ticket := &models.Ticket{
-		//AttendeeID:     data.AttendeeID,
-		EventID: data.EventID,
-		//TicketOptionID: data.TicketOptionID,
-	}
-
-	err := tc.ticketService.CreateTicket(ticket)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Internal Server Error",
-		})
-		return err
-	}
-
-	ctx.JSON(http.StatusCreated, ticket)
-	return nil
-}
-
-// getTicket retrieves a ticket by its ID
-// @Summary GET ticket by ID
-// @Description GET a ticket by its ID
 // @Tags Ticket
-// @Accept json
-// @Produce json
-// @Param id path string true "Ticket ID"
-// @Success 200 {object} models.Ticket "Successfully retrieved ticket"
-// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
-// @Failure 404 {object} Dto.ErrorDTO "Ticket Not Found"
-// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/tickets/{id} [get]
-func (tc *TicketController) getTicket(ctx *gin.Context) error {
-	ticketID := ctx.Param("id")
-	ticket, err := tc.ticketService.GetTicketByEvent(ticketID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "Ticket Not Found",
-			})
-			return err
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
-	}
-
-	ctx.JSON(http.StatusOK, ticket)
-	return nil
-}
-
-// updateTicket updates a ticket by its ID
-// @Summary Update ticket by ID
-// @Description Update a ticket by its ID
-// @Tags Ticket
-// @Accept json
-// @Produce json
-// @Param id path string true "Ticket ID"
-// // @Param UpdateTicketDto body models.Ticket true "Ticket Data"
-// // @Success 200 {object} models.Ticket "Successfully updated ticket"
-// // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
-// // @Failure 404 {object} Dto.ErrorDTO "Ticket Not Found"
-// // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// // @Router /api/v1/tickets/{id} [put]
-func (tc *TicketController) updateTicket(ctx *gin.Context) error {
-	ticketID := ctx.Param("id")
-	data := new(models.Ticket)
-	if err := ctx.BindJSON(data); err != nil {
-
-		return err
-	}
-
-	ticket := &models.Ticket{
-		ID: ticketID,
-		//AttendeeID:     data.AttendeeID,
-		EventID: data.EventID,
-		//TicketOptionID: data.TicketOptionID,
-	}
-	err := tc.ticketService.UpdateTicket(ticket)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "Ticket Not Found",
-			})
-			return err
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
-		return err
-	}
-
-	ctx.JSON(http.StatusOK, ticket)
-	return nil
-}
-
-// deleteTicket deletes a ticket by its ID
-// @Summary Delete ticket by ID
-// @Description Delete a ticket by its ID
-// @Tags Ticket
-// @Accept json
-// @Produce json
-// @Param id path string true "Ticket ID"
-// @Success 204 "Successfully deleted ticket"
-// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
-// @Failure 404 {object} Dto.ErrorDTO "Ticket Not Found"
-// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/tickets/{id} [delete]
-func (tc *TicketController) deleteTicket(ctx *gin.Context) error {
-	ticketID := ctx.Param("id")
-	err := tc.ticketService.DeleteTicket(ticketID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "Ticket Not Found",
-			})
-			return err
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
-		return err
-	}
-
-	ctx.Status(http.StatusNoContent)
-	return nil
-}
-
-// getTicketsByEvent retrieves all tickets for an event
-// @Summary GET tickets by event ID
-// @Description GET all tickets for a specific event
-// @Tags Ticket
-// @Accept json
-// @Produce json
 // @Param eventId path string true "Event ID"
-// @Success 200 {array} models.Ticket "Successfully retrieved tickets"
-// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
-// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/tickets/event/{eventId} [get]
-func (tc *TicketController) getTicketsByEvent(ctx *gin.Context) error {
-	eventID := ctx.Param("eventId")
-	tickets, err := tc.ticketService.GetTicketByEvent(eventID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
-		return err
-	}
+// @Param data body TicketOptionDTO true "Ticket Option Data"
+// @Success 200 {object} TicketOptionDTO
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets/options [post]
+func (c *ticketController) createTicketOption(ctx *gin.Context) error {
+	return nil
+}
 
-	ctx.JSON(http.StatusOK, tickets)
+// UpdateTicketOption godoc
+// @Summary Update a ticket option
+// @Description Update a ticket option for an event
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param optionId path string true "Option ID"
+// @Param data body TicketOptionDTO true "Ticket Option Data"
+// @Success 200 {object} TicketOptionDTO
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets/options/{optionId} [patch]
+func (c *ticketController) updateTicketOption(ctx *gin.Context) error {
+	return nil
+}
+
+// DeleteTicketOption godoc
+// @Summary Delete a ticket option
+// @Description Delete a ticket option for an event
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param optionId path string true "Option ID"
+// @Success 200
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets/options/{optionId} [delete]
+func (c *ticketController) deleteTicketOption(ctx *gin.Context) error {
+	return nil
+}
+
+// GetTicketOptionsForEvent godoc
+// @Summary Get ticket options for an event
+// @Description Get ticket options for an event
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param eventId path string true "Event ID"
+// @Success 200 {object} []TicketOptionDTO
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /tickets/event/{eventId}/options [get]
+func (c *ticketController) getTicketOptionsForEvent(ctx *gin.Context) error {
+	return nil
+}
+
+// PurchaseTicket godoc
+// @Summary Purchase a ticket
+// @Description Purchase a ticket for an event
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param data body TicketPurchaseDTO true "Ticket Purchase Data"
+// @Success 200 {object} TicketDTO
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets [post]
+func (c *ticketController) purchaseTicket(ctx *gin.Context) error {
+	return nil
+}
+
+// ValidateTicket godoc
+// @Summary Validate a ticket
+// @Description Validate a ticket for an event
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param ticketId path string true "Ticket ID"
+// @Success 200
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets/{ticketId}/validate [post]
+func (c *ticketController) validateTicket(ctx *gin.Context) error {
+	return nil
+}
+
+// CancelTicket godoc
+// @Summary Cancel a ticket
+// @Description Cancel a ticket for an event
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param ticketId path string true "Ticket ID"
+// @Success 200
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets/{ticketId}/cancel [post]
+func (c *ticketController) cancelTicket(ctx *gin.Context) error {
+	return nil
+}
+
+// TransferTicket godoc
+// @Summary Transfer a ticket
+// @Description Transfer a ticket for an event to another user
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param ticketId path string true "Ticket ID"
+// @Param toUserId path string true "To User ID"
+// @Success 200
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets/{ticketId}/transfer/{toUserId} [post]
+func (c *ticketController) transferTicket(ctx *gin.Context) error {
+	return nil
+}
+
+// GetTicketsByUser godoc
+// @Summary Get tickets by user
+// @Description Get tickets for a user
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param userId path string true "User ID"
+// @Success 200 {object} []TicketDTO
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets/user/{userId} [get]
+func (c *ticketController) getTicketsByUser(ctx *gin.Context) error {
+
+	return nil
+}
+
+// GetTicketDetails godoc
+// @Summary Get ticket details
+// @Description Get details of a ticket
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param ticketId path string true "Ticket ID"
+// @Success 200 {object} TicketDTO
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /tickets/{ticketId} [get]
+func (c *ticketController) getTicketDetails(ctx *gin.Context) error {
 	return nil
 }

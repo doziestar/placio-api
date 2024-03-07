@@ -29,6 +29,7 @@ import (
 	"placio-app/domains/smartGym"
 	"placio-app/domains/smartMenu"
 	"placio-app/domains/smartRoom"
+	"placio-app/domains/tickets"
 	"placio-app/domains/users"
 	"placio-app/domains/websites"
 	"placio-app/ent"
@@ -223,6 +224,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		smartFitnessService := smartGym.NewSmartFitnessService(client)
 		smartFitnessController := smartGym.NewSmartFitnessController(smartFitnessService)
 		smartFitnessController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
+
+		// tickets
+		ticketService := tickets.NewTicketService(client)
+		ticketController := tickets.NewTicketController(ticketService)
+		ticketController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 	}
 
 }
