@@ -68,27 +68,27 @@ type EventDTO struct {
 }
 
 type EventFilter struct {
-	EventType string
-	Status    string
-	Location  string
-	Title     string
-	TimeZone  string
+	EventType string `form:"eventType"`
+	Status    string `form:"status"`
+	Location  string `form:"location"`
+	Title     string `form:"title"`
+	TimeZone  string `form:"timeZone"`
 	StartDate struct {
-		From string
-		To   string
-	}
+		From string `form:"startDateFrom"`
+		To   string `form:"startDateTo"`
+	} `form:"startDate"`
 	EndDate struct {
-		From string
-		To   string
-	}
+		From string `form:"endDateFrom"`
+		To   string `form:"endDateTo"`
+	} `form:"endDate"`
 	StartTime struct {
-		From time.Time
-		To   time.Time
-	}
+		From time.Time `form:"startTimeFrom"`
+		To   time.Time `form:"startTimeTo"`
+	} `form:"startTime"`
 	EndTime struct {
-		From time.Time
-		To   time.Time
-	}
+		From time.Time `form:"endTimeFrom"`
+		To   time.Time `form:"endTimeTo"`
+	} `form:"endTime"`
 }
 
 // CheckInMethod describes the method of check-in, be it QR codes, facial recognition, or carrier pigeons.
