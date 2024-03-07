@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"placio-app/domains/events_management"
-	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/utility"
 
@@ -252,7 +251,7 @@ func (bc *BusinessAccountController) getPlacesAndEventsAssociatedWithBusinessAcc
 func (bc *BusinessAccountController) addANewEventToBusinessAccount(c *gin.Context) error {
 	businessAccountID := c.Param("businessAccountID")
 
-	var eventDto *ent.Event
+	var eventDto *events_management.EventDTO
 	if err := c.ShouldBindJSON(&eventDto); err != nil {
 
 		return err
