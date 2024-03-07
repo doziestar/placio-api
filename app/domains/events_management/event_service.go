@@ -686,31 +686,63 @@ func (s *EventService) DeleteEvent(ctx context.Context, eventId string) error {
 	return nil
 }
 
+// AddMediaToEvent adds media files to an event. It starts a transaction and fetches the event with the given eventID. Then, it uploads and creates media files using the media service
 func (s *EventService) AddMediaToEvent(ctx context.Context, eventID string, files []*multipart.FileHeader) (*ent.Event, error) {
-	// Fetch event
-	eventData, err := s.client.Event.Get(ctx, eventID)
+	// Start a transaction
+	tx, err := s.client.Tx(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
 		return nil, err
 	}
 
-	// Upload files and create media entities
+	// Fetch event within transaction
+	eventData, err := tx.Event.Get(ctx, eventID)
+	if err != nil {
+		sentry.CaptureException(err)
+		tx.Rollback()
+		return nil, err
+	}
+
 	uploadedFiles, err := s.mediaService.UploadAndCreateMedia(ctx, files)
 	if err != nil {
 		sentry.CaptureException(err)
+		tx.Rollback()
 		return nil, err
 	}
 
-	// Associate uploaded media with the event
-	eventData, err = s.client.Event.UpdateOne(eventData).
+	eventData, err = tx.Event.UpdateOne(eventData).
 		AddMedia(uploadedFiles...).
 		Save(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
+		tx.Rollback()
 		return nil, err
 	}
 
-	return eventData, nil
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		sentry.CaptureException(err)
+		return nil, err
+	}
+
+	event, err := s.client.Event.Query().
+		Where(event.IDEQ(eventID)).
+		WithOwnerUser().
+		WithOwnerBusiness().
+		WithEventOrganizers().
+		WithMedia().
+		WithEventComments().
+		WithAdditionalOrganizers().
+		WithPlace(func(query *ent.PlaceQuery) {
+			query.WithMedias()
+		}).First(ctx)
+
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil, err
+	}
+
+	return event, nil
 }
 
 func (s *EventService) GetEvents(ctx context.Context, filter *EventFilter, page int, pageSize int) ([]*ent.Event, error) {

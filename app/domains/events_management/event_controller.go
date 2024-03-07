@@ -127,7 +127,7 @@ func (c *EventController) updateEvent(ctx *gin.Context) error {
 }
 
 func (c *EventController) addMediaToEvent(ctx *gin.Context) error {
-	eventID := ctx.Param("id")
+	eventID := ctx.Param("eventId")
 
 	files, err := ctx.MultipartForm()
 	if err != nil {
