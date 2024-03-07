@@ -479,7 +479,6 @@ func (s *EventService) RemoveOrganizer(ctx context.Context, eventID string, orga
 		return err
 	}
 
-	// Attempt to remove the organizer
 	_, err = tx.EventOrganizer.Delete().
 		Where(
 			eventorganizer.HasEventWith(event.ID(eventID)),
@@ -771,53 +770,25 @@ func (s *EventService) GetEvents(ctx context.Context, filter *EventFilter, page 
 		WithOwnerUser().
 		WithOwnerBusiness()
 
-	//// Apply filters
-	//if filter.EventType != "" {
-	//	eventTypeEnum, err := parseEventType(filter.EventType)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	query = query.Where(event.HasEventTypeWith(event.EventTypeEqual(eventTypeEnum)))
-	//}
-	//if filter.Status != "" {
-	//	query = query.Where(event.StatusEqual(filter.Status))
-	//}
-	//if filter.Location != "" {
-	//	query = query.Where(event.LocationEqual(filter.Location))
-	//}
-	//if filter.Title != "" {
-	//	query = query.Where(event.TitleEqual(filter.Title))
-	//}
-	//// ... You can add similar checks for other string fields ...
-	//
-	//// Apply date ranges
-	//if filter.StartDate.From != "" {
-	//	from, err := time.Parse("2006-01-02", filter.StartDate.From)
-	//	if err == nil {
-	//		query = query.Where(event.StartDateGTE(from))
-	//	}
-	//}
-	//if filter.StartDate.To != "" {
-	//	to, err := time.Parse("2006-01-02", filter.StartDate.To)
-	//	if err == nil {
-	//		query = query.Where(event.StartDateLTE(to))
-	//	}
-	//}
-	//
-	//if filter.EndDate.From != "" {
-	//	from, err := time.Parse("2006-01-02", filter.EndDate.From)
-	//	if err == nil {
-	//		query = query.Where(event.EndDateGTE(from))
-	//	}
-	//}
-	//if filter.EndDate.To != "" {
-	//	to, err := time.Parse("2006-01-02", filter.EndDate.To)
-	//	if err == nil {
-	//		query = query.Where(event.EndDateLTE(to))
-	//	}
-	//}
+	if filter.EventType != "" {
+		eventType, err := parseEventType(filter.EventType)
+		if err != nil {
+		}
+		query = query.Where(event.EventTypeIn(eventType))
+	}
+	if filter.Status != "" {
+		query = query.Where(event.StatusContainsFold(filter.Status))
+	}
+	if filter.Location != "" {
+		query = query.Where(event.LocationContainsFold(filter.Location))
+	}
+	if filter.Title != "" {
+		query = query.Where(event.TitleContainsFold(filter.Title))
+	}
+	if filter.TimeZone != "" {
+		query = query.Where(event.TimeZoneContainsFold(filter.TimeZone))
+	}
 
-	// Apply time ranges
 	if !filter.StartTime.From.IsZero() {
 		query = query.Where(event.StartTimeGTE(filter.StartTime.From))
 	}
@@ -831,10 +802,8 @@ func (s *EventService) GetEvents(ctx context.Context, filter *EventFilter, page 
 		query = query.Where(event.EndTimeLTE(filter.EndTime.To))
 	}
 
-	// Apply pagination
 	query = query.Offset((page - 1) * pageSize).Limit(pageSize)
 
-	// Execute query
 	events, err := query.All(ctx)
 	if err != nil {
 		return nil, err
