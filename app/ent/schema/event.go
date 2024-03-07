@@ -3,6 +3,7 @@ package schema
 import (
 	"context"
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/getsentry/sentry-go"
@@ -113,11 +114,11 @@ func (Event) Fields() []ent.Field {
 // Edges of the Event.
 func (Event) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("tickets", Ticket.Type),
-		edge.To("ticket_options", TicketOption.Type),
-		edge.To("place", Place.Type),
-		edge.To("event_categories", Category.Type),
-		edge.To("event_category_assignments", CategoryAssignment.Type),
+		edge.To("tickets", Ticket.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("ticket_options", TicketOption.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("place", Place.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("event_categories", Category.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("event_category_assignments", CategoryAssignment.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.From("ownerUser", User.Type).
 			Ref("ownedEvents").
 			Unique(),
@@ -129,13 +130,13 @@ func (Event) Edges() []ent.Edge {
 		edge.From("businessFollowers", BusinessFollowEvent.Type).
 			Ref("event"),
 		edge.From("faqs", FAQ.Type).Ref("event"),
-		edge.To("ratings", Rating.Type),
-		edge.To("additional_organizers", User.Type),
-		edge.To("media", Media.Type),
-		edge.To("event_comments", Comment.Type),
-		edge.To("event_reviews", Review.Type),
-		edge.To("performers", User.Type),
-		edge.To("event_organizers", EventOrganizer.Type),
+		edge.To("ratings", Rating.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("additional_organizers", User.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("media", Media.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("event_comments", Comment.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("event_reviews", Review.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("performers", User.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("event_organizers", EventOrganizer.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }
 

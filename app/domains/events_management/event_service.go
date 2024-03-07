@@ -24,7 +24,7 @@ type IEventService interface {
 	RemoveOrganizer(ctx context.Context, eventID string, organizerID string) error
 	GetOrganizersForEvent(ctx context.Context, eventID string) ([]interface{}, error)
 	GetEventsByOrganizerID(ctx context.Context, organizerId string) ([]*ent.Event, error)
-	UpdateEvent(ctx context.Context, eventId string, businessId string, data *ent.Event) (*ent.Event, error)
+	UpdateEvent(ctx context.Context, eventId string, businessId string, data *EventDTO) (*ent.Event, error)
 	GetEventByID(ctx context.Context, id string) (*ent.Event, error)
 	DeleteEvent(ctx context.Context, eventId string) error
 	AddMediaToEvent(ctx context.Context, eventID string, files []*multipart.FileHeader) (*ent.Event, error)
@@ -474,11 +474,11 @@ func (s *EventService) RemoveOrganizer(ctx context.Context, eventID string, orga
 	return tx.Commit()
 }
 
-func (s *EventService) UpdateEvent(ctx context.Context, eventId string, businessId string, data *ent.Event) (*ent.Event, error) {
-	userID, exist := ctx.Value("userId").(string)
-	if !exist {
-		return nil, errors.New("user not found")
-	}
+func (s *EventService) UpdateEvent(ctx context.Context, eventId string, businessId string, data *EventDTO) (*ent.Event, error) {
+	//userID, exist := ctx.Value("userId").(string)
+	//if !exist {
+	//	return nil, errors.New("user not found")
+	//}
 
 	// Load the event with its owner edges to check ownership.
 	event, err := s.client.Event.Query().
@@ -494,9 +494,9 @@ func (s *EventService) UpdateEvent(ctx context.Context, eventId string, business
 	if event.Edges.OwnerBusiness != nil && businessId != event.Edges.OwnerBusiness.ID {
 		return nil, errors.New("unauthorized: You can only update events that your business owns")
 	}
-	if event.Edges.OwnerUser != nil && userID != event.Edges.OwnerUser.ID {
-		return nil, errors.New("unauthorized: You can only update events that you own")
-	}
+	//if event.Edges.OwnerUser != nil && userID != event.Edges.OwnerUser.ID {
+	//	return nil, errors.New("unauthorized: You can only update events that you own")
+	//}
 
 	// Begin updating the event fields
 	upd := s.client.Event.UpdateOneID(eventId)
@@ -507,7 +507,7 @@ func (s *EventService) UpdateEvent(ctx context.Context, eventId string, business
 	}
 	if data.EventType != "" {
 		// Assuming parseEventType returns an ent.EventType enum and handles conversion.
-		if eventType, err := parseEventType(string(data.EventType)); err == nil {
+		if eventType, err := parseEventType(data.EventType); err == nil {
 			upd.SetEventType(eventType)
 		} else {
 			return nil, err
@@ -802,6 +802,10 @@ func parseEventType(s string) (event.EventType, error) {
 		return event.EventTypePlace, nil
 	case strings.ToLower(string(event.EventTypeBusiness)):
 		return event.EventTypeBusiness, nil
+	case strings.ToLower(string(event.EventTypeFree)):
+		return event.EventTypeFree, nil
+	case strings.ToLower(string(event.EventTypePaid)):
+		return event.EventTypePaid, nil
 	default:
 		return "", fmt.Errorf("invalid EventType: %s", s)
 	}

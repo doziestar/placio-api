@@ -263,7 +263,7 @@ var (
 				Symbol:     "categories_events_event_categories",
 				Columns:    []*schema.Column{CategoriesColumns[11]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "categories_places_categories",
@@ -315,7 +315,7 @@ var (
 				Symbol:     "category_assignments_events_event_category_assignments",
 				Columns:    []*schema.Column{CategoryAssignmentsColumns[4]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "category_assignments_places_categoryAssignments",
@@ -369,7 +369,7 @@ var (
 				Symbol:     "comments_events_event_comments",
 				Columns:    []*schema.Column{CommentsColumns[5]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "comments_posts_comments",
@@ -521,7 +521,7 @@ var (
 				Symbol:     "event_organizers_events_event_organizers",
 				Columns:    []*schema.Column{EventOrganizersColumns[3]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -721,7 +721,7 @@ var (
 				Symbol:     "media_events_media",
 				Columns:    []*schema.Column{MediaColumns[7]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "media_menu_items_media",
@@ -964,7 +964,7 @@ var (
 				Symbol:     "places_events_place",
 				Columns:    []*schema.Column{PlacesColumns[38]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -1253,7 +1253,7 @@ var (
 				Symbol:     "ratings_events_ratings",
 				Columns:    []*schema.Column{RatingsColumns[5]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "ratings_places_ratings",
@@ -1398,7 +1398,7 @@ var (
 				Symbol:     "reviews_events_event_reviews",
 				Columns:    []*schema.Column{ReviewsColumns[7]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "reviews_places_reviews",
@@ -1554,7 +1554,7 @@ var (
 				Symbol:     "tickets_events_tickets",
 				Columns:    []*schema.Column{TicketsColumns[3]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -1576,7 +1576,7 @@ var (
 				Symbol:     "ticket_options_events_ticket_options",
 				Columns:    []*schema.Column{TicketOptionsColumns[3]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "ticket_options_tickets_ticket_options",
@@ -1665,13 +1665,13 @@ var (
 				Symbol:     "users_events_additional_organizers",
 				Columns:    []*schema.Column{UsersColumns[22]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "users_events_performers",
 				Columns:    []*schema.Column{UsersColumns[23]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}

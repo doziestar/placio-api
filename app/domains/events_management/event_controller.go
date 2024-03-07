@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	_ "placio-app/Dto"
-	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/utility"
 	"placio-pkg/middleware"
@@ -38,6 +37,29 @@ func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 	eventRouterWithoutAuth.GET("/organizers/:organizerId", middleware.ErrorMiddleware(c.getEventsByOrganizerId))
 	eventRouter.DELETE("/:eventId/organizers/:organizerId", middleware.ErrorMiddleware(c.removeOrganizerFromEvent))
 }
+
+// TODO: Add the rest of the methods
+// 2. test addMediaToEvent
+// 3. test addOrganizersToEvent
+// 5. test getEventsByFilters
+// 6. test removeMediaFromEvent
+// 8. test add ticket to event
+// 9. test get ticket by event id
+// 10. test get ticket by id
+// 11. test update ticket
+// 12. test delete ticket
+// 13. test get event participants
+// 14. add event participants
+// 15. remove event participants
+// 17. add user ticket purchase
+// 18. get user ticket purchase
+// 19. update user ticket purchase
+// 20. delete user ticket purchase
+// 21. add ability to cancel event
+// 22. add notifications to event
+// 23. automatically send notifications to event participants
+// 24. add a button to create a post with event
+// 25. add ability to add event to calendar
 
 // CreateEvent godoc
 // @Summary Create Event
@@ -89,7 +111,7 @@ func (c *EventController) createEvent(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /events/{eventId} [put]
 func (c *EventController) updateEvent(ctx *gin.Context) error {
-	var data *ent.Event
+	var data *EventDTO
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		return err
 	}
@@ -285,7 +307,7 @@ func (c *EventController) deleteEvent(ctx *gin.Context) error {
 
 		return err
 	}
-	ctx.JSON(http.StatusOK, "Deleted")
+	ctx.JSON(http.StatusNoContent, utility.ProcessResponse("", "Deleted"))
 	return nil
 }
 
