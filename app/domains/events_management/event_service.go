@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
+	"log"
 	"mime/multipart"
 	"placio-app/domains/media"
 	"placio-app/domains/search"
 	"placio-app/ent"
+	"placio-app/ent/business"
 	"placio-app/ent/event"
 	"placio-app/ent/eventorganizer"
 	"strings"
@@ -17,7 +19,8 @@ import (
 )
 
 type IEventService interface {
-	CreateEvent(ctx context.Context, businessId string, data *ent.Event) (*ent.Event, error)
+	CreateEvent(ctx context.Context, businessId string, data *EventDTO) (*ent.Event, error)
+	GetEventByBusinessID(ctx context.Context, businessID string) ([]*ent.Event, error)
 	AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error
 	RemoveOrganizer(ctx context.Context, eventID string, organizerID string) error
 	GetOrganizersForEvent(ctx context.Context, eventID string) ([]interface{}, error)
@@ -202,13 +205,9 @@ func (s *EventService) MultiLanguageSupport(ctx context.Context, eventId string,
 	panic("implement me")
 }
 
-func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent.Event) (*ent.Event, error) {
-	// Extract organizers from context
-	organizers, ok := ctx.Value(OrganizerContextKey).([]OrganizerInfo)
-	if !ok {
-		return nil, errors.New("organizer information missing")
-	}
+func (s *EventService) CreateEvent(ctx context.Context, userID string, data *EventDTO) (*ent.Event, error) {
 
+	organizers := data.OrganizerInfo
 	// Start a transaction
 	tx, err := s.client.Tx(ctx)
 	if err != nil {
@@ -220,7 +219,7 @@ func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent
 		SetName(data.Name).
 		SetID(uuid.NewString()).
 		SetNillableName(&data.Name). // SetNillable used for optional fields
-		SetNillableEventType(&data.EventType).
+		//SetNillableEventType(event.EventType(data.EventType)).
 		SetNillableStatus(&data.Status).
 		SetNillableLocation(&data.Location).
 		SetNillableURL(&data.URL).
@@ -274,7 +273,7 @@ func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent
 		SetIsOnlineAndInPersonOrHybrid(data.IsOnlineAndInPersonOrHybrid).
 		SetLikedByCurrentUser(data.LikedByCurrentUser).
 		SetFollowedByCurrentUser(data.FollowedByCurrentUser).
-		SetNillableRegistrationType(&data.RegistrationType).
+		//SetNillableRegistrationType(&data.RegistrationType).
 		SetNillableRegistrationURL(&data.RegistrationURL).
 		SetIsPhysicallyAccessible(data.IsPhysicallyAccessible).
 		SetNillableAccessibilityInfo(&data.AccessibilityInfo).
@@ -295,6 +294,11 @@ func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent
 		}
 	}
 
+	// add event to business
+	_, err = tx.Business.UpdateOneID(userID).
+		AddEvents(event).
+		Save(ctx)
+
 	// Attempt to commit the transaction
 	if err := tx.Commit(); err != nil {
 		return nil, err
@@ -303,12 +307,33 @@ func (s *EventService) CreateEvent(ctx context.Context, userID string, data *ent
 	return event, nil
 }
 
+func (s *EventService) GetEventByBusinessID(ctx context.Context, businessID string) ([]*ent.Event, error) {
+	log.Println("businessID: ", businessID)
+	events, err := s.client.Event.Query().
+		Where(event.HasOwnerBusinessWith(business.ID(businessID))).
+		WithEventCategories().
+		WithEventCategoryAssignments().
+		WithOwnerUser().
+		WithOwnerBusiness().
+		WithUserFollowers().
+		WithBusinessFollowers().
+		WithEventOrganizers().
+		WithMedia().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+
+}
+
 // Helper function to add an organizer to an event, distinguishing between user and business types
 func addOrganizerToEvent(ctx context.Context, tx *ent.Tx, event *ent.Event, org OrganizerInfo) error {
 	switch org.Type {
 	case "user":
 		_, err := tx.EventOrganizer.Create().
 			SetEvent(event).
+			SetID(uuid.New().String()).
 			SetOrganizerID(org.ID).
 			SetOrganizerType("user").
 			Save(ctx)
@@ -316,6 +341,7 @@ func addOrganizerToEvent(ctx context.Context, tx *ent.Tx, event *ent.Event, org 
 	case "business":
 		_, err := tx.EventOrganizer.Create().
 			SetEvent(event).
+			SetID(uuid.New().String()).
 			SetOrganizerID(org.ID).
 			SetOrganizerType("business").
 			Save(ctx)
