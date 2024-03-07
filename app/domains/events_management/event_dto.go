@@ -3,41 +3,68 @@ package events_management
 import "time"
 
 type EventDTO struct {
-	ID                   string
-	Name                 string
-	EventType            string
-	Status               string
-	Location             string
-	URL                  string
-	Title                string
-	TimeZone             string
-	StartTime            time.Time
-	EndTime              time.Time
-	StartDate            string
-	EndDate              string
-	Frequency            string
-	FrequencyInterval    string
-	FrequencyDayOfWeek   string
-	FrequencyDayOfMonth  string
-	FrequencyMonthOfYear string
-	VenueType            string
-	VenueName            string
-	VenueAddress         string
-	VenueCity            string
-	VenueState           string
-	VenueCountry         string
-	VenueZIP             string
-	VenueLat             string
-	VenueLon             string
-	VenueURL             string
-	VenuePhone           string
-	VenueEmail           string
-	Tags                 []string
-	Description          string
-	EventSettings        map[string]interface{}
-	CoverImage           string
-	CreatedAt            time.Time
-	UpdatedAt            time.Time
+	ID                          string                 `json:"id"`
+	Name                        string                 `json:"name"`
+	EventType                   string                 `json:"eventType"`
+	Status                      string                 `json:"status"`
+	Location                    string                 `json:"location"`
+	URL                         string                 `json:"url"`
+	Title                       string                 `json:"title"`
+	TimeZone                    string                 `json:"timeZone"`
+	StartTime                   time.Time              `json:"startTime"`
+	EndTime                     time.Time              `json:"endTime"`
+	StartDate                   string                 `json:"startDate"`
+	EndDate                     string                 `json:"endDate"`
+	Frequency                   string                 `json:"frequency"`
+	FrequencyInterval           string                 `json:"frequencyInterval"`
+	FrequencyDayOfWeek          string                 `json:"frequencyDayOfWeek"`
+	FrequencyDayOfMonth         string                 `json:"frequencyDayOfMonth"`
+	FrequencyMonthOfYear        string                 `json:"frequencyMonthOfYear"`
+	VenueType                   string                 `json:"venueType"`
+	VenueName                   string                 `json:"venueName"`
+	VenueAddress                string                 `json:"venueAddress"`
+	VenueCity                   string                 `json:"venueCity"`
+	VenueState                  string                 `json:"venueState"`
+	VenueCountry                string                 `json:"venueCountry"`
+	VenueZip                    string                 `json:"venueZip"`
+	VenueLat                    string                 `json:"venueLat"`
+	VenueLon                    string                 `json:"venueLon"`
+	VenueURL                    string                 `json:"venueUrl"`
+	VenuePhone                  string                 `json:"venuePhone"`
+	VenueEmail                  string                 `json:"venueEmail"`
+	Tags                        []string               `json:"tags"`
+	Description                 string                 `json:"description"`
+	CoverImage                  string                 `json:"coverImage"`
+	CreatedAt                   time.Time              `json:"createdAt"`
+	UpdatedAt                   time.Time              `json:"updatedAt"`
+	MapCoordinates              map[string]interface{} `json:"mapCoordinates"`
+	Longitude                   string                 `json:"longitude"`
+	Latitude                    string                 `json:"latitude"`
+	SearchText                  string                 `json:"searchText"`
+	RelevanceScore              float64                `json:"relevanceScore"`
+	FollowerCount               int                    `json:"followerCount"`
+	FollowingCount              int                    `json:"followingCount"`
+	EventSettings               map[string]interface{} `json:"eventSettings"`
+	OrganizerInfo               []OrganizerInfo        `json:"organizerInfo"`
+	IsPremium                   bool                   `json:"isPremium"`
+	IsPublished                 bool                   `json:"isPublished"`
+	IsOnline                    bool                   `json:"isOnline"`
+	IsFree                      bool                   `json:"isFree"`
+	IsPaid                      bool                   `json:"isPaid"`
+	IsPublic                    bool                   `json:"isPublic"`
+	IsOnlineOnly                bool                   `json:"isOnlineOnly"`
+	IsInPersonOnly              bool                   `json:"isInPersonOnly"`
+	IsHybrid                    bool                   `json:"isHybrid"`
+	IsOnlineAndInPerson         bool                   `json:"isOnlineAndInPerson"`
+	IsOnlineAndInPersonOnly     bool                   `json:"isOnlineAndInPersonOnly"`
+	IsOnlineAndInPersonOrHybrid bool                   `json:"isOnlineAndInPersonOrHybrid"`
+	LikedByCurrentUser          bool                   `json:"likedByCurrentUser"`
+	FollowedByCurrentUser       bool                   `json:"followedByCurrentUser"`
+	RegistrationType            string                 `json:"registrationType"`
+	RegistrationURL             string                 `json:"registrationUrl"`
+	IsPhysicallyAccessible      bool                   `json:"isPhysicallyAccessible"`
+	AccessibilityInfo           string                 `json:"accessibilityInfo"`
+	IsVirtuallyAccessible       bool                   `json:"isVirtuallyAccessible"`
 }
 
 type EventFilter struct {
