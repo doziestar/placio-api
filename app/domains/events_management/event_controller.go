@@ -39,10 +39,8 @@ func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 }
 
 // TODO: Add the rest of the methods
-// 2. test addMediaToEvent
 // 3. test addOrganizersToEvent
 // 5. test getEventsByFilters
-// 6. test removeMediaFromEvent
 // 8. test add ticket to event
 // 9. test get ticket by event id
 // 10. test get ticket by id
@@ -151,7 +149,7 @@ func (c *EventController) addMediaToEvent(ctx *gin.Context) error {
 // AddOrganizersToEvent handles adding organizers to an event.
 func (c *EventController) addOrganizersToEvent(ctx *gin.Context) error {
 	eventID := ctx.Param("eventId")
-	var organizers []OrganizerInput
+	var organizers []OrganizerInfo
 	if err := ctx.BindJSON(&organizers); err != nil {
 		return err
 	}

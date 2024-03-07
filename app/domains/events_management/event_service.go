@@ -20,7 +20,7 @@ import (
 type IEventService interface {
 	CreateEvent(ctx context.Context, businessId string, data *EventDTO) (*ent.Event, error)
 	GetEventByBusinessID(ctx context.Context, businessID string) ([]*ent.Event, error)
-	AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error
+	AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInfo) error
 	RemoveOrganizer(ctx context.Context, eventID string, organizerID string) error
 	GetOrganizersForEvent(ctx context.Context, eventID string) ([]interface{}, error)
 	GetEventsByOrganizerID(ctx context.Context, organizerId string) ([]*ent.Event, error)
@@ -400,27 +400,42 @@ func (s *EventService) RemoveMediaFromEvent(ctx context.Context, eventID string,
 	return nil
 }
 
-func (s *EventService) AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error {
+func (s *EventService) AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInfo) error {
 	tx, err := s.client.Tx(ctx)
 	if err != nil {
 		return err
 	}
 
 	for _, organizer := range organizers {
-		if organizer.OrganizerType != "user" && organizer.OrganizerType != "business" {
-			tx.Rollback()
-			return errors.New("invalid organizer type")
+		if organizer.Type != "user" && organizer.Type != "business" {
+			continue
 		}
 
-		_, err := tx.EventOrganizer.
-			Create().
-			SetOrganizerID(organizer.OrganizerID).
-			SetOrganizerType(organizer.OrganizerType).
-			SetEventID(eventID).
-			Save(ctx)
+		exists, err := tx.EventOrganizer.
+			Query().
+			Where(
+				eventorganizer.OrganizerID(organizer.ID),
+				eventorganizer.HasEventWith(event.ID(eventID)),
+				eventorganizer.OrganizerType(organizer.Type),
+			).
+			Exist(ctx)
 		if err != nil {
 			tx.Rollback()
 			return err
+		}
+
+		if !exists {
+			_, err := tx.EventOrganizer.
+				Create().
+				SetID(uuid.New().String()).
+				SetOrganizerID(organizer.ID).
+				SetOrganizerType(organizer.Type).
+				SetEventID(eventID).
+				Save(ctx)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
 		}
 	}
 
