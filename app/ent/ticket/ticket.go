@@ -3,6 +3,7 @@
 package ticket
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -14,16 +15,42 @@ const (
 	Label = "ticket"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldTicketCode holds the string denoting the ticketcode field in the database.
+	FieldTicketCode = "ticket_code"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldPurchaseTime holds the string denoting the purchasetime field in the database.
+	FieldPurchaseTime = "purchase_time"
+	// FieldValidationTime holds the string denoting the validationtime field in the database.
+	FieldValidationTime = "validation_time"
+	// FieldPurchaserEmail holds the string denoting the purchaseremail field in the database.
+	FieldPurchaserEmail = "purchaser_email"
 	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeTicketOption holds the string denoting the ticketoption edge name in mutations.
+	EdgeTicketOption = "ticketOption"
+	// EdgePurchaser holds the string denoting the purchaser edge name in mutations.
+	EdgePurchaser = "purchaser"
 	// EdgeEvent holds the string denoting the event edge name in mutations.
 	EdgeEvent = "event"
-	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
-	EdgeTicketOptions = "ticket_options"
 	// Table holds the table name of the ticket in the database.
 	Table = "tickets"
+	// TicketOptionTable is the table that holds the ticketOption relation/edge.
+	TicketOptionTable = "tickets"
+	// TicketOptionInverseTable is the table name for the TicketOption entity.
+	// It exists in this package in order to avoid circular dependency with the "ticketoption" package.
+	TicketOptionInverseTable = "ticket_options"
+	// TicketOptionColumn is the table column denoting the ticketOption relation/edge.
+	TicketOptionColumn = "ticket_option_tickets"
+	// PurchaserTable is the table that holds the purchaser relation/edge.
+	PurchaserTable = "tickets"
+	// PurchaserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	PurchaserInverseTable = "users"
+	// PurchaserColumn is the table column denoting the purchaser relation/edge.
+	PurchaserColumn = "user_purchased_tickets"
 	// EventTable is the table that holds the event relation/edge.
 	EventTable = "tickets"
 	// EventInverseTable is the table name for the Event entity.
@@ -31,18 +58,16 @@ const (
 	EventInverseTable = "events"
 	// EventColumn is the table column denoting the event relation/edge.
 	EventColumn = "event_tickets"
-	// TicketOptionsTable is the table that holds the ticket_options relation/edge.
-	TicketOptionsTable = "ticket_options"
-	// TicketOptionsInverseTable is the table name for the TicketOption entity.
-	// It exists in this package in order to avoid circular dependency with the "ticketoption" package.
-	TicketOptionsInverseTable = "ticket_options"
-	// TicketOptionsColumn is the table column denoting the ticket_options relation/edge.
-	TicketOptionsColumn = "ticket_ticket_options"
 )
 
 // Columns holds all SQL columns for ticket fields.
 var Columns = []string{
 	FieldID,
+	FieldTicketCode,
+	FieldStatus,
+	FieldPurchaseTime,
+	FieldValidationTime,
+	FieldPurchaserEmail,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -51,6 +76,8 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"event_tickets",
+	"ticket_option_tickets",
+	"user_purchased_tickets",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -77,12 +104,65 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 )
 
+// Status defines the type for the "status" enum field.
+type Status string
+
+// StatusAvailable is the default value of the Status enum.
+const DefaultStatus = StatusAvailable
+
+// Status values.
+const (
+	StatusAvailable Status = "available"
+	StatusReserved  Status = "reserved"
+	StatusSold      Status = "sold"
+	StatusValidated Status = "validated"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusAvailable, StatusReserved, StatusSold, StatusValidated:
+		return nil
+	default:
+		return fmt.Errorf("ticket: invalid enum value for status field: %q", s)
+	}
+}
+
 // OrderOption defines the ordering options for the Ticket queries.
 type OrderOption func(*sql.Selector)
 
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByTicketCode orders the results by the ticketCode field.
+func ByTicketCode(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTicketCode, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByPurchaseTime orders the results by the purchaseTime field.
+func ByPurchaseTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPurchaseTime, opts...).ToFunc()
+}
+
+// ByValidationTime orders the results by the validationTime field.
+func ByValidationTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldValidationTime, opts...).ToFunc()
+}
+
+// ByPurchaserEmail orders the results by the purchaserEmail field.
+func ByPurchaserEmail(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPurchaserEmail, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the createdAt field.
@@ -95,37 +175,44 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByTicketOptionField orders the results by ticketOption field.
+func ByTicketOptionField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTicketOptionStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByPurchaserField orders the results by purchaser field.
+func ByPurchaserField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPurchaserStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByEventField orders the results by event field.
 func ByEventField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newEventStep(), sql.OrderByField(field, opts...))
 	}
 }
-
-// ByTicketOptionsCount orders the results by ticket_options count.
-func ByTicketOptionsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newTicketOptionsStep(), opts...)
-	}
+func newTicketOptionStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TicketOptionInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, TicketOptionTable, TicketOptionColumn),
+	)
 }
-
-// ByTicketOptions orders the results by ticket_options terms.
-func ByTicketOptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTicketOptionsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
+func newPurchaserStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PurchaserInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, PurchaserTable, PurchaserColumn),
+	)
 }
 func newEventStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EventInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, EventTable, EventColumn),
-	)
-}
-func newTicketOptionsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TicketOptionsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TicketOptionsTable, TicketOptionsColumn),
 	)
 }

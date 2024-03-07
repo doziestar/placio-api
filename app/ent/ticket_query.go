@@ -4,13 +4,13 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 	"placio-app/ent/event"
 	"placio-app/ent/predicate"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -20,13 +20,14 @@ import (
 // TicketQuery is the builder for querying Ticket entities.
 type TicketQuery struct {
 	config
-	ctx               *QueryContext
-	order             []ticket.OrderOption
-	inters            []Interceptor
-	predicates        []predicate.Ticket
-	withEvent         *EventQuery
-	withTicketOptions *TicketOptionQuery
-	withFKs           bool
+	ctx              *QueryContext
+	order            []ticket.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.Ticket
+	withTicketOption *TicketOptionQuery
+	withPurchaser    *UserQuery
+	withEvent        *EventQuery
+	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,6 +64,50 @@ func (tq *TicketQuery) Order(o ...ticket.OrderOption) *TicketQuery {
 	return tq
 }
 
+// QueryTicketOption chains the current query on the "ticketOption" edge.
+func (tq *TicketQuery) QueryTicketOption() *TicketOptionQuery {
+	query := (&TicketOptionClient{config: tq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticket.Table, ticket.FieldID, selector),
+			sqlgraph.To(ticketoption.Table, ticketoption.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ticket.TicketOptionTable, ticket.TicketOptionColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPurchaser chains the current query on the "purchaser" edge.
+func (tq *TicketQuery) QueryPurchaser() *UserQuery {
+	query := (&UserClient{config: tq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticket.Table, ticket.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ticket.PurchaserTable, ticket.PurchaserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryEvent chains the current query on the "event" edge.
 func (tq *TicketQuery) QueryEvent() *EventQuery {
 	query := (&EventClient{config: tq.config}).Query()
@@ -78,28 +123,6 @@ func (tq *TicketQuery) QueryEvent() *EventQuery {
 			sqlgraph.From(ticket.Table, ticket.FieldID, selector),
 			sqlgraph.To(event.Table, event.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ticket.EventTable, ticket.EventColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryTicketOptions chains the current query on the "ticket_options" edge.
-func (tq *TicketQuery) QueryTicketOptions() *TicketOptionQuery {
-	query := (&TicketOptionClient{config: tq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := tq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := tq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(ticket.Table, ticket.FieldID, selector),
-			sqlgraph.To(ticketoption.Table, ticketoption.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ticket.TicketOptionsTable, ticket.TicketOptionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,17 +317,40 @@ func (tq *TicketQuery) Clone() *TicketQuery {
 		return nil
 	}
 	return &TicketQuery{
-		config:            tq.config,
-		ctx:               tq.ctx.Clone(),
-		order:             append([]ticket.OrderOption{}, tq.order...),
-		inters:            append([]Interceptor{}, tq.inters...),
-		predicates:        append([]predicate.Ticket{}, tq.predicates...),
-		withEvent:         tq.withEvent.Clone(),
-		withTicketOptions: tq.withTicketOptions.Clone(),
+		config:           tq.config,
+		ctx:              tq.ctx.Clone(),
+		order:            append([]ticket.OrderOption{}, tq.order...),
+		inters:           append([]Interceptor{}, tq.inters...),
+		predicates:       append([]predicate.Ticket{}, tq.predicates...),
+		withTicketOption: tq.withTicketOption.Clone(),
+		withPurchaser:    tq.withPurchaser.Clone(),
+		withEvent:        tq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
 	}
+}
+
+// WithTicketOption tells the query-builder to eager-load the nodes that are connected to
+// the "ticketOption" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TicketQuery) WithTicketOption(opts ...func(*TicketOptionQuery)) *TicketQuery {
+	query := (&TicketOptionClient{config: tq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTicketOption = query
+	return tq
+}
+
+// WithPurchaser tells the query-builder to eager-load the nodes that are connected to
+// the "purchaser" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TicketQuery) WithPurchaser(opts ...func(*UserQuery)) *TicketQuery {
+	query := (&UserClient{config: tq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withPurchaser = query
+	return tq
 }
 
 // WithEvent tells the query-builder to eager-load the nodes that are connected to
@@ -318,29 +364,18 @@ func (tq *TicketQuery) WithEvent(opts ...func(*EventQuery)) *TicketQuery {
 	return tq
 }
 
-// WithTicketOptions tells the query-builder to eager-load the nodes that are connected to
-// the "ticket_options" edge. The optional arguments are used to configure the query builder of the edge.
-func (tq *TicketQuery) WithTicketOptions(opts ...func(*TicketOptionQuery)) *TicketQuery {
-	query := (&TicketOptionClient{config: tq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	tq.withTicketOptions = query
-	return tq
-}
-
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"createdAt,omitempty"`
+//		TicketCode string `json:"ticketCode,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Ticket.Query().
-//		GroupBy(ticket.FieldCreatedAt).
+//		GroupBy(ticket.FieldTicketCode).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (tq *TicketQuery) GroupBy(field string, fields ...string) *TicketGroupBy {
@@ -358,11 +393,11 @@ func (tq *TicketQuery) GroupBy(field string, fields ...string) *TicketGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"createdAt,omitempty"`
+//		TicketCode string `json:"ticketCode,omitempty"`
 //	}
 //
 //	client.Ticket.Query().
-//		Select(ticket.FieldCreatedAt).
+//		Select(ticket.FieldTicketCode).
 //		Scan(ctx, &v)
 func (tq *TicketQuery) Select(fields ...string) *TicketSelect {
 	tq.ctx.Fields = append(tq.ctx.Fields, fields...)
@@ -408,12 +443,13 @@ func (tq *TicketQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ticke
 		nodes       = []*Ticket{}
 		withFKs     = tq.withFKs
 		_spec       = tq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
+			tq.withTicketOption != nil,
+			tq.withPurchaser != nil,
 			tq.withEvent != nil,
-			tq.withTicketOptions != nil,
 		}
 	)
-	if tq.withEvent != nil {
+	if tq.withTicketOption != nil || tq.withPurchaser != nil || tq.withEvent != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -437,22 +473,91 @@ func (tq *TicketQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ticke
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := tq.withTicketOption; query != nil {
+		if err := tq.loadTicketOption(ctx, query, nodes, nil,
+			func(n *Ticket, e *TicketOption) { n.Edges.TicketOption = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := tq.withPurchaser; query != nil {
+		if err := tq.loadPurchaser(ctx, query, nodes, nil,
+			func(n *Ticket, e *User) { n.Edges.Purchaser = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := tq.withEvent; query != nil {
 		if err := tq.loadEvent(ctx, query, nodes, nil,
 			func(n *Ticket, e *Event) { n.Edges.Event = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := tq.withTicketOptions; query != nil {
-		if err := tq.loadTicketOptions(ctx, query, nodes,
-			func(n *Ticket) { n.Edges.TicketOptions = []*TicketOption{} },
-			func(n *Ticket, e *TicketOption) { n.Edges.TicketOptions = append(n.Edges.TicketOptions, e) }); err != nil {
-			return nil, err
-		}
-	}
 	return nodes, nil
 }
 
+func (tq *TicketQuery) loadTicketOption(ctx context.Context, query *TicketOptionQuery, nodes []*Ticket, init func(*Ticket), assign func(*Ticket, *TicketOption)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Ticket)
+	for i := range nodes {
+		if nodes[i].ticket_option_tickets == nil {
+			continue
+		}
+		fk := *nodes[i].ticket_option_tickets
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(ticketoption.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "ticket_option_tickets" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (tq *TicketQuery) loadPurchaser(ctx context.Context, query *UserQuery, nodes []*Ticket, init func(*Ticket), assign func(*Ticket, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Ticket)
+	for i := range nodes {
+		if nodes[i].user_purchased_tickets == nil {
+			continue
+		}
+		fk := *nodes[i].user_purchased_tickets
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_purchased_tickets" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (tq *TicketQuery) loadEvent(ctx context.Context, query *EventQuery, nodes []*Ticket, init func(*Ticket), assign func(*Ticket, *Event)) error {
 	ids := make([]string, 0, len(nodes))
 	nodeids := make(map[string][]*Ticket)
@@ -482,37 +587,6 @@ func (tq *TicketQuery) loadEvent(ctx context.Context, query *EventQuery, nodes [
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
-	}
-	return nil
-}
-func (tq *TicketQuery) loadTicketOptions(ctx context.Context, query *TicketOptionQuery, nodes []*Ticket, init func(*Ticket), assign func(*Ticket, *TicketOption)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*Ticket)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.TicketOption(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(ticket.TicketOptionsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.ticket_ticket_options
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "ticket_ticket_options" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "ticket_ticket_options" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
 	}
 	return nil
 }

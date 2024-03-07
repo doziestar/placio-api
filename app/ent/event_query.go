@@ -113,7 +113,7 @@ func (eq *EventQuery) QueryTickets() *TicketQuery {
 	return query
 }
 
-// QueryTicketOptions chains the current query on the "ticket_options" edge.
+// QueryTicketOptions chains the current query on the "ticketOptions" edge.
 func (eq *EventQuery) QueryTicketOptions() *TicketOptionQuery {
 	query := (&TicketOptionClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -692,7 +692,7 @@ func (eq *EventQuery) WithTickets(opts ...func(*TicketQuery)) *EventQuery {
 }
 
 // WithTicketOptions tells the query-builder to eager-load the nodes that are connected to
-// the "ticket_options" edge. The optional arguments are used to configure the query builder of the edge.
+// the "ticketOptions" edge. The optional arguments are used to configure the query builder of the edge.
 func (eq *EventQuery) WithTicketOptions(opts ...func(*TicketOptionQuery)) *EventQuery {
 	query := (&TicketOptionClient{config: eq.config}).Query()
 	for _, opt := range opts {

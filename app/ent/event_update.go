@@ -1134,13 +1134,13 @@ func (eu *EventUpdate) AddTickets(t ...*Ticket) *EventUpdate {
 	return eu.AddTicketIDs(ids...)
 }
 
-// AddTicketOptionIDs adds the "ticket_options" edge to the TicketOption entity by IDs.
+// AddTicketOptionIDs adds the "ticketOptions" edge to the TicketOption entity by IDs.
 func (eu *EventUpdate) AddTicketOptionIDs(ids ...string) *EventUpdate {
 	eu.mutation.AddTicketOptionIDs(ids...)
 	return eu
 }
 
-// AddTicketOptions adds the "ticket_options" edges to the TicketOption entity.
+// AddTicketOptions adds the "ticketOptions" edges to the TicketOption entity.
 func (eu *EventUpdate) AddTicketOptions(t ...*TicketOption) *EventUpdate {
 	ids := make([]string, len(t))
 	for i := range t {
@@ -1408,19 +1408,19 @@ func (eu *EventUpdate) RemoveTickets(t ...*Ticket) *EventUpdate {
 	return eu.RemoveTicketIDs(ids...)
 }
 
-// ClearTicketOptions clears all "ticket_options" edges to the TicketOption entity.
+// ClearTicketOptions clears all "ticketOptions" edges to the TicketOption entity.
 func (eu *EventUpdate) ClearTicketOptions() *EventUpdate {
 	eu.mutation.ClearTicketOptions()
 	return eu
 }
 
-// RemoveTicketOptionIDs removes the "ticket_options" edge to TicketOption entities by IDs.
+// RemoveTicketOptionIDs removes the "ticketOptions" edge to TicketOption entities by IDs.
 func (eu *EventUpdate) RemoveTicketOptionIDs(ids ...string) *EventUpdate {
 	eu.mutation.RemoveTicketOptionIDs(ids...)
 	return eu
 }
 
-// RemoveTicketOptions removes "ticket_options" edges to TicketOption entities.
+// RemoveTicketOptions removes "ticketOptions" edges to TicketOption entities.
 func (eu *EventUpdate) RemoveTicketOptions(t ...*TicketOption) *EventUpdate {
 	ids := make([]string, len(t))
 	for i := range t {
@@ -3950,13 +3950,13 @@ func (euo *EventUpdateOne) AddTickets(t ...*Ticket) *EventUpdateOne {
 	return euo.AddTicketIDs(ids...)
 }
 
-// AddTicketOptionIDs adds the "ticket_options" edge to the TicketOption entity by IDs.
+// AddTicketOptionIDs adds the "ticketOptions" edge to the TicketOption entity by IDs.
 func (euo *EventUpdateOne) AddTicketOptionIDs(ids ...string) *EventUpdateOne {
 	euo.mutation.AddTicketOptionIDs(ids...)
 	return euo
 }
 
-// AddTicketOptions adds the "ticket_options" edges to the TicketOption entity.
+// AddTicketOptions adds the "ticketOptions" edges to the TicketOption entity.
 func (euo *EventUpdateOne) AddTicketOptions(t ...*TicketOption) *EventUpdateOne {
 	ids := make([]string, len(t))
 	for i := range t {
@@ -4224,19 +4224,19 @@ func (euo *EventUpdateOne) RemoveTickets(t ...*Ticket) *EventUpdateOne {
 	return euo.RemoveTicketIDs(ids...)
 }
 
-// ClearTicketOptions clears all "ticket_options" edges to the TicketOption entity.
+// ClearTicketOptions clears all "ticketOptions" edges to the TicketOption entity.
 func (euo *EventUpdateOne) ClearTicketOptions() *EventUpdateOne {
 	euo.mutation.ClearTicketOptions()
 	return euo
 }
 
-// RemoveTicketOptionIDs removes the "ticket_options" edge to TicketOption entities by IDs.
+// RemoveTicketOptionIDs removes the "ticketOptions" edge to TicketOption entities by IDs.
 func (euo *EventUpdateOne) RemoveTicketOptionIDs(ids ...string) *EventUpdateOne {
 	euo.mutation.RemoveTicketOptionIDs(ids...)
 	return euo
 }
 
-// RemoveTicketOptions removes "ticket_options" edges to TicketOption entities.
+// RemoveTicketOptions removes "ticketOptions" edges to TicketOption entities.
 func (euo *EventUpdateOne) RemoveTicketOptions(t ...*TicketOption) *EventUpdateOne {
 	ids := make([]string, len(t))
 	for i := range t {

@@ -65,6 +65,26 @@ func IDContainsFold(id string) predicate.Ticket {
 	return predicate.Ticket(sql.FieldContainsFold(FieldID, id))
 }
 
+// TicketCode applies equality check predicate on the "ticketCode" field. It's identical to TicketCodeEQ.
+func TicketCode(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldTicketCode, v))
+}
+
+// PurchaseTime applies equality check predicate on the "purchaseTime" field. It's identical to PurchaseTimeEQ.
+func PurchaseTime(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldPurchaseTime, v))
+}
+
+// ValidationTime applies equality check predicate on the "validationTime" field. It's identical to ValidationTimeEQ.
+func ValidationTime(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldValidationTime, v))
+}
+
+// PurchaserEmail applies equality check predicate on the "purchaserEmail" field. It's identical to PurchaserEmailEQ.
+func PurchaserEmail(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldPurchaserEmail, v))
+}
+
 // CreatedAt applies equality check predicate on the "createdAt" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Ticket {
 	return predicate.Ticket(sql.FieldEQ(FieldCreatedAt, v))
@@ -73,6 +93,256 @@ func CreatedAt(v time.Time) predicate.Ticket {
 // UpdatedAt applies equality check predicate on the "updatedAt" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Ticket {
 	return predicate.Ticket(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// TicketCodeEQ applies the EQ predicate on the "ticketCode" field.
+func TicketCodeEQ(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldTicketCode, v))
+}
+
+// TicketCodeNEQ applies the NEQ predicate on the "ticketCode" field.
+func TicketCodeNEQ(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNEQ(FieldTicketCode, v))
+}
+
+// TicketCodeIn applies the In predicate on the "ticketCode" field.
+func TicketCodeIn(vs ...string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldIn(FieldTicketCode, vs...))
+}
+
+// TicketCodeNotIn applies the NotIn predicate on the "ticketCode" field.
+func TicketCodeNotIn(vs ...string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNotIn(FieldTicketCode, vs...))
+}
+
+// TicketCodeGT applies the GT predicate on the "ticketCode" field.
+func TicketCodeGT(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldGT(FieldTicketCode, v))
+}
+
+// TicketCodeGTE applies the GTE predicate on the "ticketCode" field.
+func TicketCodeGTE(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldGTE(FieldTicketCode, v))
+}
+
+// TicketCodeLT applies the LT predicate on the "ticketCode" field.
+func TicketCodeLT(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldLT(FieldTicketCode, v))
+}
+
+// TicketCodeLTE applies the LTE predicate on the "ticketCode" field.
+func TicketCodeLTE(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldLTE(FieldTicketCode, v))
+}
+
+// TicketCodeContains applies the Contains predicate on the "ticketCode" field.
+func TicketCodeContains(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldContains(FieldTicketCode, v))
+}
+
+// TicketCodeHasPrefix applies the HasPrefix predicate on the "ticketCode" field.
+func TicketCodeHasPrefix(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldHasPrefix(FieldTicketCode, v))
+}
+
+// TicketCodeHasSuffix applies the HasSuffix predicate on the "ticketCode" field.
+func TicketCodeHasSuffix(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldHasSuffix(FieldTicketCode, v))
+}
+
+// TicketCodeEqualFold applies the EqualFold predicate on the "ticketCode" field.
+func TicketCodeEqualFold(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEqualFold(FieldTicketCode, v))
+}
+
+// TicketCodeContainsFold applies the ContainsFold predicate on the "ticketCode" field.
+func TicketCodeContainsFold(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldContainsFold(FieldTicketCode, v))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.Ticket {
+	return predicate.Ticket(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// PurchaseTimeEQ applies the EQ predicate on the "purchaseTime" field.
+func PurchaseTimeEQ(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldPurchaseTime, v))
+}
+
+// PurchaseTimeNEQ applies the NEQ predicate on the "purchaseTime" field.
+func PurchaseTimeNEQ(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNEQ(FieldPurchaseTime, v))
+}
+
+// PurchaseTimeIn applies the In predicate on the "purchaseTime" field.
+func PurchaseTimeIn(vs ...time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldIn(FieldPurchaseTime, vs...))
+}
+
+// PurchaseTimeNotIn applies the NotIn predicate on the "purchaseTime" field.
+func PurchaseTimeNotIn(vs ...time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNotIn(FieldPurchaseTime, vs...))
+}
+
+// PurchaseTimeGT applies the GT predicate on the "purchaseTime" field.
+func PurchaseTimeGT(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldGT(FieldPurchaseTime, v))
+}
+
+// PurchaseTimeGTE applies the GTE predicate on the "purchaseTime" field.
+func PurchaseTimeGTE(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldGTE(FieldPurchaseTime, v))
+}
+
+// PurchaseTimeLT applies the LT predicate on the "purchaseTime" field.
+func PurchaseTimeLT(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldLT(FieldPurchaseTime, v))
+}
+
+// PurchaseTimeLTE applies the LTE predicate on the "purchaseTime" field.
+func PurchaseTimeLTE(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldLTE(FieldPurchaseTime, v))
+}
+
+// ValidationTimeEQ applies the EQ predicate on the "validationTime" field.
+func ValidationTimeEQ(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldValidationTime, v))
+}
+
+// ValidationTimeNEQ applies the NEQ predicate on the "validationTime" field.
+func ValidationTimeNEQ(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNEQ(FieldValidationTime, v))
+}
+
+// ValidationTimeIn applies the In predicate on the "validationTime" field.
+func ValidationTimeIn(vs ...time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldIn(FieldValidationTime, vs...))
+}
+
+// ValidationTimeNotIn applies the NotIn predicate on the "validationTime" field.
+func ValidationTimeNotIn(vs ...time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNotIn(FieldValidationTime, vs...))
+}
+
+// ValidationTimeGT applies the GT predicate on the "validationTime" field.
+func ValidationTimeGT(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldGT(FieldValidationTime, v))
+}
+
+// ValidationTimeGTE applies the GTE predicate on the "validationTime" field.
+func ValidationTimeGTE(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldGTE(FieldValidationTime, v))
+}
+
+// ValidationTimeLT applies the LT predicate on the "validationTime" field.
+func ValidationTimeLT(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldLT(FieldValidationTime, v))
+}
+
+// ValidationTimeLTE applies the LTE predicate on the "validationTime" field.
+func ValidationTimeLTE(v time.Time) predicate.Ticket {
+	return predicate.Ticket(sql.FieldLTE(FieldValidationTime, v))
+}
+
+// ValidationTimeIsNil applies the IsNil predicate on the "validationTime" field.
+func ValidationTimeIsNil() predicate.Ticket {
+	return predicate.Ticket(sql.FieldIsNull(FieldValidationTime))
+}
+
+// ValidationTimeNotNil applies the NotNil predicate on the "validationTime" field.
+func ValidationTimeNotNil() predicate.Ticket {
+	return predicate.Ticket(sql.FieldNotNull(FieldValidationTime))
+}
+
+// PurchaserEmailEQ applies the EQ predicate on the "purchaserEmail" field.
+func PurchaserEmailEQ(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEQ(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailNEQ applies the NEQ predicate on the "purchaserEmail" field.
+func PurchaserEmailNEQ(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNEQ(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailIn applies the In predicate on the "purchaserEmail" field.
+func PurchaserEmailIn(vs ...string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldIn(FieldPurchaserEmail, vs...))
+}
+
+// PurchaserEmailNotIn applies the NotIn predicate on the "purchaserEmail" field.
+func PurchaserEmailNotIn(vs ...string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldNotIn(FieldPurchaserEmail, vs...))
+}
+
+// PurchaserEmailGT applies the GT predicate on the "purchaserEmail" field.
+func PurchaserEmailGT(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldGT(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailGTE applies the GTE predicate on the "purchaserEmail" field.
+func PurchaserEmailGTE(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldGTE(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailLT applies the LT predicate on the "purchaserEmail" field.
+func PurchaserEmailLT(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldLT(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailLTE applies the LTE predicate on the "purchaserEmail" field.
+func PurchaserEmailLTE(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldLTE(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailContains applies the Contains predicate on the "purchaserEmail" field.
+func PurchaserEmailContains(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldContains(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailHasPrefix applies the HasPrefix predicate on the "purchaserEmail" field.
+func PurchaserEmailHasPrefix(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldHasPrefix(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailHasSuffix applies the HasSuffix predicate on the "purchaserEmail" field.
+func PurchaserEmailHasSuffix(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldHasSuffix(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailIsNil applies the IsNil predicate on the "purchaserEmail" field.
+func PurchaserEmailIsNil() predicate.Ticket {
+	return predicate.Ticket(sql.FieldIsNull(FieldPurchaserEmail))
+}
+
+// PurchaserEmailNotNil applies the NotNil predicate on the "purchaserEmail" field.
+func PurchaserEmailNotNil() predicate.Ticket {
+	return predicate.Ticket(sql.FieldNotNull(FieldPurchaserEmail))
+}
+
+// PurchaserEmailEqualFold applies the EqualFold predicate on the "purchaserEmail" field.
+func PurchaserEmailEqualFold(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldEqualFold(FieldPurchaserEmail, v))
+}
+
+// PurchaserEmailContainsFold applies the ContainsFold predicate on the "purchaserEmail" field.
+func PurchaserEmailContainsFold(v string) predicate.Ticket {
+	return predicate.Ticket(sql.FieldContainsFold(FieldPurchaserEmail, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "createdAt" field.
@@ -155,6 +425,52 @@ func UpdatedAtLTE(v time.Time) predicate.Ticket {
 	return predicate.Ticket(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
+// HasTicketOption applies the HasEdge predicate on the "ticketOption" edge.
+func HasTicketOption() predicate.Ticket {
+	return predicate.Ticket(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TicketOptionTable, TicketOptionColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTicketOptionWith applies the HasEdge predicate on the "ticketOption" edge with a given conditions (other predicates).
+func HasTicketOptionWith(preds ...predicate.TicketOption) predicate.Ticket {
+	return predicate.Ticket(func(s *sql.Selector) {
+		step := newTicketOptionStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPurchaser applies the HasEdge predicate on the "purchaser" edge.
+func HasPurchaser() predicate.Ticket {
+	return predicate.Ticket(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, PurchaserTable, PurchaserColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPurchaserWith applies the HasEdge predicate on the "purchaser" edge with a given conditions (other predicates).
+func HasPurchaserWith(preds ...predicate.User) predicate.Ticket {
+	return predicate.Ticket(func(s *sql.Selector) {
+		step := newPurchaserStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasEvent applies the HasEdge predicate on the "event" edge.
 func HasEvent() predicate.Ticket {
 	return predicate.Ticket(func(s *sql.Selector) {
@@ -170,29 +486,6 @@ func HasEvent() predicate.Ticket {
 func HasEventWith(preds ...predicate.Event) predicate.Ticket {
 	return predicate.Ticket(func(s *sql.Selector) {
 		step := newEventStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasTicketOptions applies the HasEdge predicate on the "ticket_options" edge.
-func HasTicketOptions() predicate.Ticket {
-	return predicate.Ticket(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TicketOptionsTable, TicketOptionsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasTicketOptionsWith applies the HasEdge predicate on the "ticket_options" edge with a given conditions (other predicates).
-func HasTicketOptionsWith(preds ...predicate.TicketOption) predicate.Ticket {
-	return predicate.Ticket(func(s *sql.Selector) {
-		step := newTicketOptionsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -872,13 +872,13 @@ func (ec *EventCreate) AddTickets(t ...*Ticket) *EventCreate {
 	return ec.AddTicketIDs(ids...)
 }
 
-// AddTicketOptionIDs adds the "ticket_options" edge to the TicketOption entity by IDs.
+// AddTicketOptionIDs adds the "ticketOptions" edge to the TicketOption entity by IDs.
 func (ec *EventCreate) AddTicketOptionIDs(ids ...string) *EventCreate {
 	ec.mutation.AddTicketOptionIDs(ids...)
 	return ec
 }
 
-// AddTicketOptions adds the "ticket_options" edges to the TicketOption entity.
+// AddTicketOptions adds the "ticketOptions" edges to the TicketOption entity.
 func (ec *EventCreate) AddTicketOptions(t ...*TicketOption) *EventCreate {
 	ids := make([]string, len(t))
 	for i := range t {

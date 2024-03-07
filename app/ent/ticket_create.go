@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -20,6 +21,60 @@ type TicketCreate struct {
 	config
 	mutation *TicketMutation
 	hooks    []Hook
+}
+
+// SetTicketCode sets the "ticketCode" field.
+func (tc *TicketCreate) SetTicketCode(s string) *TicketCreate {
+	tc.mutation.SetTicketCode(s)
+	return tc
+}
+
+// SetStatus sets the "status" field.
+func (tc *TicketCreate) SetStatus(t ticket.Status) *TicketCreate {
+	tc.mutation.SetStatus(t)
+	return tc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tc *TicketCreate) SetNillableStatus(t *ticket.Status) *TicketCreate {
+	if t != nil {
+		tc.SetStatus(*t)
+	}
+	return tc
+}
+
+// SetPurchaseTime sets the "purchaseTime" field.
+func (tc *TicketCreate) SetPurchaseTime(t time.Time) *TicketCreate {
+	tc.mutation.SetPurchaseTime(t)
+	return tc
+}
+
+// SetValidationTime sets the "validationTime" field.
+func (tc *TicketCreate) SetValidationTime(t time.Time) *TicketCreate {
+	tc.mutation.SetValidationTime(t)
+	return tc
+}
+
+// SetNillableValidationTime sets the "validationTime" field if the given value is not nil.
+func (tc *TicketCreate) SetNillableValidationTime(t *time.Time) *TicketCreate {
+	if t != nil {
+		tc.SetValidationTime(*t)
+	}
+	return tc
+}
+
+// SetPurchaserEmail sets the "purchaserEmail" field.
+func (tc *TicketCreate) SetPurchaserEmail(s string) *TicketCreate {
+	tc.mutation.SetPurchaserEmail(s)
+	return tc
+}
+
+// SetNillablePurchaserEmail sets the "purchaserEmail" field if the given value is not nil.
+func (tc *TicketCreate) SetNillablePurchaserEmail(s *string) *TicketCreate {
+	if s != nil {
+		tc.SetPurchaserEmail(*s)
+	}
+	return tc
 }
 
 // SetCreatedAt sets the "createdAt" field.
@@ -56,38 +111,45 @@ func (tc *TicketCreate) SetID(s string) *TicketCreate {
 	return tc
 }
 
+// SetTicketOptionID sets the "ticketOption" edge to the TicketOption entity by ID.
+func (tc *TicketCreate) SetTicketOptionID(id string) *TicketCreate {
+	tc.mutation.SetTicketOptionID(id)
+	return tc
+}
+
+// SetTicketOption sets the "ticketOption" edge to the TicketOption entity.
+func (tc *TicketCreate) SetTicketOption(t *TicketOption) *TicketCreate {
+	return tc.SetTicketOptionID(t.ID)
+}
+
+// SetPurchaserID sets the "purchaser" edge to the User entity by ID.
+func (tc *TicketCreate) SetPurchaserID(id string) *TicketCreate {
+	tc.mutation.SetPurchaserID(id)
+	return tc
+}
+
+// SetNillablePurchaserID sets the "purchaser" edge to the User entity by ID if the given value is not nil.
+func (tc *TicketCreate) SetNillablePurchaserID(id *string) *TicketCreate {
+	if id != nil {
+		tc = tc.SetPurchaserID(*id)
+	}
+	return tc
+}
+
+// SetPurchaser sets the "purchaser" edge to the User entity.
+func (tc *TicketCreate) SetPurchaser(u *User) *TicketCreate {
+	return tc.SetPurchaserID(u.ID)
+}
+
 // SetEventID sets the "event" edge to the Event entity by ID.
 func (tc *TicketCreate) SetEventID(id string) *TicketCreate {
 	tc.mutation.SetEventID(id)
 	return tc
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (tc *TicketCreate) SetNillableEventID(id *string) *TicketCreate {
-	if id != nil {
-		tc = tc.SetEventID(*id)
-	}
-	return tc
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (tc *TicketCreate) SetEvent(e *Event) *TicketCreate {
 	return tc.SetEventID(e.ID)
-}
-
-// AddTicketOptionIDs adds the "ticket_options" edge to the TicketOption entity by IDs.
-func (tc *TicketCreate) AddTicketOptionIDs(ids ...string) *TicketCreate {
-	tc.mutation.AddTicketOptionIDs(ids...)
-	return tc
-}
-
-// AddTicketOptions adds the "ticket_options" edges to the TicketOption entity.
-func (tc *TicketCreate) AddTicketOptions(t ...*TicketOption) *TicketCreate {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tc.AddTicketOptionIDs(ids...)
 }
 
 // Mutation returns the TicketMutation object of the builder.
@@ -125,6 +187,10 @@ func (tc *TicketCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tc *TicketCreate) defaults() {
+	if _, ok := tc.mutation.Status(); !ok {
+		v := ticket.DefaultStatus
+		tc.mutation.SetStatus(v)
+	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
 		v := ticket.DefaultCreatedAt()
 		tc.mutation.SetCreatedAt(v)
@@ -137,11 +203,31 @@ func (tc *TicketCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (tc *TicketCreate) check() error {
+	if _, ok := tc.mutation.TicketCode(); !ok {
+		return &ValidationError{Name: "ticketCode", err: errors.New(`ent: missing required field "Ticket.ticketCode"`)}
+	}
+	if _, ok := tc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Ticket.status"`)}
+	}
+	if v, ok := tc.mutation.Status(); ok {
+		if err := ticket.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Ticket.status": %w`, err)}
+		}
+	}
+	if _, ok := tc.mutation.PurchaseTime(); !ok {
+		return &ValidationError{Name: "purchaseTime", err: errors.New(`ent: missing required field "Ticket.purchaseTime"`)}
+	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "Ticket.createdAt"`)}
 	}
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updatedAt", err: errors.New(`ent: missing required field "Ticket.updatedAt"`)}
+	}
+	if _, ok := tc.mutation.TicketOptionID(); !ok {
+		return &ValidationError{Name: "ticketOption", err: errors.New(`ent: missing required edge "Ticket.ticketOption"`)}
+	}
+	if _, ok := tc.mutation.EventID(); !ok {
+		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "Ticket.event"`)}
 	}
 	return nil
 }
@@ -178,6 +264,26 @@ func (tc *TicketCreate) createSpec() (*Ticket, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := tc.mutation.TicketCode(); ok {
+		_spec.SetField(ticket.FieldTicketCode, field.TypeString, value)
+		_node.TicketCode = value
+	}
+	if value, ok := tc.mutation.Status(); ok {
+		_spec.SetField(ticket.FieldStatus, field.TypeEnum, value)
+		_node.Status = value
+	}
+	if value, ok := tc.mutation.PurchaseTime(); ok {
+		_spec.SetField(ticket.FieldPurchaseTime, field.TypeTime, value)
+		_node.PurchaseTime = value
+	}
+	if value, ok := tc.mutation.ValidationTime(); ok {
+		_spec.SetField(ticket.FieldValidationTime, field.TypeTime, value)
+		_node.ValidationTime = value
+	}
+	if value, ok := tc.mutation.PurchaserEmail(); ok {
+		_spec.SetField(ticket.FieldPurchaserEmail, field.TypeString, value)
+		_node.PurchaserEmail = value
+	}
 	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.SetField(ticket.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -185,6 +291,40 @@ func (tc *TicketCreate) createSpec() (*Ticket, *sqlgraph.CreateSpec) {
 	if value, ok := tc.mutation.UpdatedAt(); ok {
 		_spec.SetField(ticket.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if nodes := tc.mutation.TicketOptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.TicketOptionTable,
+			Columns: []string{ticket.TicketOptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ticket_option_tickets = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.PurchaserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.PurchaserTable,
+			Columns: []string{ticket.PurchaserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_purchased_tickets = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.EventIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -201,22 +341,6 @@ func (tc *TicketCreate) createSpec() (*Ticket, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.event_tickets = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := tc.mutation.TicketOptionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   ticket.TicketOptionsTable,
-			Columns: []string{ticket.TicketOptionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

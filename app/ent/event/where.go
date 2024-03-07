@@ -3223,7 +3223,7 @@ func HasTicketsWith(preds ...predicate.Ticket) predicate.Event {
 	})
 }
 
-// HasTicketOptions applies the HasEdge predicate on the "ticket_options" edge.
+// HasTicketOptions applies the HasEdge predicate on the "ticketOptions" edge.
 func HasTicketOptions() predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -3234,7 +3234,7 @@ func HasTicketOptions() predicate.Event {
 	})
 }
 
-// HasTicketOptionsWith applies the HasEdge predicate on the "ticket_options" edge with a given conditions (other predicates).
+// HasTicketOptionsWith applies the HasEdge predicate on the "ticketOptions" edge with a given conditions (other predicates).
 func HasTicketOptionsWith(preds ...predicate.TicketOption) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		step := newTicketOptionsStep()

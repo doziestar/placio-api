@@ -3322,7 +3322,7 @@ func (c *EventClient) QueryTickets(e *Event) *TicketQuery {
 	return query
 }
 
-// QueryTicketOptions queries the ticket_options edge of a Event.
+// QueryTicketOptions queries the ticketOptions edge of a Event.
 func (c *EventClient) QueryTicketOptions(e *Event) *TicketOptionQuery {
 	query := (&TicketOptionClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
@@ -10429,6 +10429,38 @@ func (c *TicketClient) GetX(ctx context.Context, id string) *Ticket {
 	return obj
 }
 
+// QueryTicketOption queries the ticketOption edge of a Ticket.
+func (c *TicketClient) QueryTicketOption(t *Ticket) *TicketOptionQuery {
+	query := (&TicketOptionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticket.Table, ticket.FieldID, id),
+			sqlgraph.To(ticketoption.Table, ticketoption.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ticket.TicketOptionTable, ticket.TicketOptionColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPurchaser queries the purchaser edge of a Ticket.
+func (c *TicketClient) QueryPurchaser(t *Ticket) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticket.Table, ticket.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ticket.PurchaserTable, ticket.PurchaserColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryEvent queries the event edge of a Ticket.
 func (c *TicketClient) QueryEvent(t *Ticket) *EventQuery {
 	query := (&EventClient{config: c.config}).Query()
@@ -10438,22 +10470,6 @@ func (c *TicketClient) QueryEvent(t *Ticket) *EventQuery {
 			sqlgraph.From(ticket.Table, ticket.FieldID, id),
 			sqlgraph.To(event.Table, event.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ticket.EventTable, ticket.EventColumn),
-		)
-		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryTicketOptions queries the ticket_options edge of a Ticket.
-func (c *TicketClient) QueryTicketOptions(t *Ticket) *TicketOptionQuery {
-	query := (&TicketOptionClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := t.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(ticket.Table, ticket.FieldID, id),
-			sqlgraph.To(ticketoption.Table, ticketoption.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ticket.TicketOptionsTable, ticket.TicketOptionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -10603,6 +10619,22 @@ func (c *TicketOptionClient) QueryEvent(to *TicketOption) *EventQuery {
 			sqlgraph.From(ticketoption.Table, ticketoption.FieldID, id),
 			sqlgraph.To(event.Table, event.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ticketoption.EventTable, ticketoption.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(to.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTickets queries the tickets edge of a TicketOption.
+func (c *TicketOptionClient) QueryTickets(to *TicketOption) *TicketQuery {
+	query := (&TicketClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := to.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticketoption.Table, ticketoption.FieldID, id),
+			sqlgraph.To(ticket.Table, ticket.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ticketoption.TicketsTable, ticketoption.TicketsColumn),
 		)
 		fromV = sqlgraph.Neighbors(to.driver.Dialect(), step)
 		return fromV, nil
@@ -11674,6 +11706,22 @@ func (c *UserClient) QueryCustomer(u *User) *PlaceQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, user.CustomerTable, user.CustomerPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPurchasedTickets queries the purchasedTickets edge of a User.
+func (c *UserClient) QueryPurchasedTickets(u *User) *TicketQuery {
+	query := (&TicketClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(ticket.Table, ticket.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.PurchasedTicketsTable, user.PurchasedTicketsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

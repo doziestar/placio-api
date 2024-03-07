@@ -28,6 +28,7 @@ import (
 	"placio-app/ent/review"
 	"placio-app/ent/staff"
 	"placio-app/ent/subscription"
+	"placio-app/ent/ticket"
 	"placio-app/ent/trainer"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
@@ -992,6 +993,21 @@ func (uu *UserUpdate) AddCustomer(p ...*Place) *UserUpdate {
 	return uu.AddCustomerIDs(ids...)
 }
 
+// AddPurchasedTicketIDs adds the "purchasedTickets" edge to the Ticket entity by IDs.
+func (uu *UserUpdate) AddPurchasedTicketIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddPurchasedTicketIDs(ids...)
+	return uu
+}
+
+// AddPurchasedTickets adds the "purchasedTickets" edges to the Ticket entity.
+func (uu *UserUpdate) AddPurchasedTickets(t ...*Ticket) *UserUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.AddPurchasedTicketIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1742,6 +1758,27 @@ func (uu *UserUpdate) RemoveCustomer(p ...*Place) *UserUpdate {
 		ids[i] = p[i].ID
 	}
 	return uu.RemoveCustomerIDs(ids...)
+}
+
+// ClearPurchasedTickets clears all "purchasedTickets" edges to the Ticket entity.
+func (uu *UserUpdate) ClearPurchasedTickets() *UserUpdate {
+	uu.mutation.ClearPurchasedTickets()
+	return uu
+}
+
+// RemovePurchasedTicketIDs removes the "purchasedTickets" edge to Ticket entities by IDs.
+func (uu *UserUpdate) RemovePurchasedTicketIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemovePurchasedTicketIDs(ids...)
+	return uu
+}
+
+// RemovePurchasedTickets removes "purchasedTickets" edges to Ticket entities.
+func (uu *UserUpdate) RemovePurchasedTickets(t ...*Ticket) *UserUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.RemovePurchasedTicketIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -3548,6 +3585,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.PurchasedTicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PurchasedTicketsTable,
+			Columns: []string{user.PurchasedTicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedPurchasedTicketsIDs(); len(nodes) > 0 && !uu.mutation.PurchasedTicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PurchasedTicketsTable,
+			Columns: []string{user.PurchasedTicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.PurchasedTicketsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PurchasedTicketsTable,
+			Columns: []string{user.PurchasedTicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -4502,6 +4584,21 @@ func (uuo *UserUpdateOne) AddCustomer(p ...*Place) *UserUpdateOne {
 	return uuo.AddCustomerIDs(ids...)
 }
 
+// AddPurchasedTicketIDs adds the "purchasedTickets" edge to the Ticket entity by IDs.
+func (uuo *UserUpdateOne) AddPurchasedTicketIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddPurchasedTicketIDs(ids...)
+	return uuo
+}
+
+// AddPurchasedTickets adds the "purchasedTickets" edges to the Ticket entity.
+func (uuo *UserUpdateOne) AddPurchasedTickets(t ...*Ticket) *UserUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.AddPurchasedTicketIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -5252,6 +5349,27 @@ func (uuo *UserUpdateOne) RemoveCustomer(p ...*Place) *UserUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return uuo.RemoveCustomerIDs(ids...)
+}
+
+// ClearPurchasedTickets clears all "purchasedTickets" edges to the Ticket entity.
+func (uuo *UserUpdateOne) ClearPurchasedTickets() *UserUpdateOne {
+	uuo.mutation.ClearPurchasedTickets()
+	return uuo
+}
+
+// RemovePurchasedTicketIDs removes the "purchasedTickets" edge to Ticket entities by IDs.
+func (uuo *UserUpdateOne) RemovePurchasedTicketIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemovePurchasedTicketIDs(ids...)
+	return uuo
+}
+
+// RemovePurchasedTickets removes "purchasedTickets" edges to Ticket entities.
+func (uuo *UserUpdateOne) RemovePurchasedTickets(t ...*Ticket) *UserUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.RemovePurchasedTicketIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -7081,6 +7199,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.PurchasedTicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PurchasedTicketsTable,
+			Columns: []string{user.PurchasedTicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedPurchasedTicketsIDs(); len(nodes) > 0 && !uuo.mutation.PurchasedTicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PurchasedTicketsTable,
+			Columns: []string{user.PurchasedTicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.PurchasedTicketsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PurchasedTicketsTable,
+			Columns: []string{user.PurchasedTicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

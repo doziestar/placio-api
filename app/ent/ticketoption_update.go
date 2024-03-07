@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"placio-app/ent/event"
 	"placio-app/ent/predicate"
+	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"time"
 
@@ -26,6 +27,111 @@ type TicketOptionUpdate struct {
 // Where appends a list predicates to the TicketOptionUpdate builder.
 func (tou *TicketOptionUpdate) Where(ps ...predicate.TicketOption) *TicketOptionUpdate {
 	tou.mutation.Where(ps...)
+	return tou
+}
+
+// SetName sets the "name" field.
+func (tou *TicketOptionUpdate) SetName(s string) *TicketOptionUpdate {
+	tou.mutation.SetName(s)
+	return tou
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (tou *TicketOptionUpdate) SetNillableName(s *string) *TicketOptionUpdate {
+	if s != nil {
+		tou.SetName(*s)
+	}
+	return tou
+}
+
+// SetDescription sets the "description" field.
+func (tou *TicketOptionUpdate) SetDescription(s string) *TicketOptionUpdate {
+	tou.mutation.SetDescription(s)
+	return tou
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (tou *TicketOptionUpdate) SetNillableDescription(s *string) *TicketOptionUpdate {
+	if s != nil {
+		tou.SetDescription(*s)
+	}
+	return tou
+}
+
+// SetPrice sets the "price" field.
+func (tou *TicketOptionUpdate) SetPrice(f float64) *TicketOptionUpdate {
+	tou.mutation.ResetPrice()
+	tou.mutation.SetPrice(f)
+	return tou
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (tou *TicketOptionUpdate) SetNillablePrice(f *float64) *TicketOptionUpdate {
+	if f != nil {
+		tou.SetPrice(*f)
+	}
+	return tou
+}
+
+// AddPrice adds f to the "price" field.
+func (tou *TicketOptionUpdate) AddPrice(f float64) *TicketOptionUpdate {
+	tou.mutation.AddPrice(f)
+	return tou
+}
+
+// SetQuantityAvailable sets the "quantityAvailable" field.
+func (tou *TicketOptionUpdate) SetQuantityAvailable(i int) *TicketOptionUpdate {
+	tou.mutation.ResetQuantityAvailable()
+	tou.mutation.SetQuantityAvailable(i)
+	return tou
+}
+
+// SetNillableQuantityAvailable sets the "quantityAvailable" field if the given value is not nil.
+func (tou *TicketOptionUpdate) SetNillableQuantityAvailable(i *int) *TicketOptionUpdate {
+	if i != nil {
+		tou.SetQuantityAvailable(*i)
+	}
+	return tou
+}
+
+// AddQuantityAvailable adds i to the "quantityAvailable" field.
+func (tou *TicketOptionUpdate) AddQuantityAvailable(i int) *TicketOptionUpdate {
+	tou.mutation.AddQuantityAvailable(i)
+	return tou
+}
+
+// SetQuantitySold sets the "quantitySold" field.
+func (tou *TicketOptionUpdate) SetQuantitySold(i int) *TicketOptionUpdate {
+	tou.mutation.ResetQuantitySold()
+	tou.mutation.SetQuantitySold(i)
+	return tou
+}
+
+// SetNillableQuantitySold sets the "quantitySold" field if the given value is not nil.
+func (tou *TicketOptionUpdate) SetNillableQuantitySold(i *int) *TicketOptionUpdate {
+	if i != nil {
+		tou.SetQuantitySold(*i)
+	}
+	return tou
+}
+
+// AddQuantitySold adds i to the "quantitySold" field.
+func (tou *TicketOptionUpdate) AddQuantitySold(i int) *TicketOptionUpdate {
+	tou.mutation.AddQuantitySold(i)
+	return tou
+}
+
+// SetStatus sets the "status" field.
+func (tou *TicketOptionUpdate) SetStatus(t ticketoption.Status) *TicketOptionUpdate {
+	tou.mutation.SetStatus(t)
+	return tou
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tou *TicketOptionUpdate) SetNillableStatus(t *ticketoption.Status) *TicketOptionUpdate {
+	if t != nil {
+		tou.SetStatus(*t)
+	}
 	return tou
 }
 
@@ -68,6 +174,21 @@ func (tou *TicketOptionUpdate) SetEvent(e *Event) *TicketOptionUpdate {
 	return tou.SetEventID(e.ID)
 }
 
+// AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
+func (tou *TicketOptionUpdate) AddTicketIDs(ids ...string) *TicketOptionUpdate {
+	tou.mutation.AddTicketIDs(ids...)
+	return tou
+}
+
+// AddTickets adds the "tickets" edges to the Ticket entity.
+func (tou *TicketOptionUpdate) AddTickets(t ...*Ticket) *TicketOptionUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tou.AddTicketIDs(ids...)
+}
+
 // Mutation returns the TicketOptionMutation object of the builder.
 func (tou *TicketOptionUpdate) Mutation() *TicketOptionMutation {
 	return tou.mutation
@@ -77,6 +198,27 @@ func (tou *TicketOptionUpdate) Mutation() *TicketOptionMutation {
 func (tou *TicketOptionUpdate) ClearEvent() *TicketOptionUpdate {
 	tou.mutation.ClearEvent()
 	return tou
+}
+
+// ClearTickets clears all "tickets" edges to the Ticket entity.
+func (tou *TicketOptionUpdate) ClearTickets() *TicketOptionUpdate {
+	tou.mutation.ClearTickets()
+	return tou
+}
+
+// RemoveTicketIDs removes the "tickets" edge to Ticket entities by IDs.
+func (tou *TicketOptionUpdate) RemoveTicketIDs(ids ...string) *TicketOptionUpdate {
+	tou.mutation.RemoveTicketIDs(ids...)
+	return tou
+}
+
+// RemoveTickets removes "tickets" edges to Ticket entities.
+func (tou *TicketOptionUpdate) RemoveTickets(t ...*Ticket) *TicketOptionUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tou.RemoveTicketIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -115,7 +257,30 @@ func (tou *TicketOptionUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (tou *TicketOptionUpdate) check() error {
+	if v, ok := tou.mutation.Name(); ok {
+		if err := ticketoption.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TicketOption.name": %w`, err)}
+		}
+	}
+	if v, ok := tou.mutation.Price(); ok {
+		if err := ticketoption.PriceValidator(v); err != nil {
+			return &ValidationError{Name: "price", err: fmt.Errorf(`ent: validator failed for field "TicketOption.price": %w`, err)}
+		}
+	}
+	if v, ok := tou.mutation.Status(); ok {
+		if err := ticketoption.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TicketOption.status": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (tou *TicketOptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := tou.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(ticketoption.Table, ticketoption.Columns, sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString))
 	if ps := tou.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -123,6 +288,33 @@ func (tou *TicketOptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := tou.mutation.Name(); ok {
+		_spec.SetField(ticketoption.FieldName, field.TypeString, value)
+	}
+	if value, ok := tou.mutation.Description(); ok {
+		_spec.SetField(ticketoption.FieldDescription, field.TypeString, value)
+	}
+	if value, ok := tou.mutation.Price(); ok {
+		_spec.SetField(ticketoption.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := tou.mutation.AddedPrice(); ok {
+		_spec.AddField(ticketoption.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := tou.mutation.QuantityAvailable(); ok {
+		_spec.SetField(ticketoption.FieldQuantityAvailable, field.TypeInt, value)
+	}
+	if value, ok := tou.mutation.AddedQuantityAvailable(); ok {
+		_spec.AddField(ticketoption.FieldQuantityAvailable, field.TypeInt, value)
+	}
+	if value, ok := tou.mutation.QuantitySold(); ok {
+		_spec.SetField(ticketoption.FieldQuantitySold, field.TypeInt, value)
+	}
+	if value, ok := tou.mutation.AddedQuantitySold(); ok {
+		_spec.AddField(ticketoption.FieldQuantitySold, field.TypeInt, value)
+	}
+	if value, ok := tou.mutation.Status(); ok {
+		_spec.SetField(ticketoption.FieldStatus, field.TypeEnum, value)
 	}
 	if value, ok := tou.mutation.CreatedAt(); ok {
 		_spec.SetField(ticketoption.FieldCreatedAt, field.TypeTime, value)
@@ -159,6 +351,51 @@ func (tou *TicketOptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tou.mutation.TicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.TicketsTable,
+			Columns: []string{ticketoption.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tou.mutation.RemovedTicketsIDs(); len(nodes) > 0 && !tou.mutation.TicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.TicketsTable,
+			Columns: []string{ticketoption.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tou.mutation.TicketsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.TicketsTable,
+			Columns: []string{ticketoption.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tou.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{ticketoption.Label}
@@ -177,6 +414,111 @@ type TicketOptionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *TicketOptionMutation
+}
+
+// SetName sets the "name" field.
+func (touo *TicketOptionUpdateOne) SetName(s string) *TicketOptionUpdateOne {
+	touo.mutation.SetName(s)
+	return touo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (touo *TicketOptionUpdateOne) SetNillableName(s *string) *TicketOptionUpdateOne {
+	if s != nil {
+		touo.SetName(*s)
+	}
+	return touo
+}
+
+// SetDescription sets the "description" field.
+func (touo *TicketOptionUpdateOne) SetDescription(s string) *TicketOptionUpdateOne {
+	touo.mutation.SetDescription(s)
+	return touo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (touo *TicketOptionUpdateOne) SetNillableDescription(s *string) *TicketOptionUpdateOne {
+	if s != nil {
+		touo.SetDescription(*s)
+	}
+	return touo
+}
+
+// SetPrice sets the "price" field.
+func (touo *TicketOptionUpdateOne) SetPrice(f float64) *TicketOptionUpdateOne {
+	touo.mutation.ResetPrice()
+	touo.mutation.SetPrice(f)
+	return touo
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (touo *TicketOptionUpdateOne) SetNillablePrice(f *float64) *TicketOptionUpdateOne {
+	if f != nil {
+		touo.SetPrice(*f)
+	}
+	return touo
+}
+
+// AddPrice adds f to the "price" field.
+func (touo *TicketOptionUpdateOne) AddPrice(f float64) *TicketOptionUpdateOne {
+	touo.mutation.AddPrice(f)
+	return touo
+}
+
+// SetQuantityAvailable sets the "quantityAvailable" field.
+func (touo *TicketOptionUpdateOne) SetQuantityAvailable(i int) *TicketOptionUpdateOne {
+	touo.mutation.ResetQuantityAvailable()
+	touo.mutation.SetQuantityAvailable(i)
+	return touo
+}
+
+// SetNillableQuantityAvailable sets the "quantityAvailable" field if the given value is not nil.
+func (touo *TicketOptionUpdateOne) SetNillableQuantityAvailable(i *int) *TicketOptionUpdateOne {
+	if i != nil {
+		touo.SetQuantityAvailable(*i)
+	}
+	return touo
+}
+
+// AddQuantityAvailable adds i to the "quantityAvailable" field.
+func (touo *TicketOptionUpdateOne) AddQuantityAvailable(i int) *TicketOptionUpdateOne {
+	touo.mutation.AddQuantityAvailable(i)
+	return touo
+}
+
+// SetQuantitySold sets the "quantitySold" field.
+func (touo *TicketOptionUpdateOne) SetQuantitySold(i int) *TicketOptionUpdateOne {
+	touo.mutation.ResetQuantitySold()
+	touo.mutation.SetQuantitySold(i)
+	return touo
+}
+
+// SetNillableQuantitySold sets the "quantitySold" field if the given value is not nil.
+func (touo *TicketOptionUpdateOne) SetNillableQuantitySold(i *int) *TicketOptionUpdateOne {
+	if i != nil {
+		touo.SetQuantitySold(*i)
+	}
+	return touo
+}
+
+// AddQuantitySold adds i to the "quantitySold" field.
+func (touo *TicketOptionUpdateOne) AddQuantitySold(i int) *TicketOptionUpdateOne {
+	touo.mutation.AddQuantitySold(i)
+	return touo
+}
+
+// SetStatus sets the "status" field.
+func (touo *TicketOptionUpdateOne) SetStatus(t ticketoption.Status) *TicketOptionUpdateOne {
+	touo.mutation.SetStatus(t)
+	return touo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (touo *TicketOptionUpdateOne) SetNillableStatus(t *ticketoption.Status) *TicketOptionUpdateOne {
+	if t != nil {
+		touo.SetStatus(*t)
+	}
+	return touo
 }
 
 // SetCreatedAt sets the "createdAt" field.
@@ -218,6 +560,21 @@ func (touo *TicketOptionUpdateOne) SetEvent(e *Event) *TicketOptionUpdateOne {
 	return touo.SetEventID(e.ID)
 }
 
+// AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
+func (touo *TicketOptionUpdateOne) AddTicketIDs(ids ...string) *TicketOptionUpdateOne {
+	touo.mutation.AddTicketIDs(ids...)
+	return touo
+}
+
+// AddTickets adds the "tickets" edges to the Ticket entity.
+func (touo *TicketOptionUpdateOne) AddTickets(t ...*Ticket) *TicketOptionUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return touo.AddTicketIDs(ids...)
+}
+
 // Mutation returns the TicketOptionMutation object of the builder.
 func (touo *TicketOptionUpdateOne) Mutation() *TicketOptionMutation {
 	return touo.mutation
@@ -227,6 +584,27 @@ func (touo *TicketOptionUpdateOne) Mutation() *TicketOptionMutation {
 func (touo *TicketOptionUpdateOne) ClearEvent() *TicketOptionUpdateOne {
 	touo.mutation.ClearEvent()
 	return touo
+}
+
+// ClearTickets clears all "tickets" edges to the Ticket entity.
+func (touo *TicketOptionUpdateOne) ClearTickets() *TicketOptionUpdateOne {
+	touo.mutation.ClearTickets()
+	return touo
+}
+
+// RemoveTicketIDs removes the "tickets" edge to Ticket entities by IDs.
+func (touo *TicketOptionUpdateOne) RemoveTicketIDs(ids ...string) *TicketOptionUpdateOne {
+	touo.mutation.RemoveTicketIDs(ids...)
+	return touo
+}
+
+// RemoveTickets removes "tickets" edges to Ticket entities.
+func (touo *TicketOptionUpdateOne) RemoveTickets(t ...*Ticket) *TicketOptionUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return touo.RemoveTicketIDs(ids...)
 }
 
 // Where appends a list predicates to the TicketOptionUpdate builder.
@@ -278,7 +656,30 @@ func (touo *TicketOptionUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (touo *TicketOptionUpdateOne) check() error {
+	if v, ok := touo.mutation.Name(); ok {
+		if err := ticketoption.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TicketOption.name": %w`, err)}
+		}
+	}
+	if v, ok := touo.mutation.Price(); ok {
+		if err := ticketoption.PriceValidator(v); err != nil {
+			return &ValidationError{Name: "price", err: fmt.Errorf(`ent: validator failed for field "TicketOption.price": %w`, err)}
+		}
+	}
+	if v, ok := touo.mutation.Status(); ok {
+		if err := ticketoption.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TicketOption.status": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (touo *TicketOptionUpdateOne) sqlSave(ctx context.Context) (_node *TicketOption, err error) {
+	if err := touo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(ticketoption.Table, ticketoption.Columns, sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString))
 	id, ok := touo.mutation.ID()
 	if !ok {
@@ -303,6 +704,33 @@ func (touo *TicketOptionUpdateOne) sqlSave(ctx context.Context) (_node *TicketOp
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := touo.mutation.Name(); ok {
+		_spec.SetField(ticketoption.FieldName, field.TypeString, value)
+	}
+	if value, ok := touo.mutation.Description(); ok {
+		_spec.SetField(ticketoption.FieldDescription, field.TypeString, value)
+	}
+	if value, ok := touo.mutation.Price(); ok {
+		_spec.SetField(ticketoption.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := touo.mutation.AddedPrice(); ok {
+		_spec.AddField(ticketoption.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := touo.mutation.QuantityAvailable(); ok {
+		_spec.SetField(ticketoption.FieldQuantityAvailable, field.TypeInt, value)
+	}
+	if value, ok := touo.mutation.AddedQuantityAvailable(); ok {
+		_spec.AddField(ticketoption.FieldQuantityAvailable, field.TypeInt, value)
+	}
+	if value, ok := touo.mutation.QuantitySold(); ok {
+		_spec.SetField(ticketoption.FieldQuantitySold, field.TypeInt, value)
+	}
+	if value, ok := touo.mutation.AddedQuantitySold(); ok {
+		_spec.AddField(ticketoption.FieldQuantitySold, field.TypeInt, value)
+	}
+	if value, ok := touo.mutation.Status(); ok {
+		_spec.SetField(ticketoption.FieldStatus, field.TypeEnum, value)
 	}
 	if value, ok := touo.mutation.CreatedAt(); ok {
 		_spec.SetField(ticketoption.FieldCreatedAt, field.TypeTime, value)
@@ -332,6 +760,51 @@ func (touo *TicketOptionUpdateOne) sqlSave(ctx context.Context) (_node *TicketOp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if touo.mutation.TicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.TicketsTable,
+			Columns: []string{ticketoption.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := touo.mutation.RemovedTicketsIDs(); len(nodes) > 0 && !touo.mutation.TicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.TicketsTable,
+			Columns: []string{ticketoption.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := touo.mutation.TicketsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.TicketsTable,
+			Columns: []string{ticketoption.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

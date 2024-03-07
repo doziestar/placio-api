@@ -148,9 +148,11 @@ type UserEdges struct {
 	MemberOf []*Place `json:"memberOf,omitempty"`
 	// Customer holds the value of the customer edge.
 	Customer []*Place `json:"customer,omitempty"`
+	// PurchasedTickets holds the value of the purchasedTickets edge.
+	PurchasedTickets []*Ticket `json:"purchasedTickets,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [38]bool
+	loadedTypes [39]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -501,6 +503,15 @@ func (e UserEdges) CustomerOrErr() ([]*Place, error) {
 		return e.Customer, nil
 	}
 	return nil, &NotLoadedError{edge: "customer"}
+}
+
+// PurchasedTicketsOrErr returns the PurchasedTickets value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) PurchasedTicketsOrErr() ([]*Ticket, error) {
+	if e.loadedTypes[38] {
+		return e.PurchasedTickets, nil
+	}
+	return nil, &NotLoadedError{edge: "purchasedTickets"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -894,6 +905,11 @@ func (u *User) QueryMemberOf() *PlaceQuery {
 // QueryCustomer queries the "customer" edge of the User entity.
 func (u *User) QueryCustomer() *PlaceQuery {
 	return NewUserClient(u.config).QueryCustomer(u)
+}
+
+// QueryPurchasedTickets queries the "purchasedTickets" edge of the User entity.
+func (u *User) QueryPurchasedTickets() *TicketQuery {
+	return NewUserClient(u.config).QueryPurchasedTickets(u)
 }
 
 // Update returns a builder for updating this User.

@@ -133,6 +133,8 @@ const (
 	EdgeMemberOf = "memberOf"
 	// EdgeCustomer holds the string denoting the customer edge name in mutations.
 	EdgeCustomer = "customer"
+	// EdgePurchasedTickets holds the string denoting the purchasedtickets edge name in mutations.
+	EdgePurchasedTickets = "purchasedTickets"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -385,6 +387,13 @@ const (
 	// CustomerInverseTable is the table name for the Place entity.
 	// It exists in this package in order to avoid circular dependency with the "place" package.
 	CustomerInverseTable = "places"
+	// PurchasedTicketsTable is the table that holds the purchasedTickets relation/edge.
+	PurchasedTicketsTable = "tickets"
+	// PurchasedTicketsInverseTable is the table name for the Ticket entity.
+	// It exists in this package in order to avoid circular dependency with the "ticket" package.
+	PurchasedTicketsInverseTable = "tickets"
+	// PurchasedTicketsColumn is the table column denoting the purchasedTickets relation/edge.
+	PurchasedTicketsColumn = "user_purchased_tickets"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -1116,6 +1125,20 @@ func ByCustomer(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCustomerStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPurchasedTicketsCount orders the results by purchasedTickets count.
+func ByPurchasedTicketsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPurchasedTicketsStep(), opts...)
+	}
+}
+
+// ByPurchasedTickets orders the results by purchasedTickets terms.
+func ByPurchasedTickets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPurchasedTicketsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -1380,5 +1403,12 @@ func newCustomerStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CustomerInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, CustomerTable, CustomerPrimaryKey...),
+	)
+}
+func newPurchasedTicketsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PurchasedTicketsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PurchasedTicketsTable, PurchasedTicketsColumn),
 	)
 }

@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -27,6 +28,88 @@ type TicketUpdate struct {
 // Where appends a list predicates to the TicketUpdate builder.
 func (tu *TicketUpdate) Where(ps ...predicate.Ticket) *TicketUpdate {
 	tu.mutation.Where(ps...)
+	return tu
+}
+
+// SetTicketCode sets the "ticketCode" field.
+func (tu *TicketUpdate) SetTicketCode(s string) *TicketUpdate {
+	tu.mutation.SetTicketCode(s)
+	return tu
+}
+
+// SetNillableTicketCode sets the "ticketCode" field if the given value is not nil.
+func (tu *TicketUpdate) SetNillableTicketCode(s *string) *TicketUpdate {
+	if s != nil {
+		tu.SetTicketCode(*s)
+	}
+	return tu
+}
+
+// SetStatus sets the "status" field.
+func (tu *TicketUpdate) SetStatus(t ticket.Status) *TicketUpdate {
+	tu.mutation.SetStatus(t)
+	return tu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tu *TicketUpdate) SetNillableStatus(t *ticket.Status) *TicketUpdate {
+	if t != nil {
+		tu.SetStatus(*t)
+	}
+	return tu
+}
+
+// SetPurchaseTime sets the "purchaseTime" field.
+func (tu *TicketUpdate) SetPurchaseTime(t time.Time) *TicketUpdate {
+	tu.mutation.SetPurchaseTime(t)
+	return tu
+}
+
+// SetNillablePurchaseTime sets the "purchaseTime" field if the given value is not nil.
+func (tu *TicketUpdate) SetNillablePurchaseTime(t *time.Time) *TicketUpdate {
+	if t != nil {
+		tu.SetPurchaseTime(*t)
+	}
+	return tu
+}
+
+// SetValidationTime sets the "validationTime" field.
+func (tu *TicketUpdate) SetValidationTime(t time.Time) *TicketUpdate {
+	tu.mutation.SetValidationTime(t)
+	return tu
+}
+
+// SetNillableValidationTime sets the "validationTime" field if the given value is not nil.
+func (tu *TicketUpdate) SetNillableValidationTime(t *time.Time) *TicketUpdate {
+	if t != nil {
+		tu.SetValidationTime(*t)
+	}
+	return tu
+}
+
+// ClearValidationTime clears the value of the "validationTime" field.
+func (tu *TicketUpdate) ClearValidationTime() *TicketUpdate {
+	tu.mutation.ClearValidationTime()
+	return tu
+}
+
+// SetPurchaserEmail sets the "purchaserEmail" field.
+func (tu *TicketUpdate) SetPurchaserEmail(s string) *TicketUpdate {
+	tu.mutation.SetPurchaserEmail(s)
+	return tu
+}
+
+// SetNillablePurchaserEmail sets the "purchaserEmail" field if the given value is not nil.
+func (tu *TicketUpdate) SetNillablePurchaserEmail(s *string) *TicketUpdate {
+	if s != nil {
+		tu.SetPurchaserEmail(*s)
+	}
+	return tu
+}
+
+// ClearPurchaserEmail clears the value of the "purchaserEmail" field.
+func (tu *TicketUpdate) ClearPurchaserEmail() *TicketUpdate {
+	tu.mutation.ClearPurchaserEmail()
 	return tu
 }
 
@@ -50,17 +133,39 @@ func (tu *TicketUpdate) SetUpdatedAt(t time.Time) *TicketUpdate {
 	return tu
 }
 
-// SetEventID sets the "event" edge to the Event entity by ID.
-func (tu *TicketUpdate) SetEventID(id string) *TicketUpdate {
-	tu.mutation.SetEventID(id)
+// SetTicketOptionID sets the "ticketOption" edge to the TicketOption entity by ID.
+func (tu *TicketUpdate) SetTicketOptionID(id string) *TicketUpdate {
+	tu.mutation.SetTicketOptionID(id)
 	return tu
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (tu *TicketUpdate) SetNillableEventID(id *string) *TicketUpdate {
+// SetTicketOption sets the "ticketOption" edge to the TicketOption entity.
+func (tu *TicketUpdate) SetTicketOption(t *TicketOption) *TicketUpdate {
+	return tu.SetTicketOptionID(t.ID)
+}
+
+// SetPurchaserID sets the "purchaser" edge to the User entity by ID.
+func (tu *TicketUpdate) SetPurchaserID(id string) *TicketUpdate {
+	tu.mutation.SetPurchaserID(id)
+	return tu
+}
+
+// SetNillablePurchaserID sets the "purchaser" edge to the User entity by ID if the given value is not nil.
+func (tu *TicketUpdate) SetNillablePurchaserID(id *string) *TicketUpdate {
 	if id != nil {
-		tu = tu.SetEventID(*id)
+		tu = tu.SetPurchaserID(*id)
 	}
+	return tu
+}
+
+// SetPurchaser sets the "purchaser" edge to the User entity.
+func (tu *TicketUpdate) SetPurchaser(u *User) *TicketUpdate {
+	return tu.SetPurchaserID(u.ID)
+}
+
+// SetEventID sets the "event" edge to the Event entity by ID.
+func (tu *TicketUpdate) SetEventID(id string) *TicketUpdate {
+	tu.mutation.SetEventID(id)
 	return tu
 }
 
@@ -69,51 +174,27 @@ func (tu *TicketUpdate) SetEvent(e *Event) *TicketUpdate {
 	return tu.SetEventID(e.ID)
 }
 
-// AddTicketOptionIDs adds the "ticket_options" edge to the TicketOption entity by IDs.
-func (tu *TicketUpdate) AddTicketOptionIDs(ids ...string) *TicketUpdate {
-	tu.mutation.AddTicketOptionIDs(ids...)
-	return tu
-}
-
-// AddTicketOptions adds the "ticket_options" edges to the TicketOption entity.
-func (tu *TicketUpdate) AddTicketOptions(t ...*TicketOption) *TicketUpdate {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tu.AddTicketOptionIDs(ids...)
-}
-
 // Mutation returns the TicketMutation object of the builder.
 func (tu *TicketUpdate) Mutation() *TicketMutation {
 	return tu.mutation
+}
+
+// ClearTicketOption clears the "ticketOption" edge to the TicketOption entity.
+func (tu *TicketUpdate) ClearTicketOption() *TicketUpdate {
+	tu.mutation.ClearTicketOption()
+	return tu
+}
+
+// ClearPurchaser clears the "purchaser" edge to the User entity.
+func (tu *TicketUpdate) ClearPurchaser() *TicketUpdate {
+	tu.mutation.ClearPurchaser()
+	return tu
 }
 
 // ClearEvent clears the "event" edge to the Event entity.
 func (tu *TicketUpdate) ClearEvent() *TicketUpdate {
 	tu.mutation.ClearEvent()
 	return tu
-}
-
-// ClearTicketOptions clears all "ticket_options" edges to the TicketOption entity.
-func (tu *TicketUpdate) ClearTicketOptions() *TicketUpdate {
-	tu.mutation.ClearTicketOptions()
-	return tu
-}
-
-// RemoveTicketOptionIDs removes the "ticket_options" edge to TicketOption entities by IDs.
-func (tu *TicketUpdate) RemoveTicketOptionIDs(ids ...string) *TicketUpdate {
-	tu.mutation.RemoveTicketOptionIDs(ids...)
-	return tu
-}
-
-// RemoveTicketOptions removes "ticket_options" edges to TicketOption entities.
-func (tu *TicketUpdate) RemoveTicketOptions(t ...*TicketOption) *TicketUpdate {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tu.RemoveTicketOptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -152,7 +233,26 @@ func (tu *TicketUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (tu *TicketUpdate) check() error {
+	if v, ok := tu.mutation.Status(); ok {
+		if err := ticket.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Ticket.status": %w`, err)}
+		}
+	}
+	if _, ok := tu.mutation.TicketOptionID(); tu.mutation.TicketOptionCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Ticket.ticketOption"`)
+	}
+	if _, ok := tu.mutation.EventID(); tu.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Ticket.event"`)
+	}
+	return nil
+}
+
 func (tu *TicketUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := tu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(ticket.Table, ticket.Columns, sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString))
 	if ps := tu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -161,11 +261,90 @@ func (tu *TicketUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := tu.mutation.TicketCode(); ok {
+		_spec.SetField(ticket.FieldTicketCode, field.TypeString, value)
+	}
+	if value, ok := tu.mutation.Status(); ok {
+		_spec.SetField(ticket.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := tu.mutation.PurchaseTime(); ok {
+		_spec.SetField(ticket.FieldPurchaseTime, field.TypeTime, value)
+	}
+	if value, ok := tu.mutation.ValidationTime(); ok {
+		_spec.SetField(ticket.FieldValidationTime, field.TypeTime, value)
+	}
+	if tu.mutation.ValidationTimeCleared() {
+		_spec.ClearField(ticket.FieldValidationTime, field.TypeTime)
+	}
+	if value, ok := tu.mutation.PurchaserEmail(); ok {
+		_spec.SetField(ticket.FieldPurchaserEmail, field.TypeString, value)
+	}
+	if tu.mutation.PurchaserEmailCleared() {
+		_spec.ClearField(ticket.FieldPurchaserEmail, field.TypeString)
+	}
 	if value, ok := tu.mutation.CreatedAt(); ok {
 		_spec.SetField(ticket.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := tu.mutation.UpdatedAt(); ok {
 		_spec.SetField(ticket.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if tu.mutation.TicketOptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.TicketOptionTable,
+			Columns: []string{ticket.TicketOptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.TicketOptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.TicketOptionTable,
+			Columns: []string{ticket.TicketOptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tu.mutation.PurchaserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.PurchaserTable,
+			Columns: []string{ticket.PurchaserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.PurchaserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.PurchaserTable,
+			Columns: []string{ticket.PurchaserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if tu.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -196,51 +375,6 @@ func (tu *TicketUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if tu.mutation.TicketOptionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   ticket.TicketOptionsTable,
-			Columns: []string{ticket.TicketOptionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tu.mutation.RemovedTicketOptionsIDs(); len(nodes) > 0 && !tu.mutation.TicketOptionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   ticket.TicketOptionsTable,
-			Columns: []string{ticket.TicketOptionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tu.mutation.TicketOptionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   ticket.TicketOptionsTable,
-			Columns: []string{ticket.TicketOptionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{ticket.Label}
@@ -259,6 +393,88 @@ type TicketUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *TicketMutation
+}
+
+// SetTicketCode sets the "ticketCode" field.
+func (tuo *TicketUpdateOne) SetTicketCode(s string) *TicketUpdateOne {
+	tuo.mutation.SetTicketCode(s)
+	return tuo
+}
+
+// SetNillableTicketCode sets the "ticketCode" field if the given value is not nil.
+func (tuo *TicketUpdateOne) SetNillableTicketCode(s *string) *TicketUpdateOne {
+	if s != nil {
+		tuo.SetTicketCode(*s)
+	}
+	return tuo
+}
+
+// SetStatus sets the "status" field.
+func (tuo *TicketUpdateOne) SetStatus(t ticket.Status) *TicketUpdateOne {
+	tuo.mutation.SetStatus(t)
+	return tuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (tuo *TicketUpdateOne) SetNillableStatus(t *ticket.Status) *TicketUpdateOne {
+	if t != nil {
+		tuo.SetStatus(*t)
+	}
+	return tuo
+}
+
+// SetPurchaseTime sets the "purchaseTime" field.
+func (tuo *TicketUpdateOne) SetPurchaseTime(t time.Time) *TicketUpdateOne {
+	tuo.mutation.SetPurchaseTime(t)
+	return tuo
+}
+
+// SetNillablePurchaseTime sets the "purchaseTime" field if the given value is not nil.
+func (tuo *TicketUpdateOne) SetNillablePurchaseTime(t *time.Time) *TicketUpdateOne {
+	if t != nil {
+		tuo.SetPurchaseTime(*t)
+	}
+	return tuo
+}
+
+// SetValidationTime sets the "validationTime" field.
+func (tuo *TicketUpdateOne) SetValidationTime(t time.Time) *TicketUpdateOne {
+	tuo.mutation.SetValidationTime(t)
+	return tuo
+}
+
+// SetNillableValidationTime sets the "validationTime" field if the given value is not nil.
+func (tuo *TicketUpdateOne) SetNillableValidationTime(t *time.Time) *TicketUpdateOne {
+	if t != nil {
+		tuo.SetValidationTime(*t)
+	}
+	return tuo
+}
+
+// ClearValidationTime clears the value of the "validationTime" field.
+func (tuo *TicketUpdateOne) ClearValidationTime() *TicketUpdateOne {
+	tuo.mutation.ClearValidationTime()
+	return tuo
+}
+
+// SetPurchaserEmail sets the "purchaserEmail" field.
+func (tuo *TicketUpdateOne) SetPurchaserEmail(s string) *TicketUpdateOne {
+	tuo.mutation.SetPurchaserEmail(s)
+	return tuo
+}
+
+// SetNillablePurchaserEmail sets the "purchaserEmail" field if the given value is not nil.
+func (tuo *TicketUpdateOne) SetNillablePurchaserEmail(s *string) *TicketUpdateOne {
+	if s != nil {
+		tuo.SetPurchaserEmail(*s)
+	}
+	return tuo
+}
+
+// ClearPurchaserEmail clears the value of the "purchaserEmail" field.
+func (tuo *TicketUpdateOne) ClearPurchaserEmail() *TicketUpdateOne {
+	tuo.mutation.ClearPurchaserEmail()
+	return tuo
 }
 
 // SetCreatedAt sets the "createdAt" field.
@@ -281,17 +497,39 @@ func (tuo *TicketUpdateOne) SetUpdatedAt(t time.Time) *TicketUpdateOne {
 	return tuo
 }
 
-// SetEventID sets the "event" edge to the Event entity by ID.
-func (tuo *TicketUpdateOne) SetEventID(id string) *TicketUpdateOne {
-	tuo.mutation.SetEventID(id)
+// SetTicketOptionID sets the "ticketOption" edge to the TicketOption entity by ID.
+func (tuo *TicketUpdateOne) SetTicketOptionID(id string) *TicketUpdateOne {
+	tuo.mutation.SetTicketOptionID(id)
 	return tuo
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (tuo *TicketUpdateOne) SetNillableEventID(id *string) *TicketUpdateOne {
+// SetTicketOption sets the "ticketOption" edge to the TicketOption entity.
+func (tuo *TicketUpdateOne) SetTicketOption(t *TicketOption) *TicketUpdateOne {
+	return tuo.SetTicketOptionID(t.ID)
+}
+
+// SetPurchaserID sets the "purchaser" edge to the User entity by ID.
+func (tuo *TicketUpdateOne) SetPurchaserID(id string) *TicketUpdateOne {
+	tuo.mutation.SetPurchaserID(id)
+	return tuo
+}
+
+// SetNillablePurchaserID sets the "purchaser" edge to the User entity by ID if the given value is not nil.
+func (tuo *TicketUpdateOne) SetNillablePurchaserID(id *string) *TicketUpdateOne {
 	if id != nil {
-		tuo = tuo.SetEventID(*id)
+		tuo = tuo.SetPurchaserID(*id)
 	}
+	return tuo
+}
+
+// SetPurchaser sets the "purchaser" edge to the User entity.
+func (tuo *TicketUpdateOne) SetPurchaser(u *User) *TicketUpdateOne {
+	return tuo.SetPurchaserID(u.ID)
+}
+
+// SetEventID sets the "event" edge to the Event entity by ID.
+func (tuo *TicketUpdateOne) SetEventID(id string) *TicketUpdateOne {
+	tuo.mutation.SetEventID(id)
 	return tuo
 }
 
@@ -300,51 +538,27 @@ func (tuo *TicketUpdateOne) SetEvent(e *Event) *TicketUpdateOne {
 	return tuo.SetEventID(e.ID)
 }
 
-// AddTicketOptionIDs adds the "ticket_options" edge to the TicketOption entity by IDs.
-func (tuo *TicketUpdateOne) AddTicketOptionIDs(ids ...string) *TicketUpdateOne {
-	tuo.mutation.AddTicketOptionIDs(ids...)
-	return tuo
-}
-
-// AddTicketOptions adds the "ticket_options" edges to the TicketOption entity.
-func (tuo *TicketUpdateOne) AddTicketOptions(t ...*TicketOption) *TicketUpdateOne {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tuo.AddTicketOptionIDs(ids...)
-}
-
 // Mutation returns the TicketMutation object of the builder.
 func (tuo *TicketUpdateOne) Mutation() *TicketMutation {
 	return tuo.mutation
+}
+
+// ClearTicketOption clears the "ticketOption" edge to the TicketOption entity.
+func (tuo *TicketUpdateOne) ClearTicketOption() *TicketUpdateOne {
+	tuo.mutation.ClearTicketOption()
+	return tuo
+}
+
+// ClearPurchaser clears the "purchaser" edge to the User entity.
+func (tuo *TicketUpdateOne) ClearPurchaser() *TicketUpdateOne {
+	tuo.mutation.ClearPurchaser()
+	return tuo
 }
 
 // ClearEvent clears the "event" edge to the Event entity.
 func (tuo *TicketUpdateOne) ClearEvent() *TicketUpdateOne {
 	tuo.mutation.ClearEvent()
 	return tuo
-}
-
-// ClearTicketOptions clears all "ticket_options" edges to the TicketOption entity.
-func (tuo *TicketUpdateOne) ClearTicketOptions() *TicketUpdateOne {
-	tuo.mutation.ClearTicketOptions()
-	return tuo
-}
-
-// RemoveTicketOptionIDs removes the "ticket_options" edge to TicketOption entities by IDs.
-func (tuo *TicketUpdateOne) RemoveTicketOptionIDs(ids ...string) *TicketUpdateOne {
-	tuo.mutation.RemoveTicketOptionIDs(ids...)
-	return tuo
-}
-
-// RemoveTicketOptions removes "ticket_options" edges to TicketOption entities.
-func (tuo *TicketUpdateOne) RemoveTicketOptions(t ...*TicketOption) *TicketUpdateOne {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tuo.RemoveTicketOptionIDs(ids...)
 }
 
 // Where appends a list predicates to the TicketUpdate builder.
@@ -396,7 +610,26 @@ func (tuo *TicketUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (tuo *TicketUpdateOne) check() error {
+	if v, ok := tuo.mutation.Status(); ok {
+		if err := ticket.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Ticket.status": %w`, err)}
+		}
+	}
+	if _, ok := tuo.mutation.TicketOptionID(); tuo.mutation.TicketOptionCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Ticket.ticketOption"`)
+	}
+	if _, ok := tuo.mutation.EventID(); tuo.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Ticket.event"`)
+	}
+	return nil
+}
+
 func (tuo *TicketUpdateOne) sqlSave(ctx context.Context) (_node *Ticket, err error) {
+	if err := tuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(ticket.Table, ticket.Columns, sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString))
 	id, ok := tuo.mutation.ID()
 	if !ok {
@@ -422,11 +655,90 @@ func (tuo *TicketUpdateOne) sqlSave(ctx context.Context) (_node *Ticket, err err
 			}
 		}
 	}
+	if value, ok := tuo.mutation.TicketCode(); ok {
+		_spec.SetField(ticket.FieldTicketCode, field.TypeString, value)
+	}
+	if value, ok := tuo.mutation.Status(); ok {
+		_spec.SetField(ticket.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := tuo.mutation.PurchaseTime(); ok {
+		_spec.SetField(ticket.FieldPurchaseTime, field.TypeTime, value)
+	}
+	if value, ok := tuo.mutation.ValidationTime(); ok {
+		_spec.SetField(ticket.FieldValidationTime, field.TypeTime, value)
+	}
+	if tuo.mutation.ValidationTimeCleared() {
+		_spec.ClearField(ticket.FieldValidationTime, field.TypeTime)
+	}
+	if value, ok := tuo.mutation.PurchaserEmail(); ok {
+		_spec.SetField(ticket.FieldPurchaserEmail, field.TypeString, value)
+	}
+	if tuo.mutation.PurchaserEmailCleared() {
+		_spec.ClearField(ticket.FieldPurchaserEmail, field.TypeString)
+	}
 	if value, ok := tuo.mutation.CreatedAt(); ok {
 		_spec.SetField(ticket.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := tuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(ticket.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if tuo.mutation.TicketOptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.TicketOptionTable,
+			Columns: []string{ticket.TicketOptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.TicketOptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.TicketOptionTable,
+			Columns: []string{ticket.TicketOptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.PurchaserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.PurchaserTable,
+			Columns: []string{ticket.PurchaserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.PurchaserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   ticket.PurchaserTable,
+			Columns: []string{ticket.PurchaserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if tuo.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -450,51 +762,6 @@ func (tuo *TicketUpdateOne) sqlSave(ctx context.Context) (_node *Ticket, err err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if tuo.mutation.TicketOptionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   ticket.TicketOptionsTable,
-			Columns: []string{ticket.TicketOptionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tuo.mutation.RemovedTicketOptionsIDs(); len(nodes) > 0 && !tuo.mutation.TicketOptionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   ticket.TicketOptionsTable,
-			Columns: []string{ticket.TicketOptionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tuo.mutation.TicketOptionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   ticket.TicketOptionsTable,
-			Columns: []string{ticket.TicketOptionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

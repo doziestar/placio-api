@@ -138,8 +138,8 @@ const (
 	FieldIsVirtuallyAccessible = "is_virtually_accessible"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
-	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
-	EdgeTicketOptions = "ticket_options"
+	// EdgeTicketOptions holds the string denoting the ticketoptions edge name in mutations.
+	EdgeTicketOptions = "ticketOptions"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeEventCategories holds the string denoting the event_categories edge name in mutations.
@@ -179,12 +179,12 @@ const (
 	TicketsInverseTable = "tickets"
 	// TicketsColumn is the table column denoting the tickets relation/edge.
 	TicketsColumn = "event_tickets"
-	// TicketOptionsTable is the table that holds the ticket_options relation/edge.
+	// TicketOptionsTable is the table that holds the ticketOptions relation/edge.
 	TicketOptionsTable = "ticket_options"
 	// TicketOptionsInverseTable is the table name for the TicketOption entity.
 	// It exists in this package in order to avoid circular dependency with the "ticketoption" package.
 	TicketOptionsInverseTable = "ticket_options"
-	// TicketOptionsColumn is the table column denoting the ticket_options relation/edge.
+	// TicketOptionsColumn is the table column denoting the ticketOptions relation/edge.
 	TicketOptionsColumn = "event_ticket_options"
 	// PlaceTable is the table that holds the place relation/edge.
 	PlaceTable = "places"
@@ -846,14 +846,14 @@ func ByTickets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByTicketOptionsCount orders the results by ticket_options count.
+// ByTicketOptionsCount orders the results by ticketOptions count.
 func ByTicketOptionsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborsCount(s, newTicketOptionsStep(), opts...)
 	}
 }
 
-// ByTicketOptions orders the results by ticket_options terms.
+// ByTicketOptions orders the results by ticketOptions terms.
 func ByTicketOptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newTicketOptionsStep(), append([]sql.OrderTerm{term}, terms...)...)

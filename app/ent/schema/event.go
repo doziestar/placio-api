@@ -115,7 +115,7 @@ func (Event) Fields() []ent.Field {
 func (Event) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("tickets", Ticket.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
-		edge.To("ticket_options", TicketOption.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("ticketOptions", TicketOption.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("place", Place.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("event_categories", Category.Type).Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("event_category_assignments", CategoryAssignment.Type).Annotations(entsql.OnDelete(entsql.Cascade)),

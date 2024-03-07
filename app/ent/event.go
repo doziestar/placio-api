@@ -153,8 +153,8 @@ type Event struct {
 type EventEdges struct {
 	// Tickets holds the value of the tickets edge.
 	Tickets []*Ticket `json:"tickets,omitempty"`
-	// TicketOptions holds the value of the ticket_options edge.
-	TicketOptions []*TicketOption `json:"ticket_options,omitempty"`
+	// TicketOptions holds the value of the ticketOptions edge.
+	TicketOptions []*TicketOption `json:"ticketOptions,omitempty"`
 	// Place holds the value of the place edge.
 	Place []*Place `json:"place,omitempty"`
 	// EventCategories holds the value of the event_categories edge.
@@ -205,7 +205,7 @@ func (e EventEdges) TicketOptionsOrErr() ([]*TicketOption, error) {
 	if e.loadedTypes[1] {
 		return e.TicketOptions, nil
 	}
-	return nil, &NotLoadedError{edge: "ticket_options"}
+	return nil, &NotLoadedError{edge: "ticketOptions"}
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -800,7 +800,7 @@ func (e *Event) QueryTickets() *TicketQuery {
 	return NewEventClient(e.config).QueryTickets(e)
 }
 
-// QueryTicketOptions queries the "ticket_options" edge of the Event entity.
+// QueryTicketOptions queries the "ticketOptions" edge of the Event entity.
 func (e *Event) QueryTicketOptions() *TicketOptionQuery {
 	return NewEventClient(e.config).QueryTicketOptions(e)
 }

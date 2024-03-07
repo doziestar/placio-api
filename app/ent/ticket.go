@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"placio-app/ent/event"
 	"placio-app/ent/ticket"
+	"placio-app/ent/ticketoption"
+	"placio-app/ent/user"
 	"strings"
 	"time"
 
@@ -18,32 +20,72 @@ type Ticket struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// TicketCode holds the value of the "ticketCode" field.
+	TicketCode string `json:"ticketCode,omitempty"`
+	// Status holds the value of the "status" field.
+	Status ticket.Status `json:"status,omitempty"`
+	// PurchaseTime holds the value of the "purchaseTime" field.
+	PurchaseTime time.Time `json:"purchaseTime,omitempty"`
+	// ValidationTime holds the value of the "validationTime" field.
+	ValidationTime time.Time `json:"validationTime,omitempty"`
+	// PurchaserEmail holds the value of the "purchaserEmail" field.
+	PurchaserEmail string `json:"purchaserEmail,omitempty"`
 	// CreatedAt holds the value of the "createdAt" field.
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updatedAt" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TicketQuery when eager-loading is set.
-	Edges         TicketEdges `json:"edges"`
-	event_tickets *string
-	selectValues  sql.SelectValues
+	Edges                  TicketEdges `json:"edges"`
+	event_tickets          *string
+	ticket_option_tickets  *string
+	user_purchased_tickets *string
+	selectValues           sql.SelectValues
 }
 
 // TicketEdges holds the relations/edges for other nodes in the graph.
 type TicketEdges struct {
+	// TicketOption holds the value of the ticketOption edge.
+	TicketOption *TicketOption `json:"ticketOption,omitempty"`
+	// Purchaser holds the value of the purchaser edge.
+	Purchaser *User `json:"purchaser,omitempty"`
 	// Event holds the value of the event edge.
 	Event *Event `json:"event,omitempty"`
-	// TicketOptions holds the value of the ticket_options edge.
-	TicketOptions []*TicketOption `json:"ticket_options,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
+}
+
+// TicketOptionOrErr returns the TicketOption value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TicketEdges) TicketOptionOrErr() (*TicketOption, error) {
+	if e.loadedTypes[0] {
+		if e.TicketOption == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: ticketoption.Label}
+		}
+		return e.TicketOption, nil
+	}
+	return nil, &NotLoadedError{edge: "ticketOption"}
+}
+
+// PurchaserOrErr returns the Purchaser value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TicketEdges) PurchaserOrErr() (*User, error) {
+	if e.loadedTypes[1] {
+		if e.Purchaser == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.Purchaser, nil
+	}
+	return nil, &NotLoadedError{edge: "purchaser"}
 }
 
 // EventOrErr returns the Event value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e TicketEdges) EventOrErr() (*Event, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[2] {
 		if e.Event == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: event.Label}
@@ -53,25 +95,20 @@ func (e TicketEdges) EventOrErr() (*Event, error) {
 	return nil, &NotLoadedError{edge: "event"}
 }
 
-// TicketOptionsOrErr returns the TicketOptions value or an error if the edge
-// was not loaded in eager-loading.
-func (e TicketEdges) TicketOptionsOrErr() ([]*TicketOption, error) {
-	if e.loadedTypes[1] {
-		return e.TicketOptions, nil
-	}
-	return nil, &NotLoadedError{edge: "ticket_options"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Ticket) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case ticket.FieldID:
+		case ticket.FieldID, ticket.FieldTicketCode, ticket.FieldStatus, ticket.FieldPurchaserEmail:
 			values[i] = new(sql.NullString)
-		case ticket.FieldCreatedAt, ticket.FieldUpdatedAt:
+		case ticket.FieldPurchaseTime, ticket.FieldValidationTime, ticket.FieldCreatedAt, ticket.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case ticket.ForeignKeys[0]: // event_tickets
+			values[i] = new(sql.NullString)
+		case ticket.ForeignKeys[1]: // ticket_option_tickets
+			values[i] = new(sql.NullString)
+		case ticket.ForeignKeys[2]: // user_purchased_tickets
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -94,6 +131,36 @@ func (t *Ticket) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.ID = value.String
 			}
+		case ticket.FieldTicketCode:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ticketCode", values[i])
+			} else if value.Valid {
+				t.TicketCode = value.String
+			}
+		case ticket.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				t.Status = ticket.Status(value.String)
+			}
+		case ticket.FieldPurchaseTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field purchaseTime", values[i])
+			} else if value.Valid {
+				t.PurchaseTime = value.Time
+			}
+		case ticket.FieldValidationTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field validationTime", values[i])
+			} else if value.Valid {
+				t.ValidationTime = value.Time
+			}
+		case ticket.FieldPurchaserEmail:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field purchaserEmail", values[i])
+			} else if value.Valid {
+				t.PurchaserEmail = value.String
+			}
 		case ticket.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field createdAt", values[i])
@@ -113,6 +180,20 @@ func (t *Ticket) assignValues(columns []string, values []any) error {
 				t.event_tickets = new(string)
 				*t.event_tickets = value.String
 			}
+		case ticket.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ticket_option_tickets", values[i])
+			} else if value.Valid {
+				t.ticket_option_tickets = new(string)
+				*t.ticket_option_tickets = value.String
+			}
+		case ticket.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_purchased_tickets", values[i])
+			} else if value.Valid {
+				t.user_purchased_tickets = new(string)
+				*t.user_purchased_tickets = value.String
+			}
 		default:
 			t.selectValues.Set(columns[i], values[i])
 		}
@@ -126,14 +207,19 @@ func (t *Ticket) Value(name string) (ent.Value, error) {
 	return t.selectValues.Get(name)
 }
 
+// QueryTicketOption queries the "ticketOption" edge of the Ticket entity.
+func (t *Ticket) QueryTicketOption() *TicketOptionQuery {
+	return NewTicketClient(t.config).QueryTicketOption(t)
+}
+
+// QueryPurchaser queries the "purchaser" edge of the Ticket entity.
+func (t *Ticket) QueryPurchaser() *UserQuery {
+	return NewTicketClient(t.config).QueryPurchaser(t)
+}
+
 // QueryEvent queries the "event" edge of the Ticket entity.
 func (t *Ticket) QueryEvent() *EventQuery {
 	return NewTicketClient(t.config).QueryEvent(t)
-}
-
-// QueryTicketOptions queries the "ticket_options" edge of the Ticket entity.
-func (t *Ticket) QueryTicketOptions() *TicketOptionQuery {
-	return NewTicketClient(t.config).QueryTicketOptions(t)
 }
 
 // Update returns a builder for updating this Ticket.
@@ -159,6 +245,21 @@ func (t *Ticket) String() string {
 	var builder strings.Builder
 	builder.WriteString("Ticket(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
+	builder.WriteString("ticketCode=")
+	builder.WriteString(t.TicketCode)
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", t.Status))
+	builder.WriteString(", ")
+	builder.WriteString("purchaseTime=")
+	builder.WriteString(t.PurchaseTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("validationTime=")
+	builder.WriteString(t.ValidationTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("purchaserEmail=")
+	builder.WriteString(t.PurchaserEmail)
+	builder.WriteString(", ")
 	builder.WriteString("createdAt=")
 	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
