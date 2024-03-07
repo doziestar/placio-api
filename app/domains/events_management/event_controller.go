@@ -52,7 +52,7 @@ func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /events [post]
 func (c *EventController) createEvent(ctx *gin.Context) error {
-	var data *ent.Event
+	var data *EventDTO
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		log.Println("error: ", err)
 		return err
@@ -199,6 +199,17 @@ func (c *EventController) getEventsByFilters(ctx *gin.Context) error {
 		return err
 	}
 
+	businessId := ctx.Query("businessId")
+
+	if businessId != "" {
+		events, err := c.service.GetEventByBusinessID(ctx, businessId)
+		if err != nil {
+			return err
+		}
+		ctx.JSON(http.StatusOK, utility.ProcessResponse(events))
+		return nil
+	}
+
 	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	if err != nil {
 
@@ -217,7 +228,7 @@ func (c *EventController) getEventsByFilters(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, events)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(events))
 	return nil
 }
 
@@ -239,7 +250,7 @@ func (c *EventController) getEventByID(ctx *gin.Context) error {
 
 		return err
 	}
-	ctx.JSON(http.StatusOK, event)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(event))
 	return nil
 }
 
