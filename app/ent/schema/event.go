@@ -22,6 +22,7 @@ type EventOrganizer struct {
 
 func (EventOrganizer) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").Unique().Immutable(),
 		field.String("organizerID").NotEmpty(),
 		field.String("organizerType").NotEmpty().Validate(func(s string) error {
 			if s != "user" && s != "business" {
