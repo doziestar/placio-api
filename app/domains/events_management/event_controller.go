@@ -39,8 +39,6 @@ func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 }
 
 // TODO: Add the rest of the methods
-// 3. test addOrganizersToEvent
-// 5. test getEventsByFilters
 // 8. test add ticket to event
 // 9. test get ticket by event id
 // 10. test get ticket by id
@@ -189,7 +187,7 @@ func (c *EventController) getEventsByOrganizerId(ctx *gin.Context) error {
 // RemoveOrganizerFromEvent handles removing an organizer from an event.
 func (c *EventController) removeOrganizerFromEvent(ctx *gin.Context) error {
 	eventID := ctx.Param("eventId")
-	organizerID := ctx.Param("organizerId") // Ensure this param name matches your routing definition
+	organizerID := ctx.Param("organizerId")
 
 	if err := c.service.RemoveOrganizer(ctx, eventID, organizerID); err != nil {
 		return err
