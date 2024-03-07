@@ -202,7 +202,7 @@ func (c *EventController) removeOrganizerFromEvent(ctx *gin.Context) error {
 }
 
 func (c *EventController) removeMediaFromEvent(ctx *gin.Context) error {
-	eventID := ctx.Param("id")
+	eventID := ctx.Param("eventId")
 	mediaID := ctx.Param("mediaID")
 
 	if err := c.service.RemoveMediaFromEvent(ctx, eventID, mediaID); err != nil {

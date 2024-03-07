@@ -368,26 +368,31 @@ func (s *EventService) GetEventsByOrganizerID(ctx context.Context, organizerId s
 }
 
 func (s *EventService) RemoveMediaFromEvent(ctx context.Context, eventID string, mediaID string) error {
-	// Fetch the event to ensure it exists
-	_, err := s.client.Event.Get(ctx, eventID)
+	// Start a transaction
+	tx, err := s.client.Tx(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
 		return err
 	}
 
-	// Fetch the media to ensure it exists
-	media, err := s.client.Media.Get(ctx, mediaID)
+	// get media
+	media, err := tx.Media.Get(ctx, mediaID)
 	if err != nil {
+		tx.Rollback()
 		sentry.CaptureException(err)
 		return err
-
 	}
 
-	// Remove the media from the event
-	_, err = s.client.Event.UpdateOneID(eventID).
+	err = tx.Event.UpdateOneID(eventID).
 		RemoveMedia(media).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
+		tx.Rollback()
+		sentry.CaptureException(err)
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
 		sentry.CaptureException(err)
 		return err
 	}
