@@ -35,6 +35,7 @@ func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 	eventRouter.DELETE("/:eventId/media/:mediaID", middleware.ErrorMiddleware(c.removeMediaFromEvent))
 	eventRouter.POST("/:eventId/organizers", middleware.ErrorMiddleware(c.addOrganizersToEvent))
 	eventRouterWithoutAuth.GET("/:eventId/organizers", middleware.ErrorMiddleware(c.getOrganizersForEvent))
+	eventRouterWithoutAuth.GET("/organizers/:organizerId", middleware.ErrorMiddleware(c.getEventsByOrganizerId))
 	eventRouter.DELETE("/:eventId/organizers/:organizerId", middleware.ErrorMiddleware(c.removeOrganizerFromEvent))
 }
 
@@ -150,6 +151,18 @@ func (c *EventController) getOrganizersForEvent(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(organizers))
+	return nil
+}
+
+// GetEventsByOrganizerId handles retrieving events for an organizer.
+func (c *EventController) getEventsByOrganizerId(ctx *gin.Context) error {
+	organizerID := ctx.Param("organizerId")
+	events, err := c.service.GetEventsByOrganizerID(ctx, organizerID)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(events))
 	return nil
 }
 
