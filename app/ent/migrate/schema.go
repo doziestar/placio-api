@@ -506,7 +506,7 @@ var (
 	}
 	// EventOrganizersColumns holds the columns for the "event_organizers" table.
 	EventOrganizersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "organizer_id", Type: field.TypeString},
 		{Name: "organizer_type", Type: field.TypeString},
 		{Name: "event_event_organizers", Type: field.TypeString},

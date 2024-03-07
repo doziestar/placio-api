@@ -303,11 +303,11 @@ func init() {
 	eventorganizerFields := schema.EventOrganizer{}.Fields()
 	_ = eventorganizerFields
 	// eventorganizerDescOrganizerID is the schema descriptor for organizerID field.
-	eventorganizerDescOrganizerID := eventorganizerFields[0].Descriptor()
+	eventorganizerDescOrganizerID := eventorganizerFields[1].Descriptor()
 	// eventorganizer.OrganizerIDValidator is a validator for the "organizerID" field. It is called by the builders before save.
 	eventorganizer.OrganizerIDValidator = eventorganizerDescOrganizerID.Validators[0].(func(string) error)
 	// eventorganizerDescOrganizerType is the schema descriptor for organizerType field.
-	eventorganizerDescOrganizerType := eventorganizerFields[1].Descriptor()
+	eventorganizerDescOrganizerType := eventorganizerFields[2].Descriptor()
 	// eventorganizer.OrganizerTypeValidator is a validator for the "organizerType" field. It is called by the builders before save.
 	eventorganizer.OrganizerTypeValidator = func() func(string) error {
 		validators := eventorganizerDescOrganizerType.Validators

@@ -32,6 +32,12 @@ func (eoc *EventOrganizerCreate) SetOrganizerType(s string) *EventOrganizerCreat
 	return eoc
 }
 
+// SetID sets the "id" field.
+func (eoc *EventOrganizerCreate) SetID(s string) *EventOrganizerCreate {
+	eoc.mutation.SetID(s)
+	return eoc
+}
+
 // SetEventID sets the "event" edge to the Event entity by ID.
 func (eoc *EventOrganizerCreate) SetEventID(id string) *EventOrganizerCreate {
 	eoc.mutation.SetEventID(id)
@@ -127,6 +133,10 @@ func (eoc *EventOrganizerCreate) createSpec() (*EventOrganizer, *sqlgraph.Create
 		_node = &EventOrganizer{config: eoc.config}
 		_spec = sqlgraph.NewCreateSpec(eventorganizer.Table, sqlgraph.NewFieldSpec(eventorganizer.FieldID, field.TypeString))
 	)
+	if id, ok := eoc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := eoc.mutation.OrganizerID(); ok {
 		_spec.SetField(eventorganizer.FieldOrganizerID, field.TypeString, value)
 		_node.OrganizerID = value
