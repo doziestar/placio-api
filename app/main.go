@@ -39,6 +39,8 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	const NAME = ""
+
 	app.Use(func(c *gin.Context) {
 		c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
 		c.Header("Content-Security-Policy", "default-src 'self'")
@@ -64,7 +66,7 @@ func main() {
 
 	// initialize middleware
 	cmd.Middleware(app)
-	
+
 	// initialize db
 	client := db.EntClient(context.Background())
 

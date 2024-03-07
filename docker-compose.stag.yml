@@ -182,39 +182,6 @@ services:
       timeout: 5s
       retries: 5
 
-  africa_insight:
-    build:
-      context: ./africa_insight
-      dockerfile: ./docker/Dockerfile
-      args:
-        DB_CONNECTION: "postgresql://postgres:918273645dozie@db:5432/postgres"
-        MODE: "TEST"
-    entrypoint: >
-      sh -c "sleep 5 && python main.py"
-    volumes:
-      - ../:/app/
-    environment:
-      - PYTHONPATH=/app/africa_insight
-    ports:
-      - "8383:8383"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "https://gpt.palnight.com/api/v1/version"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - default
-    links:
-      - "db:db"
-    depends_on:
-      - db
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - "traefik.http.routers.africa_insight-secure.entrypoints=websecure"
-      - "traefik.http.routers.africa_insight-secure.rule=Host(`gpt.palnight.com`)"
-      - "traefik.http.routers.africa_insight-secure.service=africa_insight"
-      - "traefik.http.services.africa_insight.loadbalancer.server.port=8383"
 
 networks:
   default:

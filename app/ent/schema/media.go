@@ -25,8 +25,8 @@ func (Media) Fields() []ent.Field {
 		field.Time("UpdatedAt").Default(time.Now).UpdateDefault(time.Now),
 		field.Int("likeCount").
 			Default(0).
-			Comment("Count of likes for this media."),
-		field.Int("dislikeCount").
+			//Comment("Count of likes for this media."),
+			field.Int("dislikeCount").
 			Default(0).
 			Comment("Count of dislikes for this media."),
 	}
