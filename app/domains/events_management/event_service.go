@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
-	"log"
 	"mime/multipart"
 	"placio-app/domains/media"
 	"placio-app/domains/search"
@@ -24,6 +23,7 @@ type IEventService interface {
 	AddOrganizers(ctx context.Context, eventID string, organizers []OrganizerInput) error
 	RemoveOrganizer(ctx context.Context, eventID string, organizerID string) error
 	GetOrganizersForEvent(ctx context.Context, eventID string) ([]interface{}, error)
+	GetEventsByOrganizerID(ctx context.Context, organizerId string) ([]*ent.Event, error)
 	UpdateEvent(ctx context.Context, eventId string, businessId string, data *ent.Event) (*ent.Event, error)
 	GetEventByID(ctx context.Context, id string) (*ent.Event, error)
 	DeleteEvent(ctx context.Context, eventId string) error
@@ -308,7 +308,6 @@ func (s *EventService) CreateEvent(ctx context.Context, userID string, data *Eve
 }
 
 func (s *EventService) GetEventByBusinessID(ctx context.Context, businessID string) ([]*ent.Event, error) {
-	log.Println("businessID: ", businessID)
 	events, err := s.client.Event.Query().
 		Where(event.HasOwnerBusinessWith(business.ID(businessID))).
 		WithEventCategories().
@@ -349,6 +348,23 @@ func addOrganizerToEvent(ctx context.Context, tx *ent.Tx, event *ent.Event, org 
 	default:
 		return errors.New("invalid organizer type")
 	}
+}
+
+func (s *EventService) GetEventsByOrganizerID(ctx context.Context, organizerId string) ([]*ent.Event, error) {
+	events, err := s.client.EventOrganizer.
+		Query().
+		Where(eventorganizer.OrganizerID(organizerId)).
+		WithEvent().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*ent.Event
+	for _, event := range events {
+		result = append(result, event.Edges.Event)
+	}
+	return result, nil
 }
 
 func (s *EventService) RemoveMediaFromEvent(ctx context.Context, eventID string, mediaID string) error {
