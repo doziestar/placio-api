@@ -37,7 +37,7 @@ import (
 	"placio-pkg/kafka"
 	"placio-pkg/middleware"
 
-	"github.com/cloudinary/cloudinary-go/v2"
+	cloudinary "github.com/cloudinary/cloudinary-go/v2"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"

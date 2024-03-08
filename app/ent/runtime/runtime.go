@@ -248,56 +248,64 @@ func init() {
 	eventDescIsOnline := eventFields[44].Descriptor()
 	// event.DefaultIsOnline holds the default value on creation for the is_Online field.
 	event.DefaultIsOnline = eventDescIsOnline.Default.(bool)
+	// eventDescIsCancelled is the schema descriptor for is_cancelled field.
+	eventDescIsCancelled := eventFields[45].Descriptor()
+	// event.DefaultIsCancelled holds the default value on creation for the is_cancelled field.
+	event.DefaultIsCancelled = eventDescIsCancelled.Default.(bool)
+	// eventDescIsActive is the schema descriptor for is_Active field.
+	eventDescIsActive := eventFields[46].Descriptor()
+	// event.DefaultIsActive holds the default value on creation for the is_Active field.
+	event.DefaultIsActive = eventDescIsActive.Default.(bool)
 	// eventDescIsFree is the schema descriptor for is_Free field.
-	eventDescIsFree := eventFields[45].Descriptor()
+	eventDescIsFree := eventFields[47].Descriptor()
 	// event.DefaultIsFree holds the default value on creation for the is_Free field.
 	event.DefaultIsFree = eventDescIsFree.Default.(bool)
 	// eventDescIsPaid is the schema descriptor for is_Paid field.
-	eventDescIsPaid := eventFields[46].Descriptor()
+	eventDescIsPaid := eventFields[48].Descriptor()
 	// event.DefaultIsPaid holds the default value on creation for the is_Paid field.
 	event.DefaultIsPaid = eventDescIsPaid.Default.(bool)
 	// eventDescIsPublic is the schema descriptor for is_public field.
-	eventDescIsPublic := eventFields[47].Descriptor()
+	eventDescIsPublic := eventFields[49].Descriptor()
 	// event.DefaultIsPublic holds the default value on creation for the is_public field.
 	event.DefaultIsPublic = eventDescIsPublic.Default.(bool)
 	// eventDescIsOnlineOnly is the schema descriptor for is_Online_Only field.
-	eventDescIsOnlineOnly := eventFields[48].Descriptor()
+	eventDescIsOnlineOnly := eventFields[50].Descriptor()
 	// event.DefaultIsOnlineOnly holds the default value on creation for the is_Online_Only field.
 	event.DefaultIsOnlineOnly = eventDescIsOnlineOnly.Default.(bool)
 	// eventDescIsInPersonOnly is the schema descriptor for is_In_Person_Only field.
-	eventDescIsInPersonOnly := eventFields[49].Descriptor()
+	eventDescIsInPersonOnly := eventFields[51].Descriptor()
 	// event.DefaultIsInPersonOnly holds the default value on creation for the is_In_Person_Only field.
 	event.DefaultIsInPersonOnly = eventDescIsInPersonOnly.Default.(bool)
 	// eventDescIsHybrid is the schema descriptor for is_Hybrid field.
-	eventDescIsHybrid := eventFields[50].Descriptor()
+	eventDescIsHybrid := eventFields[52].Descriptor()
 	// event.DefaultIsHybrid holds the default value on creation for the is_Hybrid field.
 	event.DefaultIsHybrid = eventDescIsHybrid.Default.(bool)
 	// eventDescIsOnlineAndInPerson is the schema descriptor for is_Online_And_In_Person field.
-	eventDescIsOnlineAndInPerson := eventFields[51].Descriptor()
+	eventDescIsOnlineAndInPerson := eventFields[53].Descriptor()
 	// event.DefaultIsOnlineAndInPerson holds the default value on creation for the is_Online_And_In_Person field.
 	event.DefaultIsOnlineAndInPerson = eventDescIsOnlineAndInPerson.Default.(bool)
 	// eventDescIsOnlineAndInPersonOnly is the schema descriptor for is_Online_And_In_Person_Only field.
-	eventDescIsOnlineAndInPersonOnly := eventFields[52].Descriptor()
+	eventDescIsOnlineAndInPersonOnly := eventFields[54].Descriptor()
 	// event.DefaultIsOnlineAndInPersonOnly holds the default value on creation for the is_Online_And_In_Person_Only field.
 	event.DefaultIsOnlineAndInPersonOnly = eventDescIsOnlineAndInPersonOnly.Default.(bool)
 	// eventDescIsOnlineAndInPersonOrHybrid is the schema descriptor for is_Online_And_In_Person_Or_Hybrid field.
-	eventDescIsOnlineAndInPersonOrHybrid := eventFields[53].Descriptor()
+	eventDescIsOnlineAndInPersonOrHybrid := eventFields[55].Descriptor()
 	// event.DefaultIsOnlineAndInPersonOrHybrid holds the default value on creation for the is_Online_And_In_Person_Or_Hybrid field.
 	event.DefaultIsOnlineAndInPersonOrHybrid = eventDescIsOnlineAndInPersonOrHybrid.Default.(bool)
 	// eventDescLikedByCurrentUser is the schema descriptor for likedByCurrentUser field.
-	eventDescLikedByCurrentUser := eventFields[54].Descriptor()
+	eventDescLikedByCurrentUser := eventFields[56].Descriptor()
 	// event.DefaultLikedByCurrentUser holds the default value on creation for the likedByCurrentUser field.
 	event.DefaultLikedByCurrentUser = eventDescLikedByCurrentUser.Default.(bool)
 	// eventDescFollowedByCurrentUser is the schema descriptor for followedByCurrentUser field.
-	eventDescFollowedByCurrentUser := eventFields[55].Descriptor()
+	eventDescFollowedByCurrentUser := eventFields[57].Descriptor()
 	// event.DefaultFollowedByCurrentUser holds the default value on creation for the followedByCurrentUser field.
 	event.DefaultFollowedByCurrentUser = eventDescFollowedByCurrentUser.Default.(bool)
 	// eventDescIsPhysicallyAccessible is the schema descriptor for is_physically_accessible field.
-	eventDescIsPhysicallyAccessible := eventFields[58].Descriptor()
+	eventDescIsPhysicallyAccessible := eventFields[60].Descriptor()
 	// event.DefaultIsPhysicallyAccessible holds the default value on creation for the is_physically_accessible field.
 	event.DefaultIsPhysicallyAccessible = eventDescIsPhysicallyAccessible.Default.(bool)
 	// eventDescIsVirtuallyAccessible is the schema descriptor for is_virtually_accessible field.
-	eventDescIsVirtuallyAccessible := eventFields[60].Descriptor()
+	eventDescIsVirtuallyAccessible := eventFields[62].Descriptor()
 	// event.DefaultIsVirtuallyAccessible holds the default value on creation for the is_virtually_accessible field.
 	event.DefaultIsVirtuallyAccessible = eventDescIsVirtuallyAccessible.Default.(bool)
 	eventorganizerFields := schema.EventOrganizer{}.Fields()

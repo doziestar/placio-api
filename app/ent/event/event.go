@@ -104,6 +104,10 @@ const (
 	FieldIsPublished = "is_published"
 	// FieldIsOnline holds the string denoting the is_online field in the database.
 	FieldIsOnline = "is_online"
+	// FieldIsCancelled holds the string denoting the is_cancelled field in the database.
+	FieldIsCancelled = "is_cancelled"
+	// FieldIsActive holds the string denoting the is_active field in the database.
+	FieldIsActive = "is_active"
 	// FieldIsFree holds the string denoting the is_free field in the database.
 	FieldIsFree = "is_free"
 	// FieldIsPaid holds the string denoting the is_paid field in the database.
@@ -338,6 +342,8 @@ var Columns = []string{
 	FieldIsPremium,
 	FieldIsPublished,
 	FieldIsOnline,
+	FieldIsCancelled,
+	FieldIsActive,
 	FieldIsFree,
 	FieldIsPaid,
 	FieldIsPublic,
@@ -410,6 +416,10 @@ var (
 	DefaultIsPublished bool
 	// DefaultIsOnline holds the default value on creation for the "is_Online" field.
 	DefaultIsOnline bool
+	// DefaultIsCancelled holds the default value on creation for the "is_cancelled" field.
+	DefaultIsCancelled bool
+	// DefaultIsActive holds the default value on creation for the "is_Active" field.
+	DefaultIsActive bool
 	// DefaultIsFree holds the default value on creation for the "is_Free" field.
 	DefaultIsFree bool
 	// DefaultIsPaid holds the default value on creation for the "is_Paid" field.
@@ -750,6 +760,16 @@ func ByIsPublished(opts ...sql.OrderTermOption) OrderOption {
 // ByIsOnline orders the results by the is_Online field.
 func ByIsOnline(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsOnline, opts...).ToFunc()
+}
+
+// ByIsCancelled orders the results by the is_cancelled field.
+func ByIsCancelled(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsCancelled, opts...).ToFunc()
+}
+
+// ByIsActive orders the results by the is_Active field.
+func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
 }
 
 // ByIsFree orders the results by the is_Free field.

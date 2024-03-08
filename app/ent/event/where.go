@@ -255,6 +255,16 @@ func IsOnline(v bool) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldIsOnline, v))
 }
 
+// IsCancelled applies equality check predicate on the "is_cancelled" field. It's identical to IsCancelledEQ.
+func IsCancelled(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsCancelled, v))
+}
+
+// IsActive applies equality check predicate on the "is_Active" field. It's identical to IsActiveEQ.
+func IsActive(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsActive, v))
+}
+
 // IsFree applies equality check predicate on the "is_Free" field. It's identical to IsFreeEQ.
 func IsFree(v bool) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldIsFree, v))
@@ -2888,6 +2898,26 @@ func IsOnlineEQ(v bool) predicate.Event {
 // IsOnlineNEQ applies the NEQ predicate on the "is_Online" field.
 func IsOnlineNEQ(v bool) predicate.Event {
 	return predicate.Event(sql.FieldNEQ(FieldIsOnline, v))
+}
+
+// IsCancelledEQ applies the EQ predicate on the "is_cancelled" field.
+func IsCancelledEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsCancelled, v))
+}
+
+// IsCancelledNEQ applies the NEQ predicate on the "is_cancelled" field.
+func IsCancelledNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsCancelled, v))
+}
+
+// IsActiveEQ applies the EQ predicate on the "is_Active" field.
+func IsActiveEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsActive, v))
+}
+
+// IsActiveNEQ applies the NEQ predicate on the "is_Active" field.
+func IsActiveNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsActive, v))
 }
 
 // IsFreeEQ applies the EQ predicate on the "is_Free" field.

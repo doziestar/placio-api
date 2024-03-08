@@ -458,6 +458,8 @@ var (
 		{Name: "is_premium", Type: field.TypeBool, Default: false},
 		{Name: "is_published", Type: field.TypeBool, Default: false},
 		{Name: "is_online", Type: field.TypeBool, Default: false},
+		{Name: "is_cancelled", Type: field.TypeBool, Default: false},
+		{Name: "is_active", Type: field.TypeBool, Default: false},
 		{Name: "is_free", Type: field.TypeBool, Default: false},
 		{Name: "is_paid", Type: field.TypeBool, Default: false},
 		{Name: "is_public", Type: field.TypeBool, Default: false},
@@ -486,19 +488,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "events_businesses_events",
-				Columns:    []*schema.Column{EventsColumns[61]},
+				Columns:    []*schema.Column{EventsColumns[63]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_places_events",
-				Columns:    []*schema.Column{EventsColumns[62]},
+				Columns:    []*schema.Column{EventsColumns[64]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_users_ownedEvents",
-				Columns:    []*schema.Column{EventsColumns[63]},
+				Columns:    []*schema.Column{EventsColumns[65]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

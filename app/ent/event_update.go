@@ -877,6 +877,34 @@ func (eu *EventUpdate) SetNillableIsOnline(b *bool) *EventUpdate {
 	return eu
 }
 
+// SetIsCancelled sets the "is_cancelled" field.
+func (eu *EventUpdate) SetIsCancelled(b bool) *EventUpdate {
+	eu.mutation.SetIsCancelled(b)
+	return eu
+}
+
+// SetNillableIsCancelled sets the "is_cancelled" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsCancelled(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsCancelled(*b)
+	}
+	return eu
+}
+
+// SetIsActive sets the "is_Active" field.
+func (eu *EventUpdate) SetIsActive(b bool) *EventUpdate {
+	eu.mutation.SetIsActive(b)
+	return eu
+}
+
+// SetNillableIsActive sets the "is_Active" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsActive(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsActive(*b)
+	}
+	return eu
+}
+
 // SetIsFree sets the "is_Free" field.
 func (eu *EventUpdate) SetIsFree(b bool) *EventUpdate {
 	eu.mutation.SetIsFree(b)
@@ -2049,6 +2077,12 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.IsOnline(); ok {
 		_spec.SetField(event.FieldIsOnline, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsCancelled(); ok {
+		_spec.SetField(event.FieldIsCancelled, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsActive(); ok {
+		_spec.SetField(event.FieldIsActive, field.TypeBool, value)
 	}
 	if value, ok := eu.mutation.IsFree(); ok {
 		_spec.SetField(event.FieldIsFree, field.TypeBool, value)
@@ -3693,6 +3727,34 @@ func (euo *EventUpdateOne) SetNillableIsOnline(b *bool) *EventUpdateOne {
 	return euo
 }
 
+// SetIsCancelled sets the "is_cancelled" field.
+func (euo *EventUpdateOne) SetIsCancelled(b bool) *EventUpdateOne {
+	euo.mutation.SetIsCancelled(b)
+	return euo
+}
+
+// SetNillableIsCancelled sets the "is_cancelled" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsCancelled(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsCancelled(*b)
+	}
+	return euo
+}
+
+// SetIsActive sets the "is_Active" field.
+func (euo *EventUpdateOne) SetIsActive(b bool) *EventUpdateOne {
+	euo.mutation.SetIsActive(b)
+	return euo
+}
+
+// SetNillableIsActive sets the "is_Active" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsActive(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsActive(*b)
+	}
+	return euo
+}
+
 // SetIsFree sets the "is_Free" field.
 func (euo *EventUpdateOne) SetIsFree(b bool) *EventUpdateOne {
 	euo.mutation.SetIsFree(b)
@@ -4895,6 +4957,12 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if value, ok := euo.mutation.IsOnline(); ok {
 		_spec.SetField(event.FieldIsOnline, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsCancelled(); ok {
+		_spec.SetField(event.FieldIsCancelled, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsActive(); ok {
+		_spec.SetField(event.FieldIsActive, field.TypeBool, value)
 	}
 	if value, ok := euo.mutation.IsFree(); ok {
 		_spec.SetField(event.FieldIsFree, field.TypeBool, value)

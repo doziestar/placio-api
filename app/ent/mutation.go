@@ -11741,6 +11741,8 @@ type EventMutation struct {
 	is_Premium                        *bool
 	is_published                      *bool
 	is_Online                         *bool
+	is_cancelled                      *bool
+	is_Active                         *bool
 	is_Free                           *bool
 	is_Paid                           *bool
 	is_public                         *bool
@@ -14058,6 +14060,78 @@ func (m *EventMutation) ResetIsOnline() {
 	m.is_Online = nil
 }
 
+// SetIsCancelled sets the "is_cancelled" field.
+func (m *EventMutation) SetIsCancelled(b bool) {
+	m.is_cancelled = &b
+}
+
+// IsCancelled returns the value of the "is_cancelled" field in the mutation.
+func (m *EventMutation) IsCancelled() (r bool, exists bool) {
+	v := m.is_cancelled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsCancelled returns the old "is_cancelled" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsCancelled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsCancelled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsCancelled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsCancelled: %w", err)
+	}
+	return oldValue.IsCancelled, nil
+}
+
+// ResetIsCancelled resets all changes to the "is_cancelled" field.
+func (m *EventMutation) ResetIsCancelled() {
+	m.is_cancelled = nil
+}
+
+// SetIsActive sets the "is_Active" field.
+func (m *EventMutation) SetIsActive(b bool) {
+	m.is_Active = &b
+}
+
+// IsActive returns the value of the "is_Active" field in the mutation.
+func (m *EventMutation) IsActive() (r bool, exists bool) {
+	v := m.is_Active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsActive returns the old "is_Active" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsActive: %w", err)
+	}
+	return oldValue.IsActive, nil
+}
+
+// ResetIsActive resets all changes to the "is_Active" field.
+func (m *EventMutation) ResetIsActive() {
+	m.is_Active = nil
+}
+
 // SetIsFree sets the "is_Free" field.
 func (m *EventMutation) SetIsFree(b bool) {
 	m.is_Free = &b
@@ -15595,7 +15669,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 60)
+	fields := make([]string, 0, 62)
 	if m.name != nil {
 		fields = append(fields, event.FieldName)
 	}
@@ -15727,6 +15801,12 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.is_Online != nil {
 		fields = append(fields, event.FieldIsOnline)
+	}
+	if m.is_cancelled != nil {
+		fields = append(fields, event.FieldIsCancelled)
+	}
+	if m.is_Active != nil {
+		fields = append(fields, event.FieldIsActive)
 	}
 	if m.is_Free != nil {
 		fields = append(fields, event.FieldIsFree)
@@ -15872,6 +15952,10 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPublished()
 	case event.FieldIsOnline:
 		return m.IsOnline()
+	case event.FieldIsCancelled:
+		return m.IsCancelled()
+	case event.FieldIsActive:
+		return m.IsActive()
 	case event.FieldIsFree:
 		return m.IsFree()
 	case event.FieldIsPaid:
@@ -16001,6 +16085,10 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldIsPublished(ctx)
 	case event.FieldIsOnline:
 		return m.OldIsOnline(ctx)
+	case event.FieldIsCancelled:
+		return m.OldIsCancelled(ctx)
+	case event.FieldIsActive:
+		return m.OldIsActive(ctx)
 	case event.FieldIsFree:
 		return m.OldIsFree(ctx)
 	case event.FieldIsPaid:
@@ -16349,6 +16437,20 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsOnline(v)
+		return nil
+	case event.FieldIsCancelled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsCancelled(v)
+		return nil
+	case event.FieldIsActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsActive(v)
 		return nil
 	case event.FieldIsFree:
 		v, ok := value.(bool)
@@ -16924,6 +17026,12 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldIsOnline:
 		m.ResetIsOnline()
+		return nil
+	case event.FieldIsCancelled:
+		m.ResetIsCancelled()
+		return nil
+	case event.FieldIsActive:
+		m.ResetIsActive()
 		return nil
 	case event.FieldIsFree:
 		m.ResetIsFree()

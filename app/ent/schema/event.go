@@ -92,6 +92,8 @@ func (Event) Fields() []ent.Field {
 		field.Bool("is_Premium").Default(false),
 		field.Bool("is_published").Default(false),
 		field.Bool("is_Online").Default(false),
+		field.Bool("is_cancelled").Default(false),
+		field.Bool("is_Active").Default(false),
 		field.Bool("is_Free").Default(false),
 		field.Bool("is_Paid").Default(false),
 		field.Bool("is_public").Default(false),

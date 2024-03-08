@@ -627,6 +627,34 @@ func (ec *EventCreate) SetNillableIsOnline(b *bool) *EventCreate {
 	return ec
 }
 
+// SetIsCancelled sets the "is_cancelled" field.
+func (ec *EventCreate) SetIsCancelled(b bool) *EventCreate {
+	ec.mutation.SetIsCancelled(b)
+	return ec
+}
+
+// SetNillableIsCancelled sets the "is_cancelled" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsCancelled(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsCancelled(*b)
+	}
+	return ec
+}
+
+// SetIsActive sets the "is_Active" field.
+func (ec *EventCreate) SetIsActive(b bool) *EventCreate {
+	ec.mutation.SetIsActive(b)
+	return ec
+}
+
+// SetNillableIsActive sets the "is_Active" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsActive(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsActive(*b)
+	}
+	return ec
+}
+
 // SetIsFree sets the "is_Free" field.
 func (ec *EventCreate) SetIsFree(b bool) *EventCreate {
 	ec.mutation.SetIsFree(b)
@@ -1195,6 +1223,14 @@ func (ec *EventCreate) defaults() error {
 		v := event.DefaultIsOnline
 		ec.mutation.SetIsOnline(v)
 	}
+	if _, ok := ec.mutation.IsCancelled(); !ok {
+		v := event.DefaultIsCancelled
+		ec.mutation.SetIsCancelled(v)
+	}
+	if _, ok := ec.mutation.IsActive(); !ok {
+		v := event.DefaultIsActive
+		ec.mutation.SetIsActive(v)
+	}
 	if _, ok := ec.mutation.IsFree(); !ok {
 		v := event.DefaultIsFree
 		ec.mutation.SetIsFree(v)
@@ -1287,6 +1323,12 @@ func (ec *EventCreate) check() error {
 	}
 	if _, ok := ec.mutation.IsOnline(); !ok {
 		return &ValidationError{Name: "is_Online", err: errors.New(`ent: missing required field "Event.is_Online"`)}
+	}
+	if _, ok := ec.mutation.IsCancelled(); !ok {
+		return &ValidationError{Name: "is_cancelled", err: errors.New(`ent: missing required field "Event.is_cancelled"`)}
+	}
+	if _, ok := ec.mutation.IsActive(); !ok {
+		return &ValidationError{Name: "is_Active", err: errors.New(`ent: missing required field "Event.is_Active"`)}
 	}
 	if _, ok := ec.mutation.IsFree(); !ok {
 		return &ValidationError{Name: "is_Free", err: errors.New(`ent: missing required field "Event.is_Free"`)}
@@ -1542,6 +1584,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.IsOnline(); ok {
 		_spec.SetField(event.FieldIsOnline, field.TypeBool, value)
 		_node.IsOnline = value
+	}
+	if value, ok := ec.mutation.IsCancelled(); ok {
+		_spec.SetField(event.FieldIsCancelled, field.TypeBool, value)
+		_node.IsCancelled = value
+	}
+	if value, ok := ec.mutation.IsActive(); ok {
+		_spec.SetField(event.FieldIsActive, field.TypeBool, value)
+		_node.IsActive = value
 	}
 	if value, ok := ec.mutation.IsFree(); ok {
 		_spec.SetField(event.FieldIsFree, field.TypeBool, value)

@@ -25,6 +25,8 @@ type IEventService interface {
 	GetOrganizersForEvent(ctx context.Context, eventID string) ([]interface{}, error)
 	GetEventsByOrganizerID(ctx context.Context, organizerId string) ([]*ent.Event, error)
 	UpdateEvent(ctx context.Context, eventId string, businessId string, data *EventDTO) (*ent.Event, error)
+	CancelEvent(ctx context.Context, eventId string) error
+	MakeEventActive(ctx context.Context, eventId string) error
 	GetEventByID(ctx context.Context, id string) (*ent.Event, error)
 	DeleteEvent(ctx context.Context, eventId string) error
 	AddMediaToEvent(ctx context.Context, eventID string, files []*multipart.FileHeader) (*ent.Event, error)
@@ -666,6 +668,30 @@ func (s *EventService) UpdateEvent(ctx context.Context, eventId string, business
 	}
 
 	return updatedEvent, nil
+}
+
+func (s *EventService) CancelEvent(ctx context.Context, eventId string) error {
+	_, err := s.client.Event.UpdateOneID(eventId).
+		SetIsCancelled(true).
+		SetIsActive(false).
+		SetStatus("cancelled").
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *EventService) MakeEventActive(ctx context.Context, eventId string) error {
+	_, err := s.client.Event.UpdateOneID(eventId).
+		SetIsCancelled(false).
+		SetIsActive(true).
+		SetStatus("active").
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *EventService) GetEventByID(ctx context.Context, id string) (*ent.Event, error) {

@@ -108,6 +108,10 @@ type Event struct {
 	IsPublished bool `json:"is_published,omitempty"`
 	// IsOnline holds the value of the "is_Online" field.
 	IsOnline bool `json:"is_Online,omitempty"`
+	// IsCancelled holds the value of the "is_cancelled" field.
+	IsCancelled bool `json:"is_cancelled,omitempty"`
+	// IsActive holds the value of the "is_Active" field.
+	IsActive bool `json:"is_Active,omitempty"`
 	// IsFree holds the value of the "is_Free" field.
 	IsFree bool `json:"is_Free,omitempty"`
 	// IsPaid holds the value of the "is_Paid" field.
@@ -358,7 +362,7 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case event.FieldTags, event.FieldEventSettings, event.FieldMapCoordinates:
 			values[i] = new([]byte)
-		case event.FieldIsPremium, event.FieldIsPublished, event.FieldIsOnline, event.FieldIsFree, event.FieldIsPaid, event.FieldIsPublic, event.FieldIsOnlineOnly, event.FieldIsInPersonOnly, event.FieldIsHybrid, event.FieldIsOnlineAndInPerson, event.FieldIsOnlineAndInPersonOnly, event.FieldIsOnlineAndInPersonOrHybrid, event.FieldLikedByCurrentUser, event.FieldFollowedByCurrentUser, event.FieldIsPhysicallyAccessible, event.FieldIsVirtuallyAccessible:
+		case event.FieldIsPremium, event.FieldIsPublished, event.FieldIsOnline, event.FieldIsCancelled, event.FieldIsActive, event.FieldIsFree, event.FieldIsPaid, event.FieldIsPublic, event.FieldIsOnlineOnly, event.FieldIsInPersonOnly, event.FieldIsHybrid, event.FieldIsOnlineAndInPerson, event.FieldIsOnlineAndInPersonOnly, event.FieldIsOnlineAndInPersonOrHybrid, event.FieldLikedByCurrentUser, event.FieldFollowedByCurrentUser, event.FieldIsPhysicallyAccessible, event.FieldIsVirtuallyAccessible:
 			values[i] = new(sql.NullBool)
 		case event.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
@@ -664,6 +668,18 @@ func (e *Event) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_Online", values[i])
 			} else if value.Valid {
 				e.IsOnline = value.Bool
+			}
+		case event.FieldIsCancelled:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_cancelled", values[i])
+			} else if value.Valid {
+				e.IsCancelled = value.Bool
+			}
+		case event.FieldIsActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Active", values[i])
+			} else if value.Valid {
+				e.IsActive = value.Bool
 			}
 		case event.FieldIsFree:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -1034,6 +1050,12 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_Online=")
 	builder.WriteString(fmt.Sprintf("%v", e.IsOnline))
+	builder.WriteString(", ")
+	builder.WriteString("is_cancelled=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsCancelled))
+	builder.WriteString(", ")
+	builder.WriteString("is_Active=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsActive))
 	builder.WriteString(", ")
 	builder.WriteString("is_Free=")
 	builder.WriteString(fmt.Sprintf("%v", e.IsFree))
