@@ -56174,6 +56174,9 @@ type TicketOptionMutation struct {
 	tickets              map[string]struct{}
 	removedtickets       map[string]struct{}
 	clearedtickets       bool
+	media                map[string]struct{}
+	removedmedia         map[string]struct{}
+	clearedmedia         bool
 	done                 bool
 	oldValue             func(context.Context) (*TicketOption, error)
 	predicates           []predicate.TicketOption
@@ -56724,6 +56727,60 @@ func (m *TicketOptionMutation) ResetTickets() {
 	m.removedtickets = nil
 }
 
+// AddMediumIDs adds the "media" edge to the Media entity by ids.
+func (m *TicketOptionMutation) AddMediumIDs(ids ...string) {
+	if m.media == nil {
+		m.media = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.media[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMedia clears the "media" edge to the Media entity.
+func (m *TicketOptionMutation) ClearMedia() {
+	m.clearedmedia = true
+}
+
+// MediaCleared reports if the "media" edge to the Media entity was cleared.
+func (m *TicketOptionMutation) MediaCleared() bool {
+	return m.clearedmedia
+}
+
+// RemoveMediumIDs removes the "media" edge to the Media entity by IDs.
+func (m *TicketOptionMutation) RemoveMediumIDs(ids ...string) {
+	if m.removedmedia == nil {
+		m.removedmedia = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.media, ids[i])
+		m.removedmedia[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMedia returns the removed IDs of the "media" edge to the Media entity.
+func (m *TicketOptionMutation) RemovedMediaIDs() (ids []string) {
+	for id := range m.removedmedia {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MediaIDs returns the "media" edge IDs in the mutation.
+func (m *TicketOptionMutation) MediaIDs() (ids []string) {
+	for id := range m.media {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMedia resets all changes to the "media" edge.
+func (m *TicketOptionMutation) ResetMedia() {
+	m.media = nil
+	m.clearedmedia = false
+	m.removedmedia = nil
+}
+
 // Where appends a list predicates to the TicketOptionMutation builder.
 func (m *TicketOptionMutation) Where(ps ...predicate.TicketOption) {
 	m.predicates = append(m.predicates, ps...)
@@ -57015,12 +57072,15 @@ func (m *TicketOptionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TicketOptionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.event != nil {
 		edges = append(edges, ticketoption.EdgeEvent)
 	}
 	if m.tickets != nil {
 		edges = append(edges, ticketoption.EdgeTickets)
+	}
+	if m.media != nil {
+		edges = append(edges, ticketoption.EdgeMedia)
 	}
 	return edges
 }
@@ -57039,15 +57099,24 @@ func (m *TicketOptionMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case ticketoption.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.media))
+		for id := range m.media {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TicketOptionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedtickets != nil {
 		edges = append(edges, ticketoption.EdgeTickets)
+	}
+	if m.removedmedia != nil {
+		edges = append(edges, ticketoption.EdgeMedia)
 	}
 	return edges
 }
@@ -57062,18 +57131,27 @@ func (m *TicketOptionMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case ticketoption.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.removedmedia))
+		for id := range m.removedmedia {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TicketOptionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedevent {
 		edges = append(edges, ticketoption.EdgeEvent)
 	}
 	if m.clearedtickets {
 		edges = append(edges, ticketoption.EdgeTickets)
+	}
+	if m.clearedmedia {
+		edges = append(edges, ticketoption.EdgeMedia)
 	}
 	return edges
 }
@@ -57086,6 +57164,8 @@ func (m *TicketOptionMutation) EdgeCleared(name string) bool {
 		return m.clearedevent
 	case ticketoption.EdgeTickets:
 		return m.clearedtickets
+	case ticketoption.EdgeMedia:
+		return m.clearedmedia
 	}
 	return false
 }
@@ -57110,6 +57190,9 @@ func (m *TicketOptionMutation) ResetEdge(name string) error {
 		return nil
 	case ticketoption.EdgeTickets:
 		m.ResetTickets()
+		return nil
+	case ticketoption.EdgeMedia:
+		m.ResetMedia()
 		return nil
 	}
 	return fmt.Errorf("unknown TicketOption edge %s", name)

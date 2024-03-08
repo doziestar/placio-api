@@ -53,7 +53,7 @@ func (c *EventController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 // 18. get user ticket purchase
 // 19. update user ticket purchase
 // 20. delete user ticket purchase
-// 21. add ability to cancel event
+// 21. add ability for user to cancel event purchase
 // 22. add notifications to event
 // 23. automatically send notifications to event participants
 // 24. add a button to create a post with event

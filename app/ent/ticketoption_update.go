@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/event"
+	"placio-app/ent/media"
 	"placio-app/ent/predicate"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
@@ -189,6 +190,21 @@ func (tou *TicketOptionUpdate) AddTickets(t ...*Ticket) *TicketOptionUpdate {
 	return tou.AddTicketIDs(ids...)
 }
 
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (tou *TicketOptionUpdate) AddMediumIDs(ids ...string) *TicketOptionUpdate {
+	tou.mutation.AddMediumIDs(ids...)
+	return tou
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (tou *TicketOptionUpdate) AddMedia(m ...*Media) *TicketOptionUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return tou.AddMediumIDs(ids...)
+}
+
 // Mutation returns the TicketOptionMutation object of the builder.
 func (tou *TicketOptionUpdate) Mutation() *TicketOptionMutation {
 	return tou.mutation
@@ -219,6 +235,27 @@ func (tou *TicketOptionUpdate) RemoveTickets(t ...*Ticket) *TicketOptionUpdate {
 		ids[i] = t[i].ID
 	}
 	return tou.RemoveTicketIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (tou *TicketOptionUpdate) ClearMedia() *TicketOptionUpdate {
+	tou.mutation.ClearMedia()
+	return tou
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (tou *TicketOptionUpdate) RemoveMediumIDs(ids ...string) *TicketOptionUpdate {
+	tou.mutation.RemoveMediumIDs(ids...)
+	return tou
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (tou *TicketOptionUpdate) RemoveMedia(m ...*Media) *TicketOptionUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return tou.RemoveMediumIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -389,6 +426,51 @@ func (tou *TicketOptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tou.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.MediaTable,
+			Columns: []string{ticketoption.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tou.mutation.RemovedMediaIDs(); len(nodes) > 0 && !tou.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.MediaTable,
+			Columns: []string{ticketoption.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tou.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.MediaTable,
+			Columns: []string{ticketoption.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -575,6 +657,21 @@ func (touo *TicketOptionUpdateOne) AddTickets(t ...*Ticket) *TicketOptionUpdateO
 	return touo.AddTicketIDs(ids...)
 }
 
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (touo *TicketOptionUpdateOne) AddMediumIDs(ids ...string) *TicketOptionUpdateOne {
+	touo.mutation.AddMediumIDs(ids...)
+	return touo
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (touo *TicketOptionUpdateOne) AddMedia(m ...*Media) *TicketOptionUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return touo.AddMediumIDs(ids...)
+}
+
 // Mutation returns the TicketOptionMutation object of the builder.
 func (touo *TicketOptionUpdateOne) Mutation() *TicketOptionMutation {
 	return touo.mutation
@@ -605,6 +702,27 @@ func (touo *TicketOptionUpdateOne) RemoveTickets(t ...*Ticket) *TicketOptionUpda
 		ids[i] = t[i].ID
 	}
 	return touo.RemoveTicketIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (touo *TicketOptionUpdateOne) ClearMedia() *TicketOptionUpdateOne {
+	touo.mutation.ClearMedia()
+	return touo
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (touo *TicketOptionUpdateOne) RemoveMediumIDs(ids ...string) *TicketOptionUpdateOne {
+	touo.mutation.RemoveMediumIDs(ids...)
+	return touo
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (touo *TicketOptionUpdateOne) RemoveMedia(m ...*Media) *TicketOptionUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return touo.RemoveMediumIDs(ids...)
 }
 
 // Where appends a list predicates to the TicketOptionUpdate builder.
@@ -805,6 +923,51 @@ func (touo *TicketOptionUpdateOne) sqlSave(ctx context.Context) (_node *TicketOp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if touo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.MediaTable,
+			Columns: []string{ticketoption.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := touo.mutation.RemovedMediaIDs(); len(nodes) > 0 && !touo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.MediaTable,
+			Columns: []string{ticketoption.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := touo.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.MediaTable,
+			Columns: []string{ticketoption.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/event"
+	"placio-app/ent/media"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"time"
@@ -156,6 +157,21 @@ func (toc *TicketOptionCreate) AddTickets(t ...*Ticket) *TicketOptionCreate {
 		ids[i] = t[i].ID
 	}
 	return toc.AddTicketIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (toc *TicketOptionCreate) AddMediumIDs(ids ...string) *TicketOptionCreate {
+	toc.mutation.AddMediumIDs(ids...)
+	return toc
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (toc *TicketOptionCreate) AddMedia(m ...*Media) *TicketOptionCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return toc.AddMediumIDs(ids...)
 }
 
 // Mutation returns the TicketOptionMutation object of the builder.
@@ -353,6 +369,22 @@ func (toc *TicketOptionCreate) createSpec() (*TicketOption, *sqlgraph.CreateSpec
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := toc.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ticketoption.MediaTable,
+			Columns: []string{ticketoption.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -35,6 +35,8 @@ const (
 	EdgeEvent = "event"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
+	// EdgeMedia holds the string denoting the media edge name in mutations.
+	EdgeMedia = "media"
 	// Table holds the table name of the ticketoption in the database.
 	Table = "ticket_options"
 	// EventTable is the table that holds the event relation/edge.
@@ -51,6 +53,13 @@ const (
 	TicketsInverseTable = "tickets"
 	// TicketsColumn is the table column denoting the tickets relation/edge.
 	TicketsColumn = "ticket_option_tickets"
+	// MediaTable is the table that holds the media relation/edge.
+	MediaTable = "media"
+	// MediaInverseTable is the table name for the Media entity.
+	// It exists in this package in order to avoid circular dependency with the "media" package.
+	MediaInverseTable = "media"
+	// MediaColumn is the table column denoting the media relation/edge.
+	MediaColumn = "ticket_option_media"
 )
 
 // Columns holds all SQL columns for ticketoption fields.
@@ -201,6 +210,20 @@ func ByTickets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTicketsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMediaCount orders the results by media count.
+func ByMediaCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMediaStep(), opts...)
+	}
+}
+
+// ByMedia orders the results by media terms.
+func ByMedia(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMediaStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEventStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -213,5 +236,12 @@ func newTicketsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TicketsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, TicketsTable, TicketsColumn),
+	)
+}
+func newMediaStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MediaInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, MediaTable, MediaColumn),
 	)
 }

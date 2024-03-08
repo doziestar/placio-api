@@ -496,6 +496,29 @@ func HasTicketsWith(preds ...predicate.Ticket) predicate.TicketOption {
 	})
 }
 
+// HasMedia applies the HasEdge predicate on the "media" edge.
+func HasMedia() predicate.TicketOption {
+	return predicate.TicketOption(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MediaTable, MediaColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMediaWith applies the HasEdge predicate on the "media" edge with a given conditions (other predicates).
+func HasMediaWith(preds ...predicate.Media) predicate.TicketOption {
+	return predicate.TicketOption(func(s *sql.Selector) {
+		step := newMediaStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.TicketOption) predicate.TicketOption {
 	return predicate.TicketOption(sql.AndPredicates(predicates...))

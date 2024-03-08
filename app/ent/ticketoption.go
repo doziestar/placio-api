@@ -47,9 +47,11 @@ type TicketOptionEdges struct {
 	Event *Event `json:"event,omitempty"`
 	// Tickets holds the value of the tickets edge.
 	Tickets []*Ticket `json:"tickets,omitempty"`
+	// Media holds the value of the media edge.
+	Media []*Media `json:"media,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // EventOrErr returns the Event value or an error if the edge
@@ -72,6 +74,15 @@ func (e TicketOptionEdges) TicketsOrErr() ([]*Ticket, error) {
 		return e.Tickets, nil
 	}
 	return nil, &NotLoadedError{edge: "tickets"}
+}
+
+// MediaOrErr returns the Media value or an error if the edge
+// was not loaded in eager-loading.
+func (e TicketOptionEdges) MediaOrErr() ([]*Media, error) {
+	if e.loadedTypes[2] {
+		return e.Media, nil
+	}
+	return nil, &NotLoadedError{edge: "media"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -186,6 +197,11 @@ func (to *TicketOption) QueryEvent() *EventQuery {
 // QueryTickets queries the "tickets" edge of the TicketOption entity.
 func (to *TicketOption) QueryTickets() *TicketQuery {
 	return NewTicketOptionClient(to.config).QueryTickets(to)
+}
+
+// QueryMedia queries the "media" edge of the TicketOption entity.
+func (to *TicketOption) QueryMedia() *MediaQuery {
+	return NewTicketOptionClient(to.config).QueryMedia(to)
 }
 
 // Update returns a builder for updating this TicketOption.

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"placio-app/ent/event"
+	"placio-app/ent/media"
 	"placio-app/ent/predicate"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
@@ -26,6 +27,7 @@ type TicketOptionQuery struct {
 	predicates  []predicate.TicketOption
 	withEvent   *EventQuery
 	withTickets *TicketQuery
+	withMedia   *MediaQuery
 	withFKs     bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -100,6 +102,28 @@ func (toq *TicketOptionQuery) QueryTickets() *TicketQuery {
 			sqlgraph.From(ticketoption.Table, ticketoption.FieldID, selector),
 			sqlgraph.To(ticket.Table, ticket.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ticketoption.TicketsTable, ticketoption.TicketsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(toq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMedia chains the current query on the "media" edge.
+func (toq *TicketOptionQuery) QueryMedia() *MediaQuery {
+	query := (&MediaClient{config: toq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := toq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := toq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticketoption.Table, ticketoption.FieldID, selector),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ticketoption.MediaTable, ticketoption.MediaColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(toq.driver.Dialect(), step)
 		return fromU, nil
@@ -301,6 +325,7 @@ func (toq *TicketOptionQuery) Clone() *TicketOptionQuery {
 		predicates:  append([]predicate.TicketOption{}, toq.predicates...),
 		withEvent:   toq.withEvent.Clone(),
 		withTickets: toq.withTickets.Clone(),
+		withMedia:   toq.withMedia.Clone(),
 		// clone intermediate query.
 		sql:  toq.sql.Clone(),
 		path: toq.path,
@@ -326,6 +351,17 @@ func (toq *TicketOptionQuery) WithTickets(opts ...func(*TicketQuery)) *TicketOpt
 		opt(query)
 	}
 	toq.withTickets = query
+	return toq
+}
+
+// WithMedia tells the query-builder to eager-load the nodes that are connected to
+// the "media" edge. The optional arguments are used to configure the query builder of the edge.
+func (toq *TicketOptionQuery) WithMedia(opts ...func(*MediaQuery)) *TicketOptionQuery {
+	query := (&MediaClient{config: toq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	toq.withMedia = query
 	return toq
 }
 
@@ -408,9 +444,10 @@ func (toq *TicketOptionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		nodes       = []*TicketOption{}
 		withFKs     = toq.withFKs
 		_spec       = toq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			toq.withEvent != nil,
 			toq.withTickets != nil,
+			toq.withMedia != nil,
 		}
 	)
 	if toq.withEvent != nil {
@@ -447,6 +484,13 @@ func (toq *TicketOptionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		if err := toq.loadTickets(ctx, query, nodes,
 			func(n *TicketOption) { n.Edges.Tickets = []*Ticket{} },
 			func(n *TicketOption, e *Ticket) { n.Edges.Tickets = append(n.Edges.Tickets, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := toq.withMedia; query != nil {
+		if err := toq.loadMedia(ctx, query, nodes,
+			func(n *TicketOption) { n.Edges.Media = []*Media{} },
+			func(n *TicketOption, e *Media) { n.Edges.Media = append(n.Edges.Media, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -511,6 +555,37 @@ func (toq *TicketOptionQuery) loadTickets(ctx context.Context, query *TicketQuer
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "ticket_option_tickets" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (toq *TicketOptionQuery) loadMedia(ctx context.Context, query *MediaQuery, nodes []*TicketOption, init func(*TicketOption), assign func(*TicketOption, *Media)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*TicketOption)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Media(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(ticketoption.MediaColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ticket_option_media
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "ticket_option_media" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "ticket_option_media" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

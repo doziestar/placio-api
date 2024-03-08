@@ -118,6 +118,7 @@ var ForeignKeys = []string{
 	"plan_media",
 	"post_medias",
 	"review_medias",
+	"ticket_option_media",
 	"website_assets",
 }
 

@@ -10642,6 +10642,22 @@ func (c *TicketOptionClient) QueryTickets(to *TicketOption) *TicketQuery {
 	return query
 }
 
+// QueryMedia queries the media edge of a TicketOption.
+func (c *TicketOptionClient) QueryMedia(to *TicketOption) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := to.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticketoption.Table, ticketoption.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ticketoption.MediaTable, ticketoption.MediaColumn),
+		)
+		fromV = sqlgraph.Neighbors(to.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TicketOptionClient) Hooks() []Hook {
 	return c.hooks.TicketOption

@@ -226,7 +226,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		smartFitnessController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// tickets
-		ticketService := tickets.NewTicketService(client)
+		ticketService := tickets.NewTicketService(client, mediaService)
 		ticketController := tickets.NewTicketController(ticketService)
 		ticketController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 	}

@@ -54,5 +54,6 @@ func (TicketOption) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("event", Event.Type).Ref("ticketOptions").Unique(),
 		edge.To("tickets", Ticket.Type),
+		edge.To("media", Media.Type),
 	}
 }
