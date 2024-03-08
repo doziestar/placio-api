@@ -29,13 +29,12 @@ type ITicketService interface {
 	TransferTicket(ctx context.Context, ticketId string, toUserId string) error
 	GetTicketsByUser(ctx context.Context, userId string) ([]*ent.Ticket, error)
 	GetTicketDetails(ctx context.Context, ticketId string) (*ent.Ticket, error)
+	ListAttendeesForEvent(ctx context.Context, eventId string) ([]*ent.User, error)
+	AssignTicketToAttendee(ctx context.Context, ticketId string, attendeeId string) error
 
 	//ApplyPromotionToTicketOption(ctx context.Context, optionId string, promotion *PromotionDTO) error
 	//RemovePromotionFromTicketOption(ctx context.Context, optionId string) error
 	//ListCurrentPromotionsForEvent(ctx context.Context, eventId string) ([]*PromotionDTO, error)
-	//
-	//ListAttendeesForEvent(ctx context.Context, eventId string) ([]*ent.User, error)
-	//AssignTicketToAttendee(ctx context.Context, ticketId string, attendeeId string) error
 	//GenerateAttendeeReportForEvent(ctx context.Context, eventId string) (*AttendeeReportDTO, error)
 	//
 	//GenerateSalesReportForEvent(ctx context.Context, eventId string) (*SalesReportDTO, error)
@@ -397,4 +396,71 @@ func (t *TicketService) GetTicketDetails(ctx context.Context, ticketId string) (
 	}
 
 	return ticket, nil
+}
+
+func (t *TicketService) ListAttendeesForEvent(ctx context.Context, eventId string) ([]*ent.User, error) {
+	// Fetch all tickets for the given event
+	tickets, err := t.client.Ticket.
+		Query().
+		Where(ticket.HasEventWith(event.ID(eventId))).
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch tickets for event %s: %v", eventId, err)
+	}
+
+	// Using ticket IDs, fetch all unique users (attendees)
+	ticketIDs := make([]string, len(tickets))
+	for i, ticket := range tickets {
+		ticketIDs[i] = ticket.ID
+	}
+
+	users, err := t.client.User.
+		Query().
+		Where(user.HasPurchasedTicketsWith(ticket.IDIn(ticketIDs...))).
+		Unique(true).
+		//Distinct().
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch attendees for event %s: %v", eventId, err)
+	}
+
+	return users, nil
+}
+
+func (t *TicketService) AssignTicketToAttendee(ctx context.Context, ticketId string, attendeeId string) error {
+	// Begin a transaction to ensure data consistency
+	tx, err := t.client.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("starting transaction failed: %v", err)
+	}
+
+	// Verify the ticket exists
+	ticket, err := tx.Ticket.Get(ctx, ticketId)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("ticket not found: %v", err)
+	}
+
+	// Verify the attendee (user) exists
+	exists, err := tx.User.Query().Where(user.ID(attendeeId)).Exist(ctx)
+	if err != nil || !exists {
+		tx.Rollback()
+		return fmt.Errorf("attendee not found: %v", err)
+	}
+
+	// Update the ticket to assign it to the new attendee
+	_, err = ticket.Update().
+		SetPurchaserID(attendeeId).
+		Save(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("assigning ticket to attendee failed: %v", err)
+	}
+
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("committing transaction failed: %v", err)
+	}
+
+	return nil
 }
