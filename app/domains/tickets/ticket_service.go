@@ -9,8 +9,11 @@ import (
 	"placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/event"
+	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/user"
 	"placio-pkg/errors"
+	"time"
 )
 
 type ITicketService interface {
@@ -20,7 +23,7 @@ type ITicketService interface {
 	RemoveMediaFromTicketOption(ctx context.Context, ticketOptionID string, mediaID string) error
 	DeleteTicketOption(ctx context.Context, optionId string) error
 	GetTicketOptionsForEvent(ctx context.Context, eventId string) ([]*ent.TicketOption, error)
-	PurchaseTicket(ctx context.Context, userId string, purchaseDetails *TicketPurchaseDTO) (*ent.Ticket, error)
+	PurchaseTicket(ctx context.Context, userId string, purchaseDetails *TicketPurchaseDTO) ([]*ent.Ticket, error)
 	ValidateTicket(ctx context.Context, ticketId string) (*ent.Ticket, error)
 	CancelTicket(ctx context.Context, ticketId string) error
 	TransferTicket(ctx context.Context, ticketId string, toUserId string) error
@@ -63,10 +66,10 @@ type TicketService struct {
 }
 
 func NewTicketService(client *ent.Client, mediaService media.MediaService) ITicketService {
-	return TicketService{client: client}
+	return &TicketService{client: client}
 }
 
-func (t TicketService) CreateTicketOption(ctx context.Context, eventId string, option *ent.TicketOption) (*ent.TicketOption, error) {
+func (t *TicketService) CreateTicketOption(ctx context.Context, eventId string, option *ent.TicketOption) (*ent.TicketOption, error) {
 	if option.Price < 0 {
 		return nil, errors.New("ticket option price must be non-negative")
 	}
@@ -96,7 +99,7 @@ func (t TicketService) CreateTicketOption(ctx context.Context, eventId string, o
 	return createdOption, nil
 }
 
-func (t TicketService) UpdateTicketOption(ctx context.Context, optionId string, update *ent.TicketOption) (*ent.TicketOption, error) {
+func (t *TicketService) UpdateTicketOption(ctx context.Context, optionId string, update *ent.TicketOption) (*ent.TicketOption, error) {
 	existingOption, err := t.client.TicketOption.Get(ctx, optionId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find ticket option with ID %s: %v", optionId, err)
@@ -116,7 +119,7 @@ func (t TicketService) UpdateTicketOption(ctx context.Context, optionId string, 
 	return updatedOption, nil
 }
 
-func (t TicketService) DeleteTicketOption(ctx context.Context, optionId string) error {
+func (t *TicketService) DeleteTicketOption(ctx context.Context, optionId string) error {
 	err := t.client.TicketOption.DeleteOneID(optionId).Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to delete ticket option with ID %s: %v", optionId, err)
@@ -124,7 +127,7 @@ func (t TicketService) DeleteTicketOption(ctx context.Context, optionId string) 
 	return nil
 }
 
-func (t TicketService) GetTicketOptionsForEvent(ctx context.Context, eventId string) ([]*ent.TicketOption, error) {
+func (t *TicketService) GetTicketOptionsForEvent(ctx context.Context, eventId string) ([]*ent.TicketOption, error) {
 	exists, err := t.client.Event.Query().Where(event.ID(eventId)).Exist(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query event existence: %v", err)
@@ -142,7 +145,7 @@ func (t TicketService) GetTicketOptionsForEvent(ctx context.Context, eventId str
 	return options, nil
 }
 
-func (t TicketService) AddMediaToTicketOption(ctx context.Context, ticketOptionID string, files []*multipart.FileHeader) (*ent.TicketOption, error) {
+func (t *TicketService) AddMediaToTicketOption(ctx context.Context, ticketOptionID string, files []*multipart.FileHeader) (*ent.TicketOption, error) {
 	// Start a transaction
 	tx, err := t.client.Tx(ctx)
 	if err != nil {
@@ -193,7 +196,7 @@ func (t TicketService) AddMediaToTicketOption(ctx context.Context, ticketOptionI
 	return ticketOption, nil
 }
 
-func (t TicketService) RemoveMediaFromTicketOption(ctx context.Context, ticketOptionID string, mediaID string) error {
+func (t *TicketService) RemoveMediaFromTicketOption(ctx context.Context, ticketOptionID string, mediaID string) error {
 	// Start a transaction
 	tx, err := t.client.Tx(ctx)
 	if err != nil {
@@ -226,32 +229,172 @@ func (t TicketService) RemoveMediaFromTicketOption(ctx context.Context, ticketOp
 	return nil
 }
 
-func (t TicketService) PurchaseTicket(ctx context.Context, userId string, purchaseDetails *TicketPurchaseDTO) (*ent.Ticket, error) {
-	//TODO implement me
-	panic("implement me")
+func (t *TicketService) PurchaseTicket(ctx context.Context, userId string, purchaseDetails *TicketPurchaseDTO) ([]*ent.Ticket, error) {
+	// Start a transaction
+	tx, err := t.client.Tx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("starting transaction failed: %v", err)
+	}
+
+	// Verify the event exists
+	exists, err := tx.Event.Query().Where(event.ID(purchaseDetails.EventID)).Exist(ctx)
+	if err != nil || !exists {
+		tx.Rollback()
+		return nil, fmt.Errorf("event does not exist: %v", err)
+	}
+
+	var createdTickets []*ent.Ticket
+
+	// Process each ticket option purchase
+	for _, optionPurchase := range purchaseDetails.TicketOptions {
+		// Fetch the ticket option to check availability and details
+		option, err := tx.TicketOption.Get(ctx, optionPurchase.OptionID)
+		if err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("ticket option not found: %v", err)
+		}
+
+		// Check if there are enough tickets available
+		if option.QuantityAvailable < optionPurchase.Quantity {
+			tx.Rollback()
+			return nil, fmt.Errorf("not enough tickets available for option %s", optionPurchase.OptionID)
+		}
+
+		// Update the ticket option's sold and available quantities
+		_, err = option.Update().
+			AddQuantitySold(optionPurchase.Quantity).
+			SetQuantityAvailable(option.QuantityAvailable - optionPurchase.Quantity).
+			Save(ctx)
+		if err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("updating ticket option failed: %v", err)
+		}
+
+		// Create the tickets
+		for i := 0; i < optionPurchase.Quantity; i++ {
+			createdTicket, err := tx.Ticket.Create().
+				SetEventID(purchaseDetails.EventID).
+				SetTicketOptionID(optionPurchase.OptionID).
+				SetPurchaserID(userId).
+				SetStatus(ticket.StatusSold). // Assuming you have a status field to track ticket state
+				Save(ctx)
+			if err != nil {
+				tx.Rollback()
+				return nil, fmt.Errorf("creating ticket failed: %v", err)
+			}
+			createdTickets = append(createdTickets, createdTicket)
+		}
+	}
+
+	// Commit the transaction if everything is successful
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("committing transaction failed: %v", err)
+	}
+
+	// Return the first created ticket as a confirmation, or modify to return all tickets or a summary
+	if len(createdTickets) > 0 {
+		return createdTickets, nil
+	}
+
+	return nil, fmt.Errorf("no tickets were created")
 }
 
-func (t TicketService) ValidateTicket(ctx context.Context, ticketId string) (*ent.Ticket, error) {
-	//TODO implement me
-	panic("implement me")
+func (t *TicketService) ValidateTicket(ctx context.Context, ticketId string) (*ent.Ticket, error) {
+	// Begin a transaction
+	tx, err := t.client.Tx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("starting transaction failed: %v", err)
+	}
+
+	// Retrieve the ticket
+	ticket, err := tx.Ticket.Get(ctx, ticketId)
+	if err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("ticket not found: %v", err)
+	}
+
+	// Check if the ticket is already used
+	if ticket.Status == "validated" {
+		tx.Rollback()
+		return nil, fmt.Errorf("ticket already validated")
+	}
+
+	// Update the ticket status to validated
+	validatedTicket, err := ticket.Update().
+		SetStatus("validated").
+		SetValidationTime(time.Now()).
+		Save(ctx)
+	if err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("validating ticket failed: %v", err)
+	}
+
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("committing transaction failed: %v", err)
+	}
+
+	return validatedTicket, nil
 }
 
-func (t TicketService) CancelTicket(ctx context.Context, ticketId string) error {
-	//TODO implement me
-	panic("implement me")
+func (t *TicketService) CancelTicket(ctx context.Context, ticketId string) error {
+	ticket, err := t.client.Ticket.Get(ctx, ticketId)
+	if err != nil {
+		return fmt.Errorf("ticket not found: %v", err)
+	}
+
+	if ticket.Status != "available" && ticket.Status != "reserved" {
+		return fmt.Errorf("ticket cannot be cancelled in its current state")
+	}
+
+	_, err = ticket.Update().
+		SetStatus("cancelled").
+		Save(ctx)
+	if err != nil {
+		return fmt.Errorf("cancelling ticket failed: %v", err)
+	}
+
+	return nil
 }
 
-func (t TicketService) TransferTicket(ctx context.Context, ticketId string, toUserId string) error {
-	//TODO implement me
-	panic("implement me")
+func (t *TicketService) TransferTicket(ctx context.Context, ticketId string, toUserId string) error {
+	tx, err := t.client.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("starting transaction failed: %v", err)
+	}
+
+	_, err = tx.Ticket.UpdateOneID(ticketId).
+		SetPurchaserID(toUserId).
+		Save(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("transferring ticket failed: %v", err)
+	}
+
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("committing transaction failed: %v", err)
+	}
+
+	return nil
 }
 
-func (t TicketService) GetTicketsByUser(ctx context.Context, userId string) ([]*ent.Ticket, error) {
-	//TODO implement me
-	panic("implement me")
+func (t *TicketService) GetTicketsByUser(ctx context.Context, userId string) ([]*ent.Ticket, error) {
+	tickets, err := t.client.Ticket.Query().
+		Where(ticket.HasPurchaserWith(user.ID(userId))).
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("fetching tickets for user failed: %v", err)
+	}
+
+	return tickets, nil
 }
 
-func (t TicketService) GetTicketDetails(ctx context.Context, ticketId string) (*ent.Ticket, error) {
-	//TODO implement me
-	panic("implement me")
+func (t *TicketService) GetTicketDetails(ctx context.Context, ticketId string) (*ent.Ticket, error) {
+	ticket, err := t.client.Ticket.Get(ctx, ticketId)
+	if err != nil {
+		return nil, fmt.Errorf("ticket not found: %v", err)
+	}
+
+	return ticket, nil
 }
