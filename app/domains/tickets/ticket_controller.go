@@ -2,6 +2,8 @@ package tickets
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"placio-app/utility"
 	"placio-pkg/middleware"
 )
 
@@ -22,6 +24,8 @@ func (c *ticketController) RegisterRoutes(router, routerWithoutAuth *gin.RouterG
 	ticketRouter.PATCH("/options/:optionId", middleware.ErrorMiddleware(c.updateTicketOption))
 	ticketRouter.DELETE("/options/:optionId", middleware.ErrorMiddleware(c.deleteTicketOption))
 	ticketRouterWithoutAuth.GET("/event/:eventId/options", middleware.ErrorMiddleware(c.getTicketOptionsForEvent))
+	ticketRouter.POST("/options/:optionId/media", middleware.ErrorMiddleware(c.addMediaToTicketOption))
+	ticketRouter.DELETE("/options/:optionId/media/:mediaID", middleware.ErrorMiddleware(c.removeMediaFromTicketOption))
 
 	// Ticket Management
 	ticketRouter.POST("/", middleware.ErrorMiddleware(c.purchaseTicket))
@@ -30,6 +34,10 @@ func (c *ticketController) RegisterRoutes(router, routerWithoutAuth *gin.RouterG
 	ticketRouter.POST("/:ticketId/transfer", middleware.ErrorMiddleware(c.transferTicket))
 	ticketRouterWithoutAuth.GET("/:ticketId", middleware.ErrorMiddleware(c.getTicketDetails))
 	ticketRouterWithoutAuth.GET("/user/:userId", middleware.ErrorMiddleware(c.getTicketsByUser))
+
+	// Attendee Management
+	routerWithoutAuth.GET("/events/:eventId/attendees", middleware.ErrorMiddleware(c.listAttendeesForEvent))
+	ticketRouter.POST("/tickets/:ticketId/assign", middleware.ErrorMiddleware(c.assignTicketToAttendee))
 }
 
 // CreateTicketOption godoc
@@ -191,5 +199,112 @@ func (c *ticketController) getTicketsByUser(ctx *gin.Context) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /tickets/{ticketId} [get]
 func (c *ticketController) getTicketDetails(ctx *gin.Context) error {
+	return nil
+}
+
+// AddMediaToTicketOption godoc
+// @Summary Add media to a ticket option
+// @Description Add media files to a ticket option for an event
+// @Accept multipart/form-data
+// @Produce json
+// @Tags TicketOption
+// @Param ticketOptionID path string true "Ticket Option ID"
+// @Param files formData file true "Media Files"
+// @Success 200 {object} TicketOptionDTO "Successfully added media to ticket option"
+// @Failure 400 {object} ErrorResponse "Bad Request"
+// @Failure 500 {object} ErrorResponse "Internal Server Error"
+// @Security ApiKeyAuth
+// @Router /tickets/options/{ticketOptionID}/media [post]
+func (c *ticketController) addMediaToTicketOption(ctx *gin.Context) error {
+	// Extract ticketOptionID from URL
+	ticketOptionID := ctx.Param("ticketOptionID")
+	// Assume files are uploaded with form key 'files'
+	form, _ := ctx.MultipartForm()
+	files := form.File["files"]
+
+	// Call the service layer method
+	updatedTicketOption, err := c.service.AddMediaToTicketOption(ctx, ticketOptionID, files)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedTicketOption))
+	return nil
+}
+
+// RemoveMediaFromTicketOption godoc
+// @Summary Remove media from a ticket option
+// @Description Remove a media file from a ticket option for an event
+// @Produce json
+// @Tags TicketOption
+// @Param ticketOptionID path string true "Ticket Option ID"
+// @Param mediaID path string true "Media ID"
+// @Success 200 "Successfully removed media from ticket option"
+// @Failure 400 {object} ErrorResponse "Bad Request"
+// @Failure 500 {object} ErrorResponse "Internal Server Error"
+// @Security ApiKeyAuth
+// @Router /tickets/options/{ticketOptionID}/media/{mediaID} [delete]
+func (c *ticketController) removeMediaFromTicketOption(ctx *gin.Context) error {
+	ticketOptionID := ctx.Param("ticketOptionID")
+	mediaID := ctx.Param("mediaID")
+
+	err := c.service.RemoveMediaFromTicketOption(ctx, ticketOptionID, mediaID)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Media removed successfully"})
+	return nil
+}
+
+// ListAttendeesForEvent godoc
+// @Summary List attendees for an event
+// @Description Get a list of all users who have purchased tickets for the specified event
+// @Produce json
+// @Tags Event
+// @Param eventId path string true "Event ID"
+// @Success 200 {array} UserDTO "List of attendees"
+// @Failure 400 {object} ErrorResponse "Bad Request"
+// @Failure 500 {object} ErrorResponse "Internal Server Error"
+// @Router /events/{eventId}/attendees [get]
+func (c *ticketController) listAttendeesForEvent(ctx *gin.Context) error {
+	eventId := ctx.Param("eventId")
+
+	attendees, err := c.service.ListAttendeesForEvent(ctx, eventId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(attendees))
+	return nil
+}
+
+// AssignTicketToAttendee godoc
+// @Summary Assign a ticket to an attendee
+// @Description Assign a ticket to a different user by specifying the ticket and user IDs
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param ticketId path string true "Ticket ID"
+// @Param data body AssignTicketDTO true "Assign Ticket Data"
+// @Success 200 "Ticket assigned successfully"
+// @Failure 400 {object} ErrorResponse "Bad Request"
+// @Failure 500 {object} ErrorResponse "Internal Server Error"
+// @Router /tickets/{ticketId}/assign [post]
+func (c *ticketController) assignTicketToAttendee(ctx *gin.Context) error {
+	ticketId := ctx.Param("ticketId")
+	attendeeId := ctx.Query("attendeeId")
+
+	if attendeeId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "attendeeId is required"})
+		return nil
+	}
+
+	err := c.service.AssignTicketToAttendee(ctx, ticketId, attendeeId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Ticket assigned successfully"})
 	return nil
 }
