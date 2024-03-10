@@ -88,6 +88,7 @@ func (t *TicketService) CreateTicketOption(ctx context.Context, eventId string, 
 		SetID(uuid.New().String()).
 		SetDescription(option.Description).
 		SetPrice(option.Price).
+		SetDiscount(option.Discount).
 		SetQuantityAvailable(option.QuantityAvailable).
 		SetEventID(eventId).
 		Save(ctx)
@@ -124,13 +125,25 @@ func (t *TicketService) UpdateTicketOption(ctx context.Context, optionId string,
 		return nil, fmt.Errorf("failed to find ticket option with ID %s: %v", optionId, err)
 	}
 
-	updatedOption, err := existingOption.Update().
-		SetNillableName(&update.Name).
-		SetNillableDescription(&update.Description).
-		SetNillablePrice(&update.Price).
-		SetNillableQuantityAvailable(&update.QuantityAvailable).
-		Save(ctx)
+	updateQuery := existingOption.Update()
 
+	if update.Name != "" {
+		updateQuery.SetNillableName(&update.Name)
+	}
+	if update.Description != "" {
+		updateQuery.SetNillableDescription(&update.Description)
+	}
+	if update.Price > 0 {
+		updateQuery.SetNillablePrice(&update.Price)
+	}
+	if update.QuantityAvailable > 0 {
+		updateQuery.SetNillableQuantityAvailable(&update.QuantityAvailable)
+	}
+	if update.Discount > 0 {
+		updateQuery.SetNillableDiscount(&update.Discount)
+	}
+
+	updatedOption, err := updateQuery.Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update ticket option: %v", err)
 	}

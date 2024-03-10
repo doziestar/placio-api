@@ -111,14 +111,14 @@ func (c *ticketController) getTicketOption(ctx *gin.Context) error {
 // @Security ApiKeyAuth
 // @Router /tickets/options/{optionId} [patch]
 func (c *ticketController) updateTicketOption(ctx *gin.Context) error {
-	eventId := ctx.Param("eventId")
+	optionId := ctx.Param("optionId")
 	var ticketOptionDTO *ent.TicketOption
 
 	if err := ctx.ShouldBindJSON(&ticketOptionDTO); err != nil {
 		return err
 	}
 
-	updatedTicketOption, err := c.service.UpdateTicketOption(ctx, eventId, ticketOptionDTO)
+	updatedTicketOption, err := c.service.UpdateTicketOption(ctx, optionId, ticketOptionDTO)
 	if err != nil {
 		return err
 
