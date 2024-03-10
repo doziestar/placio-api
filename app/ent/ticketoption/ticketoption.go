@@ -27,6 +27,8 @@ const (
 	FieldQuantitySold = "quantity_sold"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldDiscount holds the string denoting the discount field in the database.
+	FieldDiscount = "discount"
 	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
@@ -71,6 +73,7 @@ var Columns = []string{
 	FieldQuantityAvailable,
 	FieldQuantitySold,
 	FieldStatus,
+	FieldDiscount,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -107,6 +110,10 @@ var (
 	DefaultQuantityAvailable int
 	// DefaultQuantitySold holds the default value on creation for the "quantitySold" field.
 	DefaultQuantitySold int
+	// DefaultDiscount holds the default value on creation for the "discount" field.
+	DefaultDiscount float64
+	// DiscountValidator is a validator for the "discount" field. It is called by the builders before save.
+	DiscountValidator func(float64) error
 	// DefaultCreatedAt holds the default value on creation for the "createdAt" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updatedAt" field.
@@ -178,6 +185,11 @@ func ByQuantitySold(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByDiscount orders the results by the discount field.
+func ByDiscount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDiscount, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the createdAt field.

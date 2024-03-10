@@ -91,6 +91,20 @@ func (toc *TicketOptionCreate) SetNillableStatus(t *ticketoption.Status) *Ticket
 	return toc
 }
 
+// SetDiscount sets the "discount" field.
+func (toc *TicketOptionCreate) SetDiscount(f float64) *TicketOptionCreate {
+	toc.mutation.SetDiscount(f)
+	return toc
+}
+
+// SetNillableDiscount sets the "discount" field if the given value is not nil.
+func (toc *TicketOptionCreate) SetNillableDiscount(f *float64) *TicketOptionCreate {
+	if f != nil {
+		toc.SetDiscount(*f)
+	}
+	return toc
+}
+
 // SetCreatedAt sets the "createdAt" field.
 func (toc *TicketOptionCreate) SetCreatedAt(t time.Time) *TicketOptionCreate {
 	toc.mutation.SetCreatedAt(t)
@@ -225,6 +239,10 @@ func (toc *TicketOptionCreate) defaults() {
 		v := ticketoption.DefaultStatus
 		toc.mutation.SetStatus(v)
 	}
+	if _, ok := toc.mutation.Discount(); !ok {
+		v := ticketoption.DefaultDiscount
+		toc.mutation.SetDiscount(v)
+	}
 	if _, ok := toc.mutation.CreatedAt(); !ok {
 		v := ticketoption.DefaultCreatedAt()
 		toc.mutation.SetCreatedAt(v)
@@ -268,6 +286,14 @@ func (toc *TicketOptionCreate) check() error {
 	if v, ok := toc.mutation.Status(); ok {
 		if err := ticketoption.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TicketOption.status": %w`, err)}
+		}
+	}
+	if _, ok := toc.mutation.Discount(); !ok {
+		return &ValidationError{Name: "discount", err: errors.New(`ent: missing required field "TicketOption.discount"`)}
+	}
+	if v, ok := toc.mutation.Discount(); ok {
+		if err := ticketoption.DiscountValidator(v); err != nil {
+			return &ValidationError{Name: "discount", err: fmt.Errorf(`ent: validator failed for field "TicketOption.discount": %w`, err)}
 		}
 	}
 	if _, ok := toc.mutation.CreatedAt(); !ok {
@@ -334,6 +360,10 @@ func (toc *TicketOptionCreate) createSpec() (*TicketOption, *sqlgraph.CreateSpec
 	if value, ok := toc.mutation.Status(); ok {
 		_spec.SetField(ticketoption.FieldStatus, field.TypeEnum, value)
 		_node.Status = value
+	}
+	if value, ok := toc.mutation.Discount(); ok {
+		_spec.SetField(ticketoption.FieldDiscount, field.TypeFloat64, value)
+		_node.Discount = value
 	}
 	if value, ok := toc.mutation.CreatedAt(); ok {
 		_spec.SetField(ticketoption.FieldCreatedAt, field.TypeTime, value)

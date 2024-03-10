@@ -30,6 +30,8 @@ type TicketOption struct {
 	QuantitySold int `json:"quantitySold,omitempty"`
 	// Status holds the value of the "status" field.
 	Status ticketoption.Status `json:"status,omitempty"`
+	// Discount holds the value of the "discount" field.
+	Discount float64 `json:"discount,omitempty"`
 	// CreatedAt holds the value of the "createdAt" field.
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updatedAt" field.
@@ -90,7 +92,7 @@ func (*TicketOption) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case ticketoption.FieldPrice:
+		case ticketoption.FieldPrice, ticketoption.FieldDiscount:
 			values[i] = new(sql.NullFloat64)
 		case ticketoption.FieldQuantityAvailable, ticketoption.FieldQuantitySold:
 			values[i] = new(sql.NullInt64)
@@ -156,6 +158,12 @@ func (to *TicketOption) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				to.Status = ticketoption.Status(value.String)
+			}
+		case ticketoption.FieldDiscount:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field discount", values[i])
+			} else if value.Valid {
+				to.Discount = value.Float64
 			}
 		case ticketoption.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -244,6 +252,9 @@ func (to *TicketOption) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", to.Status))
+	builder.WriteString(", ")
+	builder.WriteString("discount=")
+	builder.WriteString(fmt.Sprintf("%v", to.Discount))
 	builder.WriteString(", ")
 	builder.WriteString("createdAt=")
 	builder.WriteString(to.CreatedAt.Format(time.ANSIC))

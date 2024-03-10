@@ -844,12 +844,18 @@ func init() {
 	ticketoptionDescQuantitySold := ticketoptionFields[5].Descriptor()
 	// ticketoption.DefaultQuantitySold holds the default value on creation for the quantitySold field.
 	ticketoption.DefaultQuantitySold = ticketoptionDescQuantitySold.Default.(int)
+	// ticketoptionDescDiscount is the schema descriptor for discount field.
+	ticketoptionDescDiscount := ticketoptionFields[7].Descriptor()
+	// ticketoption.DefaultDiscount holds the default value on creation for the discount field.
+	ticketoption.DefaultDiscount = ticketoptionDescDiscount.Default.(float64)
+	// ticketoption.DiscountValidator is a validator for the "discount" field. It is called by the builders before save.
+	ticketoption.DiscountValidator = ticketoptionDescDiscount.Validators[0].(func(float64) error)
 	// ticketoptionDescCreatedAt is the schema descriptor for createdAt field.
-	ticketoptionDescCreatedAt := ticketoptionFields[7].Descriptor()
+	ticketoptionDescCreatedAt := ticketoptionFields[8].Descriptor()
 	// ticketoption.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	ticketoption.DefaultCreatedAt = ticketoptionDescCreatedAt.Default.(func() time.Time)
 	// ticketoptionDescUpdatedAt is the schema descriptor for updatedAt field.
-	ticketoptionDescUpdatedAt := ticketoptionFields[8].Descriptor()
+	ticketoptionDescUpdatedAt := ticketoptionFields[9].Descriptor()
 	// ticketoption.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
 	ticketoption.DefaultUpdatedAt = ticketoptionDescUpdatedAt.Default.(func() time.Time)
 	// ticketoption.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.

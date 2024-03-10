@@ -136,6 +136,27 @@ func (tou *TicketOptionUpdate) SetNillableStatus(t *ticketoption.Status) *Ticket
 	return tou
 }
 
+// SetDiscount sets the "discount" field.
+func (tou *TicketOptionUpdate) SetDiscount(f float64) *TicketOptionUpdate {
+	tou.mutation.ResetDiscount()
+	tou.mutation.SetDiscount(f)
+	return tou
+}
+
+// SetNillableDiscount sets the "discount" field if the given value is not nil.
+func (tou *TicketOptionUpdate) SetNillableDiscount(f *float64) *TicketOptionUpdate {
+	if f != nil {
+		tou.SetDiscount(*f)
+	}
+	return tou
+}
+
+// AddDiscount adds f to the "discount" field.
+func (tou *TicketOptionUpdate) AddDiscount(f float64) *TicketOptionUpdate {
+	tou.mutation.AddDiscount(f)
+	return tou
+}
+
 // SetCreatedAt sets the "createdAt" field.
 func (tou *TicketOptionUpdate) SetCreatedAt(t time.Time) *TicketOptionUpdate {
 	tou.mutation.SetCreatedAt(t)
@@ -311,6 +332,11 @@ func (tou *TicketOptionUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TicketOption.status": %w`, err)}
 		}
 	}
+	if v, ok := tou.mutation.Discount(); ok {
+		if err := ticketoption.DiscountValidator(v); err != nil {
+			return &ValidationError{Name: "discount", err: fmt.Errorf(`ent: validator failed for field "TicketOption.discount": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -352,6 +378,12 @@ func (tou *TicketOptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := tou.mutation.Status(); ok {
 		_spec.SetField(ticketoption.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := tou.mutation.Discount(); ok {
+		_spec.SetField(ticketoption.FieldDiscount, field.TypeFloat64, value)
+	}
+	if value, ok := tou.mutation.AddedDiscount(); ok {
+		_spec.AddField(ticketoption.FieldDiscount, field.TypeFloat64, value)
 	}
 	if value, ok := tou.mutation.CreatedAt(); ok {
 		_spec.SetField(ticketoption.FieldCreatedAt, field.TypeTime, value)
@@ -603,6 +635,27 @@ func (touo *TicketOptionUpdateOne) SetNillableStatus(t *ticketoption.Status) *Ti
 	return touo
 }
 
+// SetDiscount sets the "discount" field.
+func (touo *TicketOptionUpdateOne) SetDiscount(f float64) *TicketOptionUpdateOne {
+	touo.mutation.ResetDiscount()
+	touo.mutation.SetDiscount(f)
+	return touo
+}
+
+// SetNillableDiscount sets the "discount" field if the given value is not nil.
+func (touo *TicketOptionUpdateOne) SetNillableDiscount(f *float64) *TicketOptionUpdateOne {
+	if f != nil {
+		touo.SetDiscount(*f)
+	}
+	return touo
+}
+
+// AddDiscount adds f to the "discount" field.
+func (touo *TicketOptionUpdateOne) AddDiscount(f float64) *TicketOptionUpdateOne {
+	touo.mutation.AddDiscount(f)
+	return touo
+}
+
 // SetCreatedAt sets the "createdAt" field.
 func (touo *TicketOptionUpdateOne) SetCreatedAt(t time.Time) *TicketOptionUpdateOne {
 	touo.mutation.SetCreatedAt(t)
@@ -791,6 +844,11 @@ func (touo *TicketOptionUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TicketOption.status": %w`, err)}
 		}
 	}
+	if v, ok := touo.mutation.Discount(); ok {
+		if err := ticketoption.DiscountValidator(v); err != nil {
+			return &ValidationError{Name: "discount", err: fmt.Errorf(`ent: validator failed for field "TicketOption.discount": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -849,6 +907,12 @@ func (touo *TicketOptionUpdateOne) sqlSave(ctx context.Context) (_node *TicketOp
 	}
 	if value, ok := touo.mutation.Status(); ok {
 		_spec.SetField(ticketoption.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := touo.mutation.Discount(); ok {
+		_spec.SetField(ticketoption.FieldDiscount, field.TypeFloat64, value)
+	}
+	if value, ok := touo.mutation.AddedDiscount(); ok {
+		_spec.AddField(ticketoption.FieldDiscount, field.TypeFloat64, value)
 	}
 	if value, ok := touo.mutation.CreatedAt(); ok {
 		_spec.SetField(ticketoption.FieldCreatedAt, field.TypeTime, value)

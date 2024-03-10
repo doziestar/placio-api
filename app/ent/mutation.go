@@ -56166,6 +56166,8 @@ type TicketOptionMutation struct {
 	quantitySold         *int
 	addquantitySold      *int
 	status               *ticketoption.Status
+	discount             *float64
+	adddiscount          *float64
 	createdAt            *time.Time
 	updatedAt            *time.Time
 	clearedFields        map[string]struct{}
@@ -56562,6 +56564,62 @@ func (m *TicketOptionMutation) ResetStatus() {
 	m.status = nil
 }
 
+// SetDiscount sets the "discount" field.
+func (m *TicketOptionMutation) SetDiscount(f float64) {
+	m.discount = &f
+	m.adddiscount = nil
+}
+
+// Discount returns the value of the "discount" field in the mutation.
+func (m *TicketOptionMutation) Discount() (r float64, exists bool) {
+	v := m.discount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDiscount returns the old "discount" field's value of the TicketOption entity.
+// If the TicketOption object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TicketOptionMutation) OldDiscount(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDiscount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDiscount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDiscount: %w", err)
+	}
+	return oldValue.Discount, nil
+}
+
+// AddDiscount adds f to the "discount" field.
+func (m *TicketOptionMutation) AddDiscount(f float64) {
+	if m.adddiscount != nil {
+		*m.adddiscount += f
+	} else {
+		m.adddiscount = &f
+	}
+}
+
+// AddedDiscount returns the value that was added to the "discount" field in this mutation.
+func (m *TicketOptionMutation) AddedDiscount() (r float64, exists bool) {
+	v := m.adddiscount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDiscount resets all changes to the "discount" field.
+func (m *TicketOptionMutation) ResetDiscount() {
+	m.discount = nil
+	m.adddiscount = nil
+}
+
 // SetCreatedAt sets the "createdAt" field.
 func (m *TicketOptionMutation) SetCreatedAt(t time.Time) {
 	m.createdAt = &t
@@ -56815,7 +56873,7 @@ func (m *TicketOptionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TicketOptionMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.name != nil {
 		fields = append(fields, ticketoption.FieldName)
 	}
@@ -56833,6 +56891,9 @@ func (m *TicketOptionMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, ticketoption.FieldStatus)
+	}
+	if m.discount != nil {
+		fields = append(fields, ticketoption.FieldDiscount)
 	}
 	if m.createdAt != nil {
 		fields = append(fields, ticketoption.FieldCreatedAt)
@@ -56860,6 +56921,8 @@ func (m *TicketOptionMutation) Field(name string) (ent.Value, bool) {
 		return m.QuantitySold()
 	case ticketoption.FieldStatus:
 		return m.Status()
+	case ticketoption.FieldDiscount:
+		return m.Discount()
 	case ticketoption.FieldCreatedAt:
 		return m.CreatedAt()
 	case ticketoption.FieldUpdatedAt:
@@ -56885,6 +56948,8 @@ func (m *TicketOptionMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldQuantitySold(ctx)
 	case ticketoption.FieldStatus:
 		return m.OldStatus(ctx)
+	case ticketoption.FieldDiscount:
+		return m.OldDiscount(ctx)
 	case ticketoption.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case ticketoption.FieldUpdatedAt:
@@ -56940,6 +57005,13 @@ func (m *TicketOptionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
+	case ticketoption.FieldDiscount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDiscount(v)
+		return nil
 	case ticketoption.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -56971,6 +57043,9 @@ func (m *TicketOptionMutation) AddedFields() []string {
 	if m.addquantitySold != nil {
 		fields = append(fields, ticketoption.FieldQuantitySold)
 	}
+	if m.adddiscount != nil {
+		fields = append(fields, ticketoption.FieldDiscount)
+	}
 	return fields
 }
 
@@ -56985,6 +57060,8 @@ func (m *TicketOptionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedQuantityAvailable()
 	case ticketoption.FieldQuantitySold:
 		return m.AddedQuantitySold()
+	case ticketoption.FieldDiscount:
+		return m.AddedDiscount()
 	}
 	return nil, false
 }
@@ -57014,6 +57091,13 @@ func (m *TicketOptionMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddQuantitySold(v)
+		return nil
+	case ticketoption.FieldDiscount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDiscount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown TicketOption numeric field %s", name)
@@ -57059,6 +57143,9 @@ func (m *TicketOptionMutation) ResetField(name string) error {
 		return nil
 	case ticketoption.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case ticketoption.FieldDiscount:
+		m.ResetDiscount()
 		return nil
 	case ticketoption.FieldCreatedAt:
 		m.ResetCreatedAt()

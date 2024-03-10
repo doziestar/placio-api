@@ -1595,6 +1595,7 @@ var (
 		{Name: "quantity_available", Type: field.TypeInt, Default: 0},
 		{Name: "quantity_sold", Type: field.TypeInt, Default: 0},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"active", "inactive", "sold_out"}, Default: "active"},
+		{Name: "discount", Type: field.TypeFloat64, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "event_ticket_options", Type: field.TypeString, Nullable: true},
@@ -1607,7 +1608,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "ticket_options_events_ticketOptions",
-				Columns:    []*schema.Column{TicketOptionsColumns[9]},
+				Columns:    []*schema.Column{TicketOptionsColumns[10]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

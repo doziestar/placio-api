@@ -90,6 +90,11 @@ func QuantitySold(v int) predicate.TicketOption {
 	return predicate.TicketOption(sql.FieldEQ(FieldQuantitySold, v))
 }
 
+// Discount applies equality check predicate on the "discount" field. It's identical to DiscountEQ.
+func Discount(v float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldEQ(FieldDiscount, v))
+}
+
 // CreatedAt applies equality check predicate on the "createdAt" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.TicketOption {
 	return predicate.TicketOption(sql.FieldEQ(FieldCreatedAt, v))
@@ -368,6 +373,46 @@ func StatusIn(vs ...Status) predicate.TicketOption {
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...Status) predicate.TicketOption {
 	return predicate.TicketOption(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// DiscountEQ applies the EQ predicate on the "discount" field.
+func DiscountEQ(v float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldEQ(FieldDiscount, v))
+}
+
+// DiscountNEQ applies the NEQ predicate on the "discount" field.
+func DiscountNEQ(v float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldNEQ(FieldDiscount, v))
+}
+
+// DiscountIn applies the In predicate on the "discount" field.
+func DiscountIn(vs ...float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldIn(FieldDiscount, vs...))
+}
+
+// DiscountNotIn applies the NotIn predicate on the "discount" field.
+func DiscountNotIn(vs ...float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldNotIn(FieldDiscount, vs...))
+}
+
+// DiscountGT applies the GT predicate on the "discount" field.
+func DiscountGT(v float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldGT(FieldDiscount, v))
+}
+
+// DiscountGTE applies the GTE predicate on the "discount" field.
+func DiscountGTE(v float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldGTE(FieldDiscount, v))
+}
+
+// DiscountLT applies the LT predicate on the "discount" field.
+func DiscountLT(v float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldLT(FieldDiscount, v))
+}
+
+// DiscountLTE applies the LTE predicate on the "discount" field.
+func DiscountLTE(v float64) predicate.TicketOption {
+	return predicate.TicketOption(sql.FieldLTE(FieldDiscount, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "createdAt" field.
