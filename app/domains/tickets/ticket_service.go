@@ -18,6 +18,7 @@ import (
 
 type ITicketService interface {
 	CreateTicketOption(ctx context.Context, eventId string, option *ent.TicketOption) (*ent.TicketOption, error)
+	GetTicketOption(ctx context.Context, optionId string) (*ent.TicketOption, error)
 	UpdateTicketOption(ctx context.Context, optionId string, update *ent.TicketOption) (*ent.TicketOption, error)
 	AddMediaToTicketOption(ctx context.Context, ticketOptionID string, files []*multipart.FileHeader) (*ent.TicketOption, error)
 	RemoveMediaFromTicketOption(ctx context.Context, ticketOptionID string, mediaID string) error
@@ -96,6 +97,25 @@ func (t *TicketService) CreateTicketOption(ctx context.Context, eventId string, 
 	}
 
 	return createdOption, nil
+}
+
+func (t *TicketService) GetTicketOption(ctx context.Context, optionId string) (*ent.TicketOption, error) {
+	option, err := t.client.TicketOption.Query().
+		Where(ticketoption.IDEQ(optionId)).
+		WithMedia().
+		WithEvent(func(query *ent.EventQuery) {
+			query.WithPlace()
+			query.WithMedia()
+		}).
+		WithTickets(func(query *ent.TicketQuery) {
+			query.WithPurchaser()
+		}).
+		First(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve ticket option with ID %s: %v", optionId, err)
+	}
+	return option, nil
+
 }
 
 func (t *TicketService) UpdateTicketOption(ctx context.Context, optionId string, update *ent.TicketOption) (*ent.TicketOption, error) {

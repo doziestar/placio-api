@@ -291,11 +291,6 @@ func (toc *TicketOptionCreate) check() error {
 	if _, ok := toc.mutation.Discount(); !ok {
 		return &ValidationError{Name: "discount", err: errors.New(`ent: missing required field "TicketOption.discount"`)}
 	}
-	if v, ok := toc.mutation.Discount(); ok {
-		if err := ticketoption.DiscountValidator(v); err != nil {
-			return &ValidationError{Name: "discount", err: fmt.Errorf(`ent: validator failed for field "TicketOption.discount": %w`, err)}
-		}
-	}
 	if _, ok := toc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "TicketOption.createdAt"`)}
 	}

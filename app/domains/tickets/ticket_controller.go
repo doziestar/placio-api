@@ -23,6 +23,7 @@ func (c *ticketController) RegisterRoutes(router, routerWithoutAuth *gin.RouterG
 	// Ticket Option Management
 	ticketRouter.POST("/options", middleware.ErrorMiddleware(c.createTicketOption))
 	ticketRouter.PATCH("/options/:optionId", middleware.ErrorMiddleware(c.updateTicketOption))
+	ticketRouter.GET("/options/:optionId", middleware.ErrorMiddleware(c.getTicketOption))
 	ticketRouter.DELETE("/options/:optionId", middleware.ErrorMiddleware(c.deleteTicketOption))
 	ticketRouterWithoutAuth.GET("/event/:eventId/options", middleware.ErrorMiddleware(c.getTicketOptionsForEvent))
 	ticketRouter.POST("/options/:optionId/media", middleware.ErrorMiddleware(c.addMediaToTicketOption))
@@ -55,7 +56,7 @@ func (c *ticketController) RegisterRoutes(router, routerWithoutAuth *gin.RouterG
 // @Security ApiKeyAuth
 // @Router /tickets/options [post]
 func (c *ticketController) createTicketOption(ctx *gin.Context) error {
-	eventId := ctx.Param("eventId")
+	eventId := ctx.Query("eventId")
 	var ticketOptionDTO *ent.TicketOption
 
 	if err := ctx.ShouldBindJSON(&ticketOptionDTO); err != nil {
@@ -69,6 +70,31 @@ func (c *ticketController) createTicketOption(ctx *gin.Context) error {
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(createdTicketOption))
 	return nil
+}
+
+// GetTicketOption godoc
+// @Summary Get a ticket option
+// @Description Get a ticket option for an event
+// @Accept json
+// @Produce json
+// @Tags Ticket
+// @Param optionId path string true "Option ID"
+// @Success 200 {object} TicketOptionDTO
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Security ApiKeyAuth
+// @Router /tickets/options/{optionId} [get]
+func (c *ticketController) getTicketOption(ctx *gin.Context) error {
+	optionId := ctx.Param("optionId")
+
+	ticketOption, err := c.service.GetTicketOption(ctx, optionId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(ticketOption))
+	return nil
+
 }
 
 // UpdateTicketOption godoc

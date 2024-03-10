@@ -112,8 +112,6 @@ var (
 	DefaultQuantitySold int
 	// DefaultDiscount holds the default value on creation for the "discount" field.
 	DefaultDiscount float64
-	// DiscountValidator is a validator for the "discount" field. It is called by the builders before save.
-	DiscountValidator func(float64) error
 	// DefaultCreatedAt holds the default value on creation for the "createdAt" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updatedAt" field.

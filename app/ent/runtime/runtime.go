@@ -848,8 +848,6 @@ func init() {
 	ticketoptionDescDiscount := ticketoptionFields[7].Descriptor()
 	// ticketoption.DefaultDiscount holds the default value on creation for the discount field.
 	ticketoption.DefaultDiscount = ticketoptionDescDiscount.Default.(float64)
-	// ticketoption.DiscountValidator is a validator for the "discount" field. It is called by the builders before save.
-	ticketoption.DiscountValidator = ticketoptionDescDiscount.Validators[0].(func(float64) error)
 	// ticketoptionDescCreatedAt is the schema descriptor for createdAt field.
 	ticketoptionDescCreatedAt := ticketoptionFields[8].Descriptor()
 	// ticketoption.DefaultCreatedAt holds the default value on creation for the createdAt field.

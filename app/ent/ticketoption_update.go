@@ -332,11 +332,6 @@ func (tou *TicketOptionUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TicketOption.status": %w`, err)}
 		}
 	}
-	if v, ok := tou.mutation.Discount(); ok {
-		if err := ticketoption.DiscountValidator(v); err != nil {
-			return &ValidationError{Name: "discount", err: fmt.Errorf(`ent: validator failed for field "TicketOption.discount": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -842,11 +837,6 @@ func (touo *TicketOptionUpdateOne) check() error {
 	if v, ok := touo.mutation.Status(); ok {
 		if err := ticketoption.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TicketOption.status": %w`, err)}
-		}
-	}
-	if v, ok := touo.mutation.Discount(); ok {
-		if err := ticketoption.DiscountValidator(v); err != nil {
-			return &ValidationError{Name: "discount", err: fmt.Errorf(`ent: validator failed for field "TicketOption.discount": %w`, err)}
 		}
 	}
 	return nil
