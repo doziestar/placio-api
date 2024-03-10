@@ -3,6 +3,7 @@ package tickets
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"placio-app/ent"
 	"placio-app/utility"
 	"placio-pkg/middleware"
 )
@@ -54,6 +55,19 @@ func (c *ticketController) RegisterRoutes(router, routerWithoutAuth *gin.RouterG
 // @Security ApiKeyAuth
 // @Router /tickets/options [post]
 func (c *ticketController) createTicketOption(ctx *gin.Context) error {
+	eventId := ctx.Param("eventId")
+	var ticketOptionDTO *ent.TicketOption
+
+	if err := ctx.ShouldBindJSON(&ticketOptionDTO); err != nil {
+		return err
+	}
+
+	createdTicketOption, err := c.service.CreateTicketOption(ctx, eventId, ticketOptionDTO)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(createdTicketOption))
 	return nil
 }
 
@@ -71,6 +85,20 @@ func (c *ticketController) createTicketOption(ctx *gin.Context) error {
 // @Security ApiKeyAuth
 // @Router /tickets/options/{optionId} [patch]
 func (c *ticketController) updateTicketOption(ctx *gin.Context) error {
+	eventId := ctx.Param("eventId")
+	var ticketOptionDTO *ent.TicketOption
+
+	if err := ctx.ShouldBindJSON(&ticketOptionDTO); err != nil {
+		return err
+	}
+
+	updatedTicketOption, err := c.service.UpdateTicketOption(ctx, eventId, ticketOptionDTO)
+	if err != nil {
+		return err
+
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedTicketOption))
 	return nil
 }
 
@@ -87,6 +115,14 @@ func (c *ticketController) updateTicketOption(ctx *gin.Context) error {
 // @Security ApiKeyAuth
 // @Router /tickets/options/{optionId} [delete]
 func (c *ticketController) deleteTicketOption(ctx *gin.Context) error {
+	optionId := ctx.Param("optionId")
+
+	err := c.service.DeleteTicketOption(ctx, optionId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Ticket option deleted successfully"})
 	return nil
 }
 
@@ -102,6 +138,14 @@ func (c *ticketController) deleteTicketOption(ctx *gin.Context) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /tickets/event/{eventId}/options [get]
 func (c *ticketController) getTicketOptionsForEvent(ctx *gin.Context) error {
+	eventId := ctx.Param("eventId")
+
+	ticketOptions, err := c.service.GetTicketOptionsForEvent(ctx, eventId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(ticketOptions))
 	return nil
 }
 

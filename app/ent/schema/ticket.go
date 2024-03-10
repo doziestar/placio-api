@@ -45,6 +45,7 @@ func (TicketOption) Fields() []ent.Field {
 		field.Int("quantityAvailable").Default(0),
 		field.Int("quantitySold").Default(0),
 		field.Enum("status").Values("active", "inactive", "sold_out").Default("active"),
+		field.Float("discount").Positive().Default(0),
 		field.Time("createdAt").Default(time.Now),
 		field.Time("updatedAt").Default(time.Now).UpdateDefault(time.Now),
 	}
